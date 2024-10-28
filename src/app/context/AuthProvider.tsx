@@ -1,20 +1,12 @@
+'use client'
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
-interface AuthContextType {
-  user: User | null;
-  login: (username: string, password: string) => Promise<void>;
-  logout: () => void;
-  isAuthenticated: boolean;
-}
+import { AuthContextType, User } from '../types/types';
 
-interface User {
-  id: string;
-  username: string;
-  // Add more user properties as needed
-}
+
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -52,7 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(user);
 
       // Redirect to a protected page (e.g., dashboard)
-      router.push('/dashboard');
+      router.push('/');
     } catch (error) {
       console.error("Login failed:", error);
       throw new Error("Invalid credentials");

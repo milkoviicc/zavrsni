@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthProvider } from "./context/AuthProvider";
 
 export const metadata: Metadata = {
   title: "Društvena mreža",
@@ -12,10 +13,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
-        {children}
-      </body>
-    </html>
+    <AuthProvider>
+      <html lang="en">
+        <body>
+          {children}
+        </body>
+      </html>
+    </AuthProvider>
   );
 }
