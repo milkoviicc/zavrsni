@@ -3,38 +3,30 @@
 import React, {useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios';
+import { useAuth } from '@/app/context/AuthProvider';
 
 
 
 const Login = () => {
+  const {login} = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showMessage, setShowMessage] = useState(false);
+  const [showMessage, setShowMessage] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
 
   const handleSignIn = async () => {
     try {
-      const res = await axios.post('/api/auth/login', {email, password});
-
-      if(res.status === 200) {
-        setShowMessage(true);
-
-        const timer = setTimeout(() => {
-          router.push('/');
-        }, 1500);
-
-        return () => clearTimeout(timer);
-      }
+      await login(email,password);
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 3000);
     } catch(err) {
       setError('Invalid email or password');
-      console.error('Login failed: ', error);
-    } 
-  };
-
-  if(showMessage) {
-    return <h1>You have been succesfully logged in.</h1>
+    }
   }
+
+  if(showMessage) return <h1>You have been succesfully logged in.</h1>
 
 
   return (

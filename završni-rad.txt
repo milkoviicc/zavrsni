@@ -1,0 +1,21 @@
+DRUŠTVENA MREŽA
+
+Stranice: Login i Register stranica, Profil stranica, Početna stranica s postovima i njihovim komentarima, različitim opcijama itd..
+
+REGISTRACIJA
+Polja: ime, prezime, korisničko ime, email, lozinka, potvrdi lozinku
+
+PRIJAVA
+Polja: korisničko ime/email, lozinka
+
+PROFIL
+Uređivanje vlastitog profila, dodavanje/brisanje prijatelja preko njihovih profila
+
+POČETNA STRANICA
+Kreiranje, brisanje, uređivanje vlastitih postova i komentara, lajkanje tuđih komentara
+
+Stranica će biti napravljena uz pomoć NextJS frameworka, pisan u Reactu uz pomoć Typescripta i neće biti običan CSS nego TailwindCSS.
+Koristim NextJS zbog njegove mogućnosti lakog i brzog routinga te server-side renderinga.
+Informacije korisnika, postovi i komentari bit će pozvani te renderirani na stranice uz pomoć gotovog back-enda i SQL baze podataka.
+
+Marko Milković 4.d

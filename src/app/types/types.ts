@@ -10,3 +10,12 @@ export interface User {
     username: string;
     // Add more user properties as needed
 }
+
+export interface LoginFormProps {
+    email: string,
+    password: string,
+    setEmail: (value: string) => void;
+    setPassword: (value: string) => void;
+    error: string | null;
+    handleSignIn: () => void;
+}
