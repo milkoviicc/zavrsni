@@ -7,8 +7,11 @@ export interface AuthContextType {
   
 export interface User {
     id: string;
+    firstName: string | null,
+    lastName: string | null,
     username: string;
-    // Add more user properties as needed
+    email: string,
+    password: string,
 }
 
 export interface LoginFormProps {
