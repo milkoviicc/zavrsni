@@ -22,7 +22,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const token = localStorage.getItem('token');
 
     if (token) {
-
       axios.get<User>('/api/user', {
         headers: { Authorization: `Bearer ${token}` }
       }).then(res => {
@@ -34,6 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     }
   }, []);
+
 
   const addDetails = async(firstname: string, lastname: string) => {
     try {
@@ -90,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           router.push('/');
         } else {
-          throw new Error('Username not correct.')
+          throw new Error(`This username/email doesn't exist.`);
         }
       } else {
         throw new Error('Invalid response structure');
