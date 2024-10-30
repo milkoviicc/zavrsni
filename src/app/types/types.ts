@@ -1,3 +1,5 @@
+
+
 export interface AuthContextType {
     user: User | null;
     login: (username: string, password: string) => Promise<void>;
@@ -20,6 +22,8 @@ export interface Profile {
     firstName: string | null,
     lastName: string | null,
 }
+
+
 
 export interface LoginFormProps {
     email: string,

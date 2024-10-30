@@ -1,6 +1,4 @@
 'use client';
-
-import { AuthProvider } from "@/app/context/AuthProvider";
 import "../../globals.css";
 
 
@@ -10,12 +8,8 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AuthProvider>
-      <html lang="en">
-        <body>
-          {children}
-        </body>
-      </html>
-    </AuthProvider>
+    <div className="w-full h-full">
+      {children}
+    </div>
   );
 }

@@ -1,8 +1,7 @@
-import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthProvider";
-import Footer from "./components/Footer/Footer";
-import Navbar from "./components/Navbar/Navbar";
+import ClientLayout from './ClientLayout'
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Društvena mreža",
@@ -14,15 +13,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+
   return (
-    <AuthProvider>
       <html lang="en">
         <body>
-          <Navbar />
-          {children}
-          <Footer />
+          <AuthProvider>
+              <ClientLayout>{children}</ClientLayout>
+          </AuthProvider>
         </body>
       </html>
-    </AuthProvider>
+
   );
 }

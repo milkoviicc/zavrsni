@@ -7,9 +7,8 @@ import { useAuth } from '@/app/context/AuthProvider';
 
 
 
-
 const Login = () => {
-  const {login} = useAuth();
+  const {login, isAuthenticated} = useAuth();
   const router = useRouter();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -18,12 +17,19 @@ const Login = () => {
 
 
   const handleSignIn = async () => {
+
+
     try {
+
+      if(name === '' || password === '') {
+        setError('You must fill in all the fields.');
+      }
+
       await login(name,password);
       setShowMessage(true);
       setTimeout(() => setShowMessage(false), 1500);
     } catch(err) {
-      setError('Invalid email or password');
+      setError('Invalid email or password, try again!');
     }
   }
 
@@ -37,7 +43,7 @@ const Login = () => {
           <div className='my-4'>
             <input type="text" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Email address or username' id="name" onChange={(e) => setName(e.target.value)}/>
             <input type="password" className={`w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="password" onChange={(e) => setPassword(e.target.value)} />
-            {error !== null ? <p className='text-red-500 text-sm my-2'>Invalid email address/username or password, try again!</p> : null}
+            {error !== null ? <p className='text-red-500 text-sm my-2'>{error}</p> : null}
             {showMessage ? <p className='text-green-600 text-sm my-2'>You have been succesfully registered. Redirecting you to our login page.</p> : null}
           </div>
 

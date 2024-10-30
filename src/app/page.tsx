@@ -6,6 +6,7 @@ import { useAuth } from "./context/AuthProvider";
 import { useRouter } from "next/navigation";
 
 
+
 export default function Home() {
 
   const {user, logout, isAuthenticated, fullyRegistered, addDetails } = useAuth();
@@ -19,11 +20,7 @@ export default function Home() {
     if(!isAuthenticated) {
       setShowMessage(true);
 
-      const timer = setTimeout(() => {
-        router.push('/login');
-      }, 1500);
-      
-      return () => clearTimeout(timer);
+      router.push('/login')
     }
   }, [isAuthenticated, router])
   
@@ -49,9 +46,7 @@ export default function Home() {
       </div>
 
       :
-      <div className="h-full flex items-center justify-center">
-        <h1>You have to login to view the page content. Redirecting to Login page.</h1>  
-      </div> 
+      null
       }
     </div>
   );
