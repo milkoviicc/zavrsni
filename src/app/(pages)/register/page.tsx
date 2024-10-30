@@ -4,11 +4,12 @@ import React, {useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios';
 import { useAuth } from '@/app/context/AuthProvider';
+import { User } from '@/app/types/types';
 
 
 
 const Register = () => {
-  const {login} = useAuth();
+  const {register} = useAuth();
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -48,22 +49,13 @@ const Register = () => {
     validateForm();
 
     try {
-      const res = await axios.post('/api/auth/register', {username, email, password});
-      if(res.status === 200) {
-        setShowMessage(true);
-
-        const timer = setTimeout(() => {
-          router.push('/');
-
-          // Redirecta na home page, savea token u localstorage i stavlja u header kao Bearer: '';
-        }, 1500);
-
-        return () => clearTimeout(timer);
-      }
+      await register(username, email, password, confirmPassword);
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 1500);
     } catch(err) {
-      console.error('Register failed', error);
+      setError('Registration failed.');
     }
-  }
+}
 
   return (
     <div className='h-full flex items-center justify-center'>

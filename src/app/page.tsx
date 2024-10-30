@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import { useEffect, useState } from "react";
@@ -7,9 +8,12 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
 
-  const {user, logout, isAuthenticated } = useAuth();
+  const {user, logout, isAuthenticated, fullyRegistered, addDetails } = useAuth();
   const [showMessage, setShowMessage] = useState(false);
   const router = useRouter();
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   useEffect(() => {
     if(!isAuthenticated) {
@@ -22,20 +26,33 @@ export default function Home() {
       return () => clearTimeout(timer);
     }
   }, [isAuthenticated, router])
-
-  if(!isAuthenticated && showMessage) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <h1>You have to login to view the page content. Redirecting to Login page.</h1>  
-      </div>
-      )
-  }
   
 
   return (
-    <div>
-      <h1>Welcome, {user?.username}</h1>
-      <button onClick={logout}></button>
+    <div className='h-full'>
+      {isAuthenticated && fullyRegistered
+      ?
+      <div>
+        <h1>bok</h1>
+      </div>
+
+      :  isAuthenticated && !fullyRegistered 
+      ?  
+      <div className="border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg">
+        <div className="px-8 py-14">
+          <h1>We just need a little more information about you.</h1>
+          <p>Please enter your full name.</p>
+          <input type="text" className={`w-full py-3 px-4 borde border-gray-300  rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='First name' id="firstname" onChange={(e) => setFirstName(e.target.value)}/>
+          <input type="text" className={`w-full py-3 px-4 border border-gray-300 rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Last name' id="lastname" onChange={(e) => setLastName(e.target.value)}/>
+          <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold w-full py-2 border border-blue-700 rounded transition-all' onClick={() => addDetails(firstName, lastName)}>Confirm</button>
+        </div>
+      </div>
+
+      :
+      <div className="h-full flex items-center justify-center">
+        <h1>You have to login to view the page content. Redirecting to Login page.</h1>  
+      </div> 
+      }
     </div>
   );
 }

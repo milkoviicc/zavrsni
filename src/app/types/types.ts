@@ -1,17 +1,24 @@
 export interface AuthContextType {
     user: User | null;
     login: (username: string, password: string) => Promise<void>;
+    register: (username: string, email: string, password: string, confirmPassword: string) => Promise<void>;
+    addDetails: (firstName: string, lastName: string) => Promise<void>;
     logout: () => void;
     isAuthenticated: boolean;
+    fullyRegistered: boolean;
 }
   
 export interface User {
     id: string;
-    firstName: string | null,
-    lastName: string | null,
     username: string;
     email: string,
-    password: string,
+    token: string,
+    profile: Profile;    
+}
+
+export interface Profile {
+    firstName: string | null,
+    lastName: string | null,
 }
 
 export interface LoginFormProps {

@@ -7,10 +7,11 @@ import { useAuth } from '@/app/context/AuthProvider';
 
 
 
+
 const Login = () => {
   const {login} = useAuth();
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [showMessage, setShowMessage] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,14 +19,13 @@ const Login = () => {
 
   const handleSignIn = async () => {
     try {
-      await login(email,password);
+      await login(name,password);
       setShowMessage(true);
-      setTimeout(() => setShowMessage(false), 3000);
+      setTimeout(() => setShowMessage(false), 1500);
     } catch(err) {
       setError('Invalid email or password');
     }
   }
-
 
   return (
     <div className='h-full flex items-center justify-center'>
@@ -35,9 +35,9 @@ const Login = () => {
           <h1 className='text-black font-bold text-3xl'>Welcome back</h1>
         
           <div className='my-4'>
-            <input type="text" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Email address' id="email" onChange={(e) => setEmail(e.target.value)}/>
+            <input type="text" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Email address or username' id="name" onChange={(e) => setName(e.target.value)}/>
             <input type="password" className={`w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="password" onChange={(e) => setPassword(e.target.value)} />
-            {error !== null ? <p className='text-red-500 text-sm my-2'>Invalid email or password, try again!</p> : null}
+            {error !== null ? <p className='text-red-500 text-sm my-2'>Invalid email address/username or password, try again!</p> : null}
             {showMessage ? <p className='text-green-600 text-sm my-2'>You have been succesfully registered. Redirecting you to our login page.</p> : null}
           </div>
 
