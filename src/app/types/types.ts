@@ -8,6 +8,7 @@ export interface AuthContextType {
     logout: () => void;
     isAuthenticated: boolean;
     fullyRegistered: boolean;
+    loading: boolean;
 }
   
 export interface User {

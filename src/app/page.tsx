@@ -10,20 +10,9 @@ import { useRouter } from "next/navigation";
 export default function Home() {
 
   const {user, logout, isAuthenticated, fullyRegistered, addDetails } = useAuth();
-  const [showMessage, setShowMessage] = useState(false);
-  const router = useRouter();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-
-  useEffect(() => {
-    if(!isAuthenticated) {
-      setShowMessage(true);
-
-      router.push('/login')
-    }
-  }, [isAuthenticated, router])
-  
 
   return (
     <div className='h-full'>

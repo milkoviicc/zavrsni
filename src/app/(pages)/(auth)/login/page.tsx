@@ -17,8 +17,6 @@ const Login = () => {
 
 
   const handleSignIn = async () => {
-
-
     try {
 
       if(name === '' || password === '') {

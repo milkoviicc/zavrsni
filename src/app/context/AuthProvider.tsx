@@ -14,25 +14,37 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    
-    // Check if a user is logged in on initial load (from localStorage)
-    const token = localStorage.getItem('token');
 
-    if (token) {
-      axios.get<User>('/api/user', {
-        headers: { Authorization: `Bearer ${token}` }
-      }).then(res => {
-        setUser(res.data);
-      }).catch(() => {
-        // Token is invalid, remove it
-        localStorage.removeItem('token');
-      });
+    const checkAuth = async () => {
+      // Check if a user is logged in on initial load (from localStorage)
+      const token = localStorage.getItem('token');
 
+      if (token) {
+        try {
+          const res = await axios.get<User>('/api/user', {
+            headers:{ Authorization: `Bearer ${token}` }
+          });
+          setUser(res.data);
+        } catch(err) {
+          localStorage.removeItem('token');
+        }
+      }
+
+      setLoading(false);
     }
+    
+    checkAuth();
   }, []);
+
+  useEffect(() => {
+    if(!user) {
+      router.push('/login');
+    }
+  }, [user, router]);
 
 
   const addDetails = async(firstname: string, lastname: string) => {
@@ -112,8 +124,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isAuthenticated = !!user;
   const fullyRegistered = user?.profile.firstName !== null && user?.profile.lastName !== null;
 
+  if(loading) return null;
+
   return (
-    <AuthContext.Provider value={{ user, login, register, addDetails, logout, isAuthenticated, fullyRegistered }}>
+    <AuthContext.Provider value={{ user, login, register, addDetails, logout, isAuthenticated, fullyRegistered, loading }}>
       {children}
     </AuthContext.Provider>
   );

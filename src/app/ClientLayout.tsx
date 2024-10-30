@@ -5,7 +5,9 @@ import Footer from "./components/Footer/Footer";
 import Navbar from "./components/Navbar/Navbar";
 
 import { usePathname } from "next/navigation";
-
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "./context/AuthProvider";
 
 export default function ClientLayout({
   children,
@@ -16,6 +18,17 @@ export default function ClientLayout({
   const pathname = usePathname();
 
   const isAuthRoute = pathname === '/login' || pathname === '/register';
+
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login'); // Redirect to login if not authenticated
+    }
+  }, [isAuthenticated, router]);
+
+
 
   return (
     <div className="min-h-[100%] flex flex-col">
