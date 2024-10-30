@@ -33,7 +33,6 @@ export default function Home() {
           <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold w-full py-2 border border-blue-700 rounded transition-all' onClick={() => addDetails(firstName, lastName)}>Confirm</button>
         </div>
       </div>
-
       :
       null
       }
