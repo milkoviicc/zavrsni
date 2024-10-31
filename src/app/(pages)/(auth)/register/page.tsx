@@ -18,12 +18,16 @@ const Register = () => {
   const [showMessage, setShowMessage] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+
+
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
   const validateForm = () => {
+    const numberRegex = /\d/;
+
     if(!username || !email || !password || !confirmPassword) {
       setError('You must fill in all fields!');
       return false;
@@ -38,7 +42,18 @@ const Register = () => {
       setError('Passwords must match!');
       return false;
     }
+
+    if(password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      console.log(password.length);
+      return false;
+    }
     
+    if(!numberRegex.test(password)) {
+      setError('Password must contain at least 1 digit!');
+      return false;
+    }
+
     return true;
   };
 
@@ -54,6 +69,7 @@ const Register = () => {
       setTimeout(() => setShowMessage(false), 1500);
     } catch(err) {
       console.log('Registration failed: ', err);
+      setError('This username or email are already registered, try a different one!')
     }
   }
 

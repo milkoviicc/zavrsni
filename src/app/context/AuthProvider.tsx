@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
 import { AuthContextType, User, Profile } from '../types/types';
+import { error } from 'console';
 
 
 
@@ -15,6 +16,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -26,42 +28,61 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (token && storedUser) {
       const userData = JSON.parse(storedUser);
       setUser(userData);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      setIsLoggedIn(true);
     }
 
     setLoading(false); // Set loading to false after the check
-  }, []);
+  }, [isLoggedIn ]);
 
 
-  const addDetails = async(firstname: string, lastname: string) => {
+  const addDetails = async (firstName: string, lastName: string) => {
     try {
+      const user = localStorage.getItem('user');
       const token = localStorage.getItem('token');
-      if(token) {
-        const res = await axios.put<Profile>('/api/user', 
-          {firstname: firstname, lastname: lastname}
+  
+      if (user) {
+        const userData: User = JSON.parse(user);
+        const res = await axios.put<{id: string, username: string, email: string, profile: {firstName: string | null, lastName: string | null}}>(
+          `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/update-profile/${userData.id}`, 
+          { firstName, lastName }
         );
 
-        setProfile(res.data);
+        const {id, username: userName, email: userEmail, profile} = res.data;
+
+
+        if(token && id && profile.firstName && profile.lastName) {
+          const updatedUser = {id, username: userName, email: userEmail, token, profile};
+          localStorage.clear();
+
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+          localStorage.setItem('token', token);
+          setUser(updatedUser);
+        } else {
+          throw new Error('Invalid response structrue');
+        }
+  
       }
-      
-    } catch(error) {
+    } catch (error) {
       console.error('Updating user data failed:', error);
       throw new Error('Could not update user data.');
     }
-  }
-
+  };
+  
   const register = async(username: string, email: string, password: string, confirmPassword: string) => {
     try {
       const res = await axios.post<{id: string, username: string, email: string, token: string, profile: {firstName: string | null, lastName: string | null}}>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/register', {username, email, password, confirmPassword});
 
       const {id, username: userName, email: userEmail, token, profile} = res.data;
 
-      console.log(res.data);
 
       if(token && id && userName && userEmail) {
+        const newUser = {id, username: userName, email:userEmail, token, profile};
         localStorage.setItem('token', token);
+        setUser(newUser);
+        localStorage.setItem('user', JSON.stringify(newUser));
 
-        setUser({id, username: userName, email:userEmail, token, profile});
-        localStorage.setItem('user', JSON.stringify(user));
+        setIsLoggedIn(true);
         router.push('/');
       } else {
         throw new Error('Invalid response structure');
@@ -89,7 +110,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           localStorage.setItem('token', token);
           setUser(newUser);
           localStorage.setItem('user', JSON.stringify(newUser));
-          
+
+          setIsLoggedIn(true);
           router.push('/');
         } else {
           throw new Error(`This username/email doesn't exist.`);
@@ -106,13 +128,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     // Clear token and user data on logout
-    localStorage.removeItem('token');
+    localStorage.clear();
     setUser(null);
+    setProfile(null);
+    setIsLoggedIn(false)
     router.push('/login');
   };
 
   const isAuthenticated = !!user;
-  const fullyRegistered = user?.profile.firstName !== null && user?.profile.lastName !== null;
+  const fullyRegistered = user?.profile?.firstName !== null && user?.profile?.lastName !== null;
 
   if(loading) return null;
 

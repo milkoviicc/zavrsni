@@ -16,9 +16,9 @@ const Login = () => {
   const [error, setError] = useState<string | null>(null);
 
 
+
   const handleSignIn = async () => {
     try {
-
       if(name === '' || password === '') {
         setError('You must fill in all the fields.');
       }
@@ -27,7 +27,7 @@ const Login = () => {
       setShowMessage(true);
       setTimeout(() => setShowMessage(false), 1500);
     } catch(err) {
-      setError('Invalid email or password, try again!');
+      setError('Invalid username/email or password, try again!');
     }
   }
 

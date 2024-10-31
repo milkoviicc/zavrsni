@@ -17,7 +17,11 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
     if (!isAuthenticated) {
       router.push('/login'); // Redirect to login if not authenticated
     }
-  }, [isAuthenticated, router]);
+
+    if(isAuthenticated && isAuthRoute) {
+      router.push('/');
+    }
+  }, [isAuthenticated, router, isAuthRoute]);
 
   return (
     <>

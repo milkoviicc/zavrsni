@@ -14,6 +14,9 @@ export default function Home() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
 
+
+  
+
   return (
     <div className='h-full'>
       {isAuthenticated && fullyRegistered
