@@ -19,7 +19,12 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
     }
   }, [isAuthenticated, router]);
 
-  return <>{!isAuthenticated && isAuthRoute ? children : null}</>; // Render children if not authenticated and pathname is '/login' or '/register'
+  return (
+    <>
+      {isAuthenticated === !isAuthRoute && children}
+    </>
+    
+  ) // Render children if not authenticated and pathname is '/login' or '/register'
 };
 
 export default AuthRedirect;

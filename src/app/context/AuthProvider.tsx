@@ -18,33 +18,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const router = useRouter();
 
   useEffect(() => {
+    // Check for token in local storage
+    const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
 
-    const checkAuth = async () => {
-      // Check if a user is logged in on initial load (from localStorage)
-      const token = localStorage.getItem('token');
-
-      if (token) {
-        try {
-          const res = await axios.get<User>('/api/user', {
-            headers:{ Authorization: `Bearer ${token}` }
-          });
-          setUser(res.data);
-        } catch(err) {
-          localStorage.removeItem('token');
-        }
-      }
-
-      setLoading(false);
+    // If there's a token, set the user from local storage
+    if (token && storedUser) {
+      const userData = JSON.parse(storedUser);
+      setUser(userData);
     }
-    
-    checkAuth();
+
+    setLoading(false); // Set loading to false after the check
   }, []);
-
-  useEffect(() => {
-    if(!user) {
-      router.push('/login');
-    }
-  }, [user, router]);
 
 
   const addDetails = async(firstname: string, lastname: string) => {
@@ -66,14 +51,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async(username: string, email: string, password: string, confirmPassword: string) => {
     try {
-      const res = await axios.post<{token: string, user: User}>('/api/auth/register', {username, email, password, confirmPassword});
+      const res = await axios.post<{id: string, username: string, email: string, token: string, profile: {firstName: string | null, lastName: string | null}}>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/register', {username, email, password, confirmPassword});
 
-      const {token, user} = res.data;
+      const {id, username: userName, email: userEmail, token, profile} = res.data;
 
-      if(token && user) {
+      console.log(res.data);
+
+      if(token && id && userName && userEmail) {
         localStorage.setItem('token', token);
-        setUser(user);
-        
+
+        setUser({id, username: userName, email:userEmail, token, profile});
+        localStorage.setItem('user', JSON.stringify(user));
         router.push('/');
       } else {
         throw new Error('Invalid response structure');
@@ -87,18 +75,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (name: string, password: string) => {
     try {
-      const res = await axios.post<{ token: string, user: User }>('/api/auth/login', {
+      const res = await axios.post<{id: string, username: string, email: string, token: string, profile: {firstName: string | null, lastName: string | null}}>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/login', {
         name,
         password
       });
 
-      const { token, user } = res.data;
+      const {id, username: userName, email: userEmail, token, profile} = res.data;
 
 
-      if(token && user) {
-        if(name === user.email || name === user.username) {
+      if(token && id && userName && userEmail) {
+        if(name === userName || name === userEmail) {
+          const newUser = {id, username: userName, email:userEmail, token, profile};
           localStorage.setItem('token', token);
-          setUser(user);
+          setUser(newUser);
+          localStorage.setItem('user', JSON.stringify(newUser));
           
           router.push('/');
         } else {

@@ -2,7 +2,7 @@
 'use client';
 import React, {useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import { useAuth } from '@/app/context/AuthProvider';
 import { User } from '@/app/types/types';
 
@@ -26,36 +26,36 @@ const Register = () => {
   const validateForm = () => {
     if(!username || !email || !password || !confirmPassword) {
       setError('You must fill in all fields!');
-      return;
+      return false;
     }
 
     if(!validateEmail(email)) {
       setError(`Email must be in a format 'myemail@gmail.com'!`);
-      return;
+      return false;
     }
 
     if(password !== confirmPassword) {
       setError('Passwords must match!');
-      return;
+      return false;
     }
-
-    setError(null);
+    
     return true;
-  }
+  };
 
 
   const handleRegister = async () => {
 
-    validateForm();
+    const isValid = validateForm();
+    if(!isValid) return;
 
     try {
       await register(username, email, password, confirmPassword);
       setShowMessage(true);
       setTimeout(() => setShowMessage(false), 1500);
     } catch(err) {
-      setError('Registration failed.');
+      console.log('Registration failed: ', err);
     }
-}
+  }
 
   return (
     <div className='h-full flex items-center justify-center'>
