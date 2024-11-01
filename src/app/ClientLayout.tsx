@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar/Navbar";
 
 import { usePathname } from "next/navigation";
 import AuthRedirect from "./AuthRedirect";
+import { useAuth } from "./context/AuthProvider";
 
 export default function ClientLayout({
   children,
@@ -17,15 +18,15 @@ export default function ClientLayout({
 
   const isAuthRoute = pathname === '/login' || pathname === '/register';
 
-
+  const {fullyRegistered} = useAuth();
   return (
     <AuthRedirect>
       <div className="min-h-[100%] flex flex-col">
-        {!isAuthRoute && <Navbar />}
+        {!isAuthRoute && fullyRegistered && <Navbar />}
         <main className="flex flex-1 justify-center items-center">
             {children}  
         </main>
-        {!isAuthRoute && <Footer />}
+        {!isAuthRoute && fullyRegistered && <Footer />}
       </div>
     </AuthRedirect>
     

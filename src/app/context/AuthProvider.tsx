@@ -43,8 +43,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
       if (user) {
         const userData: User = JSON.parse(user);
-        const res = await axios.put<{id: string, username: string, email: string, profile: {firstName: string | null, lastName: string | null}}>(
-          `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/update-profile/${userData.id}`, 
+        const res = await axios.put<{id: string, username: string, email: string, profile: {firstName: string | null, lastName: string | null, id: string}}>(
+          `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/update-profile/${userData.profile.id}`, 
           { firstName, lastName }
         );
 
@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   const register = async(username: string, email: string, password: string, confirmPassword: string) => {
     try {
-      const res = await axios.post<{id: string, username: string, email: string, token: string, profile: {firstName: string | null, lastName: string | null}}>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/register', {username, email, password, confirmPassword});
+      const res = await axios.post<{id: string, username: string, email: string, token: string, profile: {firstName: string | null, lastName: string | null, id: string}}>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/register', {username, email, password, confirmPassword});
 
       const {id, username: userName, email: userEmail, token, profile} = res.data;
 
@@ -96,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (name: string, password: string) => {
     try {
-      const res = await axios.post<{id: string, username: string, email: string, token: string, profile: {firstName: string | null, lastName: string | null}}>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/login', {
+      const res = await axios.post<{id: string, username: string, email: string, token: string, profile: {firstName: string | null, lastName: string | null, id: string}}>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/login', {
         name,
         password
       });

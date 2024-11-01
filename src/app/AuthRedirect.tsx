@@ -6,12 +6,13 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from './context/AuthProvider';
 
 const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, fullyRegistered } = useAuth();
   const router = useRouter();
 
   const pathname = usePathname();
 
   const isAuthRoute = pathname === '/login' || pathname === '/register';
+  const isProfileRoute = pathname === '/profile';
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -21,7 +22,15 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
     if(isAuthenticated && isAuthRoute) {
       router.push('/');
     }
-  }, [isAuthenticated, router, isAuthRoute]);
+
+    if(isAuthenticated && isProfileRoute && !fullyRegistered) {
+      router.push('/');
+    }
+
+    if(isAuthenticated && isProfileRoute && fullyRegistered) {
+      router.push('/');
+    }
+  }, [isAuthenticated, router, isAuthRoute, isProfileRoute, fullyRegistered]);
 
   return (
     <>

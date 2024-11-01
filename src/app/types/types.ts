@@ -22,6 +22,7 @@ export interface User {
 export interface Profile {
     firstName: string | null,
     lastName: string | null,
+    id: string,
 }
 
 
