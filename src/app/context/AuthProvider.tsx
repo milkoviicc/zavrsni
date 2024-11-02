@@ -10,6 +10,7 @@ import { error } from 'console';
 
 
 
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -43,7 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
       if (user) {
         const userData: User = JSON.parse(user);
-        const res = await axios.put<{id: string, username: string, email: string, profile: {firstName: string | null, lastName: string | null, id: string}}>(
+        const res = await axios.put<User>(
           `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/update-profile/${userData.profile.id}`, 
           { firstName, lastName }
         );
@@ -71,14 +72,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   const register = async(username: string, email: string, password: string, confirmPassword: string) => {
     try {
-      const res = await axios.post<{id: string, username: string, email: string, token: string, profile: {firstName: string | null, lastName: string | null, id: string}}>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/register', {username, email, password, confirmPassword});
+      const res = await axios.post<User>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/register', {username, email, password, confirmPassword});
 
-      const {id, username: userName, email: userEmail, token, profile} = res.data;
+      const newUser: User = res.data;
 
 
-      if(token && id && userName && userEmail) {
-        const newUser = {id, username: userName, email:userEmail, token, profile};
-        localStorage.setItem('token', token);
+      if(newUser.token && newUser.id && newUser.username && newUser.email) {
+        localStorage.setItem('token', newUser.token);
         setUser(newUser);
         localStorage.setItem('user', JSON.stringify(newUser));
 
@@ -96,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (name: string, password: string) => {
     try {
-      const res = await axios.post<{id: string, username: string, email: string, token: string, profile: {firstName: string | null, lastName: string | null, id: string}}>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/login', {
+      const res = await axios.post<User>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/login', {
         name,
         password
       });
