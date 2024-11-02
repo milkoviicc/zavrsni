@@ -23,7 +23,7 @@ export default function Navbar() {
         <div className="border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg h-[75px] fixed w-full">
             <div className="flex justify-center items-center gap-2 h-full w-full">
                 <Button variant="linkHover1" onClick={() => router.push('/')} className="uppercase"><FontAwesomeIcon icon={faHouse} className="text-md px-1 -mt-1" />Home</Button>
-                <Button variant="linkHover1" onClick={() => router.push('/')} className="uppercase"><FontAwesomeIcon icon={faUserGroup} className="text-md px-1 -mt-1" />Friends</Button>
+                <Button variant="linkHover1" onClick={() => router.push('/people')} className="uppercase"><FontAwesomeIcon icon={faUserGroup} className="text-md px-1 -mt-1" />People</Button>
                 <Button variant="linkHover1" onClick={() => router.push(`/profile/${user.id}`)} className="uppercase"><FontAwesomeIcon icon={faUser} className="text-md px-1 -mt-1" />Profile</Button>
                 <Button variant="linkHover1" onClick={logout} className="uppercase"><FontAwesomeIcon icon={faRightFromBracket} className="text-md px-1 -mt-1" />Logout</Button>
             </div>

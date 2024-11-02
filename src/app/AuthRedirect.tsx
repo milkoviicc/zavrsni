@@ -12,7 +12,7 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
 
   const isAuthRoute = pathname === '/login' || pathname === '/register';
-  const isProfileRoute = pathname === '/profile';
+  const isProfileRoute = pathname === '/profile' || pathname === '/people';
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -24,10 +24,6 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
     }
 
     if(isAuthenticated && isProfileRoute && !fullyRegistered) {
-      router.push('/');
-    }
-
-    if(isAuthenticated && isProfileRoute && fullyRegistered) {
       router.push('/');
     }
   }, [isAuthenticated, router, isAuthRoute, isProfileRoute, fullyRegistered]);
