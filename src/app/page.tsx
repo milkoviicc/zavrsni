@@ -28,7 +28,7 @@ export default function Home() {
 
       :  isAuthenticated && !fullyRegistered 
       ?  
-      <div className="border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg">
+      <div className="border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg ">
         <div className="px-8 py-14">
           <h1>We just need a little more information about you.</h1>
           <p>Please enter your full name.</p>
