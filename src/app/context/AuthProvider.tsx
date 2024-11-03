@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (user) {
         const userData: User = JSON.parse(user);
         const res = await axios.put<Profile>(
-          `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/update-profile/${userData.profile.id}`, 
+          `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile`, 
           { username: userData.username, firstName, lastName }
         );
 
@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if(token && userData.id && firstname && lastname) {
           const updatedProfile: Profile = {id, username, firstName, lastName};
-          const updatedUser = {id: userData.id, username, email: userData.email, token: userData.token, profile: updatedProfile};
+          const updatedUser = {id, username, email: userData.email, token: userData.token, profile: updatedProfile};
           localStorage.clear();
 
           localStorage.setItem('user', JSON.stringify(updatedUser));
