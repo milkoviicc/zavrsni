@@ -44,20 +44,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
       if (user) {
         const userData: User = JSON.parse(user);
-        const res = await axios.put<User>(
+        const res = await axios.put<Profile>(
           `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/update-profile/${userData.profile.id}`, 
-          { firstName, lastName }
+          { username: userData.username, firstName, lastName }
         );
 
-        const {id, username: userName, email: userEmail, profile} = res.data;
+        const {id, username, firstName: firstname, lastName: lastname} = res.data;
 
 
-        if(token && id && profile.firstName && profile.lastName) {
-          const updatedUser = {id, username: userName, email: userEmail, token, profile};
+        if(token && userData.id && firstname && lastname) {
+          const updatedProfile: Profile = {id, username, firstName, lastName};
+          const updatedUser = {id: userData.id, username, email: userData.email, token: userData.token, profile: updatedProfile};
           localStorage.clear();
 
           localStorage.setItem('user', JSON.stringify(updatedUser));
-          localStorage.setItem('token', token);
+          localStorage.setItem('token', userData.token);
           setUser(updatedUser);
         } else {
           throw new Error('Invalid response structrue');
@@ -135,13 +136,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     router.push('/login');
   };
 
+  const deleteAccount = async () => {
+
+    try {
+      const user = localStorage.getItem('user');
+
+      if(user) {
+        const userData: User = JSON.parse(user);
+
+        const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/delete-user/${userData.id}`);
+
+        if(res.status === 200) {
+          logout();
+        } else {
+          console.log('Cant delete user');
+        }
+      } else {
+        throw new Error('Could not fetch user');
+      }
+    
+    } catch(err) {
+      console.error('Could not delete account. ' + err);
+      throw new Error('Deleting account failed. ' + err);
+    }
+
+  }
+
   const isAuthenticated = !!user;
   const fullyRegistered = user?.profile?.firstName !== null && user?.profile?.lastName !== null;
 
   if(loading) return null;
 
   return (
-    <AuthContext.Provider value={{ user, login, register, addDetails, logout, isAuthenticated, fullyRegistered, loading }}>
+    <AuthContext.Provider value={{ user, login, register, addDetails, logout, deleteAccount, isAuthenticated, fullyRegistered, loading }}>
       {children}
     </AuthContext.Provider>
   );

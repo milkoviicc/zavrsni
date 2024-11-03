@@ -4,8 +4,9 @@ export interface AuthContextType {
     user: User | null;
     login: (username: string, password: string) => Promise<void>;
     register: (username: string, email: string, password: string, confirmPassword: string) => Promise<void>;
-    addDetails: (firstName: string, lastName: string) => Promise<void>;
+    addDetails: (username: string, firstName: string, lastName: string) => Promise<void>;
     logout: () => void;
+    deleteAccount: () => void;
     isAuthenticated: boolean;
     fullyRegistered: boolean;
     loading: boolean;
@@ -20,6 +21,7 @@ export interface User {
 }
 
 export interface Profile {
+    username: string,
     firstName: string | null,
     lastName: string | null,
     id: string,
