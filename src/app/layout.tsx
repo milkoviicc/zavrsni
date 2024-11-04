@@ -5,6 +5,7 @@ import ClientLayout from './ClientLayout'
 import { Metadata } from "next";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { Theme }  from '@radix-ui/themes';
 
 export const metadata: Metadata = {
   title: "Društvena mreža",
@@ -22,7 +23,9 @@ export default function RootLayout({
       <html lang="en">
         <body>
           <AuthProvider>
+            <Theme>
               <ClientLayout>{children}</ClientLayout>
+            </Theme>
           </AuthProvider>
         </body>
       </html>
