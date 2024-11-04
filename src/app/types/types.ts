@@ -27,6 +27,12 @@ export interface Profile {
     id: string,
 }
 
+export interface Post {
+    postId: string,
+    content: string,
+    createdOn: string,
+    userProfile: Profile,
+}
 
 
 export interface LoginFormProps {
