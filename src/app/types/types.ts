@@ -17,7 +17,7 @@ export interface User {
     username: string;
     email: string,
     token: string,
-    profile: Profile;    
+    profile: Profile;
 }
 
 export interface Profile {

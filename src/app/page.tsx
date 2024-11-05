@@ -27,14 +27,19 @@ export default function Home() {
 
   const [content, setContent] = useState('');
 
+  const [msg, setMsg] = useState<string | null>(null);
+
 
   const sendPost = async () => {
     try {
       const res = await axios.post('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/add-post', {content});
 
       if(res.status === 200) {
-        console.log('Post has been succesfully added');
         setContent('');
+        setTimeout(() => {
+          setMsg(null);
+        }, 1500);
+        setMsg('Post has been succesfully added')
       }
     } catch(err) {
         console.error('Could not add post', err);
@@ -59,11 +64,14 @@ export default function Home() {
             <div className="w-full flex justify-end">
               <Button variant="shine" onClick={() => sendPost()}>Post</Button>
             </div>
+            <div>
+              <h1>{msg === null ? null : `${msg}`}</h1>
+            </div>
           </div>
           <div className="h-full w-full flex flex-col items-center">
             <h1 className="text-xl text-gray-900 py-4">All posts</h1>
             <hr className="w-[60%] border-gray-900" />
-            <div>
+            <div className="w-full flex justify-center">
               <Posts />
             </div>
           </div>
@@ -77,8 +85,8 @@ export default function Home() {
           <div className="px-8 py-14">
             <h1>We just need a little more information about you.</h1>
             <p>Please enter your full name.</p>
-            <input type="text" className={`w-full py-3 px-4 borde border-gray-300  rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='First name' id="firstname" onChange={(e) => setFirstName(e.target.value)}/>
-            <input type="text" className={`w-full py-3 px-4 border border-gray-300 rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Last name' id="lastname" onChange={(e) => setLastName(e.target.value)}/>
+            <input type="text" className={`w-full py-3 px-4 border border-gray-300  rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='First name' id="firstname" onChange={(e) => setFirstName(e.target.value)} autoComplete="off"/>
+            <input type="text" className={`w-full py-3 px-4 border border-gray-300 rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Last name' id="lastname" onChange={(e) => setLastName(e.target.value)} autoComplete="off"/>
             <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold w-full py-2 border border-blue-700 rounded transition-all' onClick={() => addDetails(firstName, lastName)}>Confirm</button>
           </div>
         </div>
