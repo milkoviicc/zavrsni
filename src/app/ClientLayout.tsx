@@ -21,7 +21,7 @@ export default function ClientLayout({
   const {fullyRegistered} = useAuth();
   return (
     <AuthRedirect>
-      <div className="h-full flex flex-col">
+      <div className="min-h-[100dvh] flex flex-col justify-center">
         {!isAuthRoute && fullyRegistered && <Navbar />}
         <main className="h-full">
             {children}  

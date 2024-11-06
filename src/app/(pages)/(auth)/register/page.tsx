@@ -73,8 +73,8 @@ const Register = () => {
   }
 
   return (
-    <div className='h-full flex items-center justify-center'>
-      <div className='border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg w-1/4'>
+    <div className='h-full flex items-center justify-center px-10'>
+      <div className='border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg xl:w-1/3 md:w-1/2 sm:w-full'>
         <div className='px-8 py-14'>
           <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
           <h1 className='text-black font-bold text-3xl'>Create account</h1>

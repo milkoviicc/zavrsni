@@ -27,7 +27,7 @@ const EachPost = ({username, content, date}: {username: string, content: string,
   const minutes = Math.floor((totalSeconds % 3600) / 60); // Remaining seconds converted to minutes
   const seconds = totalSeconds % 60; // Remaining seconds after full minutes  
 
-  console.log(`${days} + ${hours} + ${minutes} + ${seconds}`);
+
   
   return (
     <div className='my-2 w-fit h-fit flex justify-center gap-2 bg-gray-900 text-white px-1 py-2 rounded-md'>

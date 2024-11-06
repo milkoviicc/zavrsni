@@ -38,7 +38,7 @@ const Login = () => {
   }
 
   return (
-    <div className='h-full flex items-center justify-center'>
+    <div className='h-full flex items-center justify-center px-10'>
       <div className='border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg'>
         <div className='px-8 py-14'>
           <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>

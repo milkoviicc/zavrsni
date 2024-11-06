@@ -12,7 +12,7 @@ import {Flex, Avatar} from '@radix-ui/themes'
 
 import { Input } from '@/components/ui/input';
 import { Button } from "@/components/ui/button";
-import Posts from "./components/Posts/page";
+import Posts from "./components/posts";
 
 import axios from "axios";
 

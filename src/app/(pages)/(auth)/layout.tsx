@@ -10,9 +10,7 @@ export default function AuthLayout({
   return (
     <center className="h-full">
     <div className="w-full h-full">
-
         {children}
-
     </div>
     </center>
   );
