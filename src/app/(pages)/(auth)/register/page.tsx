@@ -17,7 +17,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showMessage, setShowMessage] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const [loading, setLoading] = useState<boolean>(false);
 
 
   const validateForm = () => {
@@ -59,10 +59,13 @@ const Register = () => {
     const isValid = validateForm();
     if(!isValid) return;
 
+    setLoading(true);
+
     try {
       await register(username, email, password, confirmPassword);
       setShowMessage(true);
       setTimeout(() => setShowMessage(false), 1500);
+      setLoading(false);
     } catch(err) {
       console.log('Registration failed: ', err);
       setError('This username or email are already registered, try a different one!')
@@ -84,6 +87,7 @@ const Register = () => {
             <input type="password" className={`w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="password" onChange={(e) => setPassword(e.target.value)} autoComplete="off"/>
             <input type="password" className={`w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Confirm password' id="confirmPassword" onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="off"/>
             {error !== null ? <p className='text-red-500 text-sm my-2'>{error}</p> : null}
+            {loading ? <h1>Registering you, please wait.</h1> : null}
             {showMessage ? <p className='text-green-600 text-sm my-2'>You have been succesfully registered. Redirecting you to our home page.</p> : null}
           </div>
 

@@ -26,6 +26,8 @@ const EachPost = ({username, content, date}: {username: string, content: string,
   const hours = Math.floor((totalSeconds % 86400) / 3600); // Remaining seconds converted to hours
   const minutes = Math.floor((totalSeconds % 3600) / 60); // Remaining seconds converted to minutes
   const seconds = totalSeconds % 60; // Remaining seconds after full minutes  
+
+  console.log(`${days} + ${hours} + ${minutes} + ${seconds}`);
   
   return (
     <div className='my-2 w-fit h-fit flex justify-center gap-2 bg-gray-900 text-white px-1 py-2 rounded-md'>
@@ -38,19 +40,20 @@ const EachPost = ({username, content, date}: {username: string, content: string,
         <div className='flex gap-2 items-center'>
           <h1>{username}</h1>
           <p>
-          {
-          days <= 0 && hours <= 0 && minutes <= 0 && seconds < 60 ? (seconds + 's ago')
-          : days <= 0 && hours <= 0 && minutes <= 60 && seconds > 60 ? (minutes + 'm ago')
-          : days <= 0 && hours <= 60 ? (hours + 'h ago')
-          : days > 1 ? (days + 'd ago')
-          : 'Just now'
-          }
+            {
+              days > 1 ? (days + 'd ago')
+              : days <= 0 && hours > 0 && minutes <= 60 && seconds <= 60 ? (hours + 'h ago')
+              : days <= 0 && hours <= 24 && minutes <= 60 && minutes >= 1 ? (minutes + 'm ago')
+              : minutes === 0 && seconds < 60 ? (seconds + 's ago')
+              : seconds < 0 ? 'Just now'
+              : null
+            }
           </p>
         </div>
         <p>{content}</p>
         <div className='flex gap-4 py-4 items-center'>
-          <FontAwesomeIcon icon={faThumbsUp} className='text-2xl hover:cursor-pointer'/>
-          <FontAwesomeIcon icon={faThumbsDown} className='text-2xl hover:cursor-pointer'/>
+          <FontAwesomeIcon icon={faThumbsUp} className='text-2xl hover:cursor-pointer hover:text-blue-600 transition-all'/>
+          <FontAwesomeIcon icon={faThumbsDown} className='text-2xl hover:cursor-pointer hover:text-blue-600 transition-all'/>
         </div>
       </div>
      

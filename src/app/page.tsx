@@ -52,8 +52,8 @@ export default function Home() {
     <div className='h-full'>
       {isAuthenticated && fullyRegistered
       ?
-      <div className="h-full py-[75px] w-full">
-        <div className="border-1 border-gray-900 bg-[#f5f4f4] px-4 py-8 h-full flex flex-col items-center gap-12">
+      <div className="h-full w-full py-[75px] bg-[#f5f4f4]">
+        <div className="border-1 border-gray-900  px-4 py-8 h-full flex flex-col items-center gap-12">
           <div className="flex gap-2 items-center flex-col w-fit">
             <div className="flex flex-row w-fit justify-center items-center gap-4">
               <Flex gap="2">
@@ -68,7 +68,7 @@ export default function Home() {
               <h1>{msg === null ? null : `${msg}`}</h1>
             </div>
           </div>
-          <div className="h-full w-full flex flex-col items-center">
+          <div className="h-full w-full flex flex-col items-center ">
             <h1 className="text-xl text-gray-900 py-4">All posts</h1>
             <hr className="w-[60%] border-gray-900" />
             <div className="w-full flex justify-center">

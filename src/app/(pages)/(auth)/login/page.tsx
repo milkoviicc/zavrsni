@@ -14,10 +14,14 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showMessage, setShowMessage] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
 
 
   const handleSignIn = async () => {
+
+    setLoading(true);
+
 
     if(name === '' || password === '') {
       setError('You must fill in all the fields.');
@@ -27,6 +31,7 @@ const Login = () => {
       await login(name,password);
       setShowMessage(true);
       setTimeout(() => setShowMessage(false), 1500);
+      setLoading(false);
     } catch(err) {
       setError('Invalid username/email or password, try again!');
     }
@@ -43,6 +48,7 @@ const Login = () => {
             <input type="text" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Email address or username' id="name" onChange={(e) => setName(e.target.value)}/>
             <input type="password" className={`w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="password" onChange={(e) => setPassword(e.target.value)} autoComplete="off" />
             {error !== null ? <p className='text-red-500 text-sm my-2'>{error}</p> : null}
+            {loading ? <h1>Signing you in...</h1> : null}
             {showMessage ? <p className='text-green-600 text-sm my-2'>You have been succesfully registered. Redirecting you to our login page.</p> : null}
           </div>
 
