@@ -1,10 +1,11 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import {Flex, Avatar} from '@radix-ui/themes'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 
-const EachPost = ({username, content, date}: {username: string, content: string, date:string}) => {
+const EachPost = ({postId, username, content, date}: {postId: string, username: string, content: string, date:string}) => {
   
   // Your timestamp as a string
   const timestamp = date;
@@ -28,6 +29,58 @@ const EachPost = ({username, content, date}: {username: string, content: string,
   const seconds = totalSeconds % 60; // Remaining seconds after full minutes  
 
 
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [firstClick, setFirstClick] = useState<boolean>(false);
+
+  const [likes, setLikes] = useState(0);
+
+  const handleLike = async () => {
+    try {
+
+      setIsLiked((prev) => !prev);
+      setFirstClick(true);
+
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  useEffect(() => {
+    const addReaction = async () => {
+        try {
+            if (isLiked && firstClick) {
+                const reaction = 1;
+                console.log('Reaction:', reaction);
+
+                const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}`,{ reaction });
+
+                if (res.status === 200) {
+                    setLikes((prevLikes) => prevLikes + 1);
+                }
+            } else if (!isLiked && firstClick) { 
+                const reaction = 0;
+                const res = await axios.post(
+                    `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}`,
+                    { reaction }
+                );
+
+                if (res.status === 200) {
+                    setLikes((prevLikes) => prevLikes - 1);
+                }
+            }
+        } catch(err) {
+            console.error(err);
+        }
+    };
+
+    addReaction();
+}, [isLiked, firstClick, postId]); 
+
+  const handleDislike = () => {
+
+  }
+
+
   
   return (
     <div className='my-2 w-fit h-fit flex justify-center gap-2 bg-gray-900 text-white px-1 py-2 rounded-md'>
@@ -38,8 +91,8 @@ const EachPost = ({username, content, date}: {username: string, content: string,
       </div>
       <div className='flex flex-col justify-between'>
         <div className='flex gap-2 items-center'>
-          <h1>{username}</h1>
-          <p>
+          <h1 className='text-sm'>{username}</h1>
+          <p className='text-sm'>
             {
               days > 1 ? (days + 'd ago')
               : days <= 0 && hours > 0 && minutes <= 60 && seconds <= 60 ? (hours + 'h ago')
@@ -50,10 +103,19 @@ const EachPost = ({username, content, date}: {username: string, content: string,
             }
           </p>
         </div>
-        <p>{content}</p>
+        <p className='py-2'>{content}</p>
         <div className='flex gap-4 py-4 items-center'>
-          <FontAwesomeIcon icon={faThumbsUp} className='text-2xl hover:cursor-pointer hover:text-blue-600 transition-all'/>
-          <FontAwesomeIcon icon={faThumbsDown} className='text-2xl hover:cursor-pointer hover:text-blue-600 transition-all'/>
+          <FontAwesomeIcon icon={faThumbsUp} className='text-2xl hover:cursor-pointer hover:text-blue-600 transition-all' onClick={() => handleLike()}/>
+          <p>{likes}</p>
+          <FontAwesomeIcon icon={faThumbsDown} className='text-2xl hover:cursor-pointer hover:text-blue-600 transition-all' onClick={() => handleDislike()}/>
+          <p></p>
+        </div>
+        <div className='w-full flex justify-between'>
+          <button className='text-sm px-2'>Comment</button>
+          <div className='flex gap-2'>
+            <button className='text-sm'>update</button>
+            <button className='text-sm'>delete</button>
+          </div>
         </div>
       </div>
      

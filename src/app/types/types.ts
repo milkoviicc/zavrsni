@@ -28,10 +28,13 @@ export interface Profile {
 }
 
 export interface Post {
-    postId: string,
+    id: string,
     content: string,
     createdOn: string,
     userProfile: Profile,
+    likes: number,
+    dislikes: number,
+    userReacted: number
 }
 
 
