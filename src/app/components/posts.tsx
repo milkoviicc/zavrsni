@@ -116,7 +116,7 @@ const Posts = () => {
 
   return (
     <div className='w-[60%] grid grid-cols-4 gap-4'>
-        {posts.length > 0 ? posts?.map((post, index) => (<EachPost key={index} postId={post.id} username={post.userProfile.username} content={post.content} date={post.createdOn} likes={post.likes} dislikes={post.dislikes} userReacted={post.userReacted} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost}/>)) : posts.length === 0 ? <h1>There are no posts to load</h1> : <h1>Loading...</h1>}
+        {posts.length > 0 ? posts?.map((post, index) => (<EachPost key={index} post={post} username={post.userProfile.username} content={post.content} date={post.createdOn} likes={post.likes} dislikes={post.dislikes} userReacted={post.userReacted} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost}/>)) : posts.length === 0 ? <h1>There are no posts to load</h1> : <h1>Loading...</h1>}
     </div>
   )
 }
