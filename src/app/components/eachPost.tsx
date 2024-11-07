@@ -52,9 +52,9 @@ const EachPost = ({postId, username, content, date, likes, dislikes, userReacted
         </div>
         <p className='py-2'>{content}</p>
         <div className='flex gap-4 py-4 items-center'>
-          <FontAwesomeIcon icon={faThumbsUp} className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${userReacted === 1 ? {className:'text-blue-600'} : null}`} onClick={() => handleLike(postId)}/>
+          <FontAwesomeIcon icon={faThumbsUp} className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${userReacted === 1 ? 'text-blue-600' : ''}`} onClick={() => handleLike(postId)}/>
           <p>{likes}</p>
-          <FontAwesomeIcon icon={faThumbsDown} className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${userReacted === 1 ? {className:'text-blue-600'} : null}`} onClick={() => handleDislike(postId)}/>
+          <FontAwesomeIcon icon={faThumbsDown} className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${userReacted === 1 ? 'text-blue-600' : ''}`} onClick={() => handleDislike(postId)}/>
           <p>{dislikes}</p>
         </div>
         <div className='w-full flex justify-between'>
