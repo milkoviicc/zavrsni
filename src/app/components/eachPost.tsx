@@ -38,7 +38,7 @@ const EachPost = ({postId, username, content, date, likes, dislikes, userReacted
 
   const dislikeClick = () => {
     setIsDisliked((prev) => !prev);
-    handleLike(postId, isDisliked);
+    handleDislike(postId, isDisliked);
   }
 
   
