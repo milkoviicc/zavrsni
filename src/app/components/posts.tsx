@@ -37,26 +37,32 @@ const Posts = () => {
             if(!post) return;
 
             if(post.userReacted === 0 && reaction === 1) {
+                console.log('1st if + ' + reaction);
                 await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=1`);   
             }
 
             if(post.userReacted === 1 && reaction === 0) {
+                console.log('2nd if + ' + reaction);
                 await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/delete/${postId}`);
             }
 
             if(post.userReacted === 0 && reaction === -1) {
+                console.log('3rd if + ' + reaction);
                 await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=-1`);   
             }
 
             if(post.userReacted === -1 && reaction === 0) {
+                console.log('4th if + ' + reaction);
                 await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/delete/${postId}`); 
             }
 
             if(post.userReacted === 1 && reaction === -1) {
+                console.log('5th if + ' + reaction);
                 await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
             }
 
             if(post.userReacted === -1 && reaction === 1) {
+                console.log('6th if + ' + reaction);
                 await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
             }
 
