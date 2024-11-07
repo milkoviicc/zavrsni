@@ -13,23 +13,6 @@ const Posts = () => {
 
     const [reactionTrigger, setReactionTrigger] = useState(false);
 
-
-    const handleReaction = async ({postId}: {postId: string}) => {
-        try {
-            const post = posts.find((post) => post.id === postId);
-            if(!post) return;
-
-            if(post.userReacted === 0) {
-                const reaction = 1;
-                await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}`,{ reaction });   
-            }
-
-            setReactionTrigger((prev) => !prev);
-        } catch(err) {
-            console.error(err);
-        }
-    }
-
     useEffect(() => {
         const getPosts = async () => {
             try {
@@ -46,6 +29,24 @@ const Posts = () => {
 
         getPosts();
     }, [reactionTrigger]) 
+
+    
+    const handleReaction = async ({postId}: {postId: string}) => {
+        try {
+            const post = posts.find((post) => post.id === postId);
+            if(!post) return;
+
+            if(post.userReacted === 0) {
+                const reaction = 1;
+                console.log(reaction);
+                await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}`,{ reaction });   
+            }
+
+            setReactionTrigger((prev) => !prev);
+        } catch(err) {
+            console.error(err);
+        }
+    }
 
     const handleLike = async (postId: string) => {
         try {
