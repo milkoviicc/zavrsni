@@ -61,6 +61,11 @@ const Posts = () => {
                 setIsLiked(false);
             }
 
+            if(post.userReacted === -1 && isLiked) {
+                await axios.put(`ttps://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
+                setIsDisliked(false);
+            }
+
             setReactionTrigger((prev) => !prev);
         } catch(err) {
             console.error(err);
