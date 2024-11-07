@@ -58,6 +58,8 @@ const Posts = () => {
         try {
             const post = posts.find((post) => post.id === postId);
 
+            console.log(post);
+
             if(!post) return;
 
             if(post.userReacted === 1) {
