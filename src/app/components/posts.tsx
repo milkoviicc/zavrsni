@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 
 import axios from 'axios';
-import { Post, Reaction } from '@/app/types/types';
+import { Post, User } from '@/app/types/types';
 
 import EachPost from './eachPost';
 
@@ -85,14 +85,22 @@ const Posts = () => {
     const deletePost = async (postId: string) => {
         try {
             const post = posts.find((post) => post.id === postId);
-
             if(!post) return;
 
-            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/delete/${postId}`);
+            const user = localStorage.getItem('user');
 
-            if(res.status === 200) {
-                setReactionTrigger((prev) => !prev);
+            if(user) {
+                const userData: User = JSON.parse(user);
+                if(post.userProfile.id === userData.id) {
+                    const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/delete-post/${postId}`);
+                    if(res.status === 200) {
+                        setReactionTrigger((prev) => !prev);
+                    }
+                } else {
+                    console.log('You cannot delete posts that are not yours');
+                }
             }
+            
         } catch(err) {
             console.error('Could not delete post: ', err);
         }
