@@ -37,10 +37,7 @@ const Posts = () => {
             if(!post) return;
 
             if(post.userReacted === 0) {
-                const newReaction: Reaction = {
-                    reaction: 1
-                }
-                await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}`,{ newReaction });   
+                await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=1` );   
             }
 
             setReactionTrigger((prev) => !prev);
