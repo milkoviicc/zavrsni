@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
-const EachPost = ({postId, username, content, date}: {postId: string, username: string, content: string, date:string}) => {
+const EachPost = ({postId, username, content, date, postLikes, userReacted}: {postId: string, username: string, content: string, date:string, postLikes: number, userReacted: number}) => {
   
   // Your timestamp as a string
   const timestamp = date;
@@ -55,7 +55,7 @@ const EachPost = ({postId, username, content, date}: {postId: string, username: 
                 const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}`,{ reaction });
 
                 if (res.status === 200) {
-                    setLikes((prevLikes) => prevLikes + 1);
+                    setLikes((prevLikes) => prevLikes + 1);   
                 }
             } else if (!isLiked && firstClick) { 
                 const reaction = 0;
@@ -74,7 +74,7 @@ const EachPost = ({postId, username, content, date}: {postId: string, username: 
     };
 
     addReaction();
-}, [isLiked, firstClick, postId]); 
+}, [isLiked, firstClick, postId, postLikes]); 
 
   const handleDislike = () => {
 
@@ -106,7 +106,7 @@ const EachPost = ({postId, username, content, date}: {postId: string, username: 
         <p className='py-2'>{content}</p>
         <div className='flex gap-4 py-4 items-center'>
           <FontAwesomeIcon icon={faThumbsUp} className='text-2xl hover:cursor-pointer hover:text-blue-600 transition-all' onClick={() => handleLike()}/>
-          <p>{likes}</p>
+          <p>{postLikes}</p>
           <FontAwesomeIcon icon={faThumbsDown} className='text-2xl hover:cursor-pointer hover:text-blue-600 transition-all' onClick={() => handleDislike()}/>
           <p></p>
         </div>
