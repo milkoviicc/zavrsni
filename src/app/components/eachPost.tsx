@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
-const EachPost = ({postId, username, content, date, likes, dislikes, userReacted, handleLike, handleDislike}: {postId: string, username: string, content: string, date:string, likes: number, dislikes: number, userReacted: number,  handleLike: (postId: string) => void, handleDislike: (postId: string) => void}) => {
+const EachPost = ({postId, username, content, date, likes, dislikes, userReacted, handleLike, handleDislike}: {postId: string, username: string, content: string, date:string, likes: number, dislikes: number, userReacted: number,  handleLike: (postId: string, isLiked: boolean) => void, handleDislike: (postId: string, isDisliked: boolean) => void}) => {
   
   // Your timestamp as a string
   const timestamp = date;
@@ -27,6 +27,19 @@ const EachPost = ({postId, username, content, date, likes, dislikes, userReacted
   const hours = Math.floor((totalSeconds % 86400) / 3600); // Remaining seconds converted to hours
   const minutes = Math.floor((totalSeconds % 3600) / 60); // Remaining seconds converted to minutes
   const seconds = totalSeconds % 60; // Remaining seconds after full minutes  
+
+  const [isLiked, setIsLiked] = useState(false);
+  const [isDisliked, setIsDisliked] = useState(false);
+
+  const likeClick = () => {
+    setIsLiked((prev) => !prev);
+    handleLike(postId, isLiked);
+  }
+
+  const dislikeClick = () => {
+    setIsDisliked((prev) => !prev);
+    handleLike(postId, isDisliked);
+  }
 
   
   return (
@@ -52,9 +65,9 @@ const EachPost = ({postId, username, content, date, likes, dislikes, userReacted
         </div>
         <p className='py-2'>{content}</p>
         <div className='flex gap-4 py-4 items-center'>
-          <FontAwesomeIcon icon={faThumbsUp} className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${userReacted === 1 ? 'text-blue-600' : ''}`} onClick={() => handleLike(postId)}/>
+          <FontAwesomeIcon icon={faThumbsUp} className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${userReacted === 1 ? 'text-blue-600' : ''}`} onClick={() => likeClick()}/>
           <p>{likes}</p>
-          <FontAwesomeIcon icon={faThumbsDown} className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${userReacted === -1 ? 'text-blue-600' : ''}`} onClick={() => handleDislike(postId)}/>
+          <FontAwesomeIcon icon={faThumbsDown} className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${userReacted === -1 ? 'text-blue-600' : ''}`} onClick={() => dislikeClick()}/>
           <p>{dislikes}</p>
         </div>
         <div className='w-full flex justify-between'>

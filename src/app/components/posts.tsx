@@ -12,8 +12,6 @@ const Posts = () => {
     const [posts, setPosts] = useState<Post[]>([]);
 
     const [reactionTrigger, setReactionTrigger] = useState(false);
-    const [isLiked, setIsLiked] = useState(false);
-    const [isDisliked, setIsDisliked] = useState(false);
 
     useEffect(() => {
         const getPosts = async () => {
@@ -33,37 +31,33 @@ const Posts = () => {
     }, [reactionTrigger]) 
 
     
-    const handleReaction = async ({postId}: {postId: string}) => {
+    const handleReaction = async ({postId, reaction}: {postId: string, reaction: number}) => {
         try {
             const post = posts.find((post) => post.id === postId);
             if(!post) return;
 
-            if(post.userReacted === 0 && isLiked) {
+            if(post.userReacted === 0 && reaction === 1) {
                 await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=1`);   
             }
 
-            if(post.userReacted === 1 && isLiked) {
+            if(post.userReacted === 1 && reaction === 0) {
                 await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/delete/${postId}`);
-                setIsLiked(false);  
             }
 
-            if(post.userReacted === 0 && isDisliked) {
+            if(post.userReacted === 0 && reaction === -1) {
                 await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=-1`);   
             }
 
-            if(post.userReacted === -1 && isDisliked) {
-                await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/delete/${postId}`);
-                setIsDisliked(false);  
+            if(post.userReacted === -1 && reaction === 0) {
+                await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/delete/${postId}`); 
             }
 
-            if(post.userReacted === 1 && isDisliked) {
+            if(post.userReacted === 1 && reaction === -1) {
                 await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
-                setIsLiked(false);
             }
 
-            if(post.userReacted === -1 && isLiked) {
+            if(post.userReacted === -1 && reaction === 1) {
                 await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
-                setIsDisliked(false);
             }
 
             setReactionTrigger((prev) => !prev);
@@ -72,23 +66,30 @@ const Posts = () => {
         }
     }
 
-    const handleLike = async (postId: string) => {
+    const handleLike = async (postId: string, isLiked: boolean) => {
         try {
-            if(!isLiked) {
-                setIsLiked(true);
+            if(isLiked) {
+                const reaction = 1;
+                await handleReaction({postId, reaction});
+            } else if(!isLiked) {
+                const reaction = 0;
+                await handleReaction({postId, reaction});
             }
-            await handleReaction({postId});
+            
         } catch(err) {
             console.error(err);
         }
     }
 
-    const handleDislike = async (postId: string) => {
+    const handleDislike = async (postId: string, isDisliked: boolean) => {
         try {
-            if(!isDisliked) {
-                setIsDisliked(true);
+            if(isDisliked) {
+                const reaction = -1;
+                await handleReaction({postId, reaction});
+            } else if(!isDisliked) {
+                const reaction = 0;
+                await handleReaction({postId, reaction});
             }
-            await handleReaction({postId});
         } catch(err) {
             console.error(err);
         }
