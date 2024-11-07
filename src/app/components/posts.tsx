@@ -30,56 +30,23 @@ const Posts = () => {
         getPosts();
     }, [reactionTrigger]) 
 
-    
-    const handleReaction = async ({postId, reaction}: {postId: string, reaction: number}) => {
+
+    const handleLike = async (postId: string) => {
         try {
             const post = posts.find((post) => post.id === postId);
+
             if(!post) return;
 
-            if(post.userReacted === 0 && reaction === 1) {
-                console.log('1st if + ' + reaction);
-                await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=1`);   
-            }
-
-            if(post.userReacted === 1 && reaction === 0) {
-                console.log('2nd if + ' + reaction);
+            if(post.userReacted === 1) {
                 await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/delete/${postId}`);
             }
 
-            if(post.userReacted === 0 && reaction === -1) {
-                console.log('3rd if + ' + reaction);
-                await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=-1`);   
-            }
-
-            if(post.userReacted === -1 && reaction === 0) {
-                console.log('4th if + ' + reaction);
-                await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/delete/${postId}`); 
-            }
-
-            if(post.userReacted === 1 && reaction === -1) {
-                console.log('5th if + ' + reaction);
+            if(post.userReacted === -1) {
                 await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
             }
 
-            if(post.userReacted === -1 && reaction === 1) {
-                console.log('6th if + ' + reaction);
-                await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
-            }
-
-            setReactionTrigger((prev) => !prev);
-        } catch(err) {
-            console.error(err);
-        }
-    }
-
-    const handleLike = async (postId: string, isLiked: boolean) => {
-        try {
-            if(isLiked) {
-                const reaction = 1;
-                await handleReaction({postId, reaction});
-            } else if(!isLiked) {
-                const reaction = 0;
-                await handleReaction({postId, reaction});
+            if (post.userReacted === 0) {
+                await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=1`);   
             }
             
         } catch(err) {
@@ -87,15 +54,25 @@ const Posts = () => {
         }
     }
 
-    const handleDislike = async (postId: string, isDisliked: boolean) => {
+    const handleDislike = async (postId: string) => {
         try {
-            if(isDisliked) {
-                const reaction = -1;
-                await handleReaction({postId, reaction});
-            } else if(!isDisliked) {
-                const reaction = 0;
-                await handleReaction({postId, reaction});
+            const post = posts.find((post) => post.id === postId);
+
+            if(!post) return;
+
+            if(post.userReacted === 1) {
+                await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
             }
+
+            if(post.userReacted === -1) {
+                await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/delete/${postId}`);
+            }
+
+            if (post.userReacted === 0) {
+                await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=-1`);   
+            }
+
+            setReactionTrigger((prev) => !prev);
         } catch(err) {
             console.error(err);
         }
