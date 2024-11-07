@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
-const EachPost = ({postId, username, content, date}: {postId: string, username: string, content: string, date:string}) => {
+const EachPost = ({postId, username, content, date, likes, dislikes, userReacted, handleLike, handleDislike}: {postId: string, username: string, content: string, date:string, likes: number, dislikes: number, userReacted: number,  handleLike: (postId: string) => void, handleDislike: (postId: string) => void}) => {
   
   // Your timestamp as a string
   const timestamp = date;
@@ -27,59 +27,6 @@ const EachPost = ({postId, username, content, date}: {postId: string, username: 
   const hours = Math.floor((totalSeconds % 86400) / 3600); // Remaining seconds converted to hours
   const minutes = Math.floor((totalSeconds % 3600) / 60); // Remaining seconds converted to minutes
   const seconds = totalSeconds % 60; // Remaining seconds after full minutes  
-
-
-  const [isLiked, setIsLiked] = useState<boolean>(false);
-  const [firstClick, setFirstClick] = useState<boolean>(false);
-
-  const [likes, setLikes] = useState(0);
-
-  const handleLike = async () => {
-    try {
-
-      setIsLiked((prev) => !prev);
-      setFirstClick(true);
-
-    } catch(err) {
-      console.error(err);
-    }
-  }
-
-  useEffect(() => {
-    const addReaction = async () => {
-        try {
-            if (isLiked && firstClick) {
-                const reaction = 1;
-                console.log('Reaction:', reaction);
-
-                const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}`,{ reaction });
-
-                if (res.status === 200) {
-                    setLikes((prevLikes) => prevLikes + 1);
-                }
-            } else if (!isLiked && firstClick) { 
-                const reaction = 0;
-                const res = await axios.post(
-                    `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}`,
-                    { reaction }
-                );
-
-                if (res.status === 200) {
-                    setLikes((prevLikes) => prevLikes - 1);
-                }
-            }
-        } catch(err) {
-            console.error(err);
-        }
-    };
-
-    addReaction();
-}, [isLiked, firstClick, postId]); 
-
-  const handleDislike = () => {
-
-  }
-
 
   
   return (
@@ -105,10 +52,10 @@ const EachPost = ({postId, username, content, date}: {postId: string, username: 
         </div>
         <p className='py-2'>{content}</p>
         <div className='flex gap-4 py-4 items-center'>
-          <FontAwesomeIcon icon={faThumbsUp} className='text-2xl hover:cursor-pointer hover:text-blue-600 transition-all' onClick={() => handleLike()}/>
+          <FontAwesomeIcon icon={faThumbsUp} className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${userReacted === 1 ? {className:'text-blue-600'} : null}`} onClick={() => handleLike(postId)}/>
           <p>{likes}</p>
-          <FontAwesomeIcon icon={faThumbsDown} className='text-2xl hover:cursor-pointer hover:text-blue-600 transition-all' onClick={() => handleDislike()}/>
-          <p></p>
+          <FontAwesomeIcon icon={faThumbsDown} className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${userReacted === 1 ? {className:'text-blue-600'} : null}`} onClick={() => handleDislike(postId)}/>
+          <p>{dislikes}</p>
         </div>
         <div className='w-full flex justify-between'>
           <button className='text-sm px-2'>Comment</button>
