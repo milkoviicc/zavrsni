@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
-const EachPost = ({postId, username, content, date, likes, dislikes, userReacted, handleLike, handleDislike}: {postId: string, username: string, content: string, date:string, likes: number, dislikes: number, userReacted: number,  handleLike: (postId: string) => void, handleDislike: (postId: string) => void}) => {
+const EachPost = ({postId, username, content, date, likes, dislikes, userReacted, handleLike, handleDislike, deletePost, updatePost}: {postId: string, username: string, content: string, date:string, likes: number, dislikes: number, userReacted: number,  handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string) => void})=> {
   
   // Your timestamp as a string
   const timestamp = date;
@@ -60,8 +60,8 @@ const EachPost = ({postId, username, content, date, likes, dislikes, userReacted
         <div className='w-full flex justify-between'>
           <button className='text-sm px-2'>Comment</button>
           <div className='flex gap-2'>
-            <button className='text-sm'>update</button>
-            <button className='text-sm'>delete</button>
+            <button className='text-sm' onClick={() => updatePost(postId)}>update</button>
+            <button className='text-sm' onClick={() => deletePost(postId)}>delete</button>
           </div>
         </div>
       </div>

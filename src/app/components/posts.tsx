@@ -82,13 +82,33 @@ const Posts = () => {
         }
     }
 
+    const deletePost = async (postId: string) => {
+        try {
+            const post = posts.find((post) => post.id === postId);
+
+            if(!post) return;
+
+            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}`);
+
+            if(res.status === 200) {
+                setReactionTrigger((prev) => !prev);
+            }
+        } catch(err) {
+            console.error('Could not delete post: ', err);
+        }
+    }
+
+    const updatePost = async (postId: string) => {
+        return;
+    }
+
 
     
 
 
   return (
     <div className='w-[60%] grid grid-cols-4 gap-4'>
-        {posts.length > 0 ? posts?.map((post, index) => (<EachPost key={index} postId={post.id} username={post.userProfile.username} content={post.content} date={post.createdOn} likes={post.likes} dislikes={post.dislikes} userReacted={post.userReacted} handleLike={handleLike} handleDislike={handleDislike} />)) : posts.length === 0 ? <h1>There are no posts to load</h1> : <h1>Loading...</h1>}
+        {posts.length > 0 ? posts?.map((post, index) => (<EachPost key={index} postId={post.id} username={post.userProfile.username} content={post.content} date={post.createdOn} likes={post.likes} dislikes={post.dislikes} userReacted={post.userReacted} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost}/>)) : posts.length === 0 ? <h1>There are no posts to load</h1> : <h1>Loading...</h1>}
     </div>
   )
 }
