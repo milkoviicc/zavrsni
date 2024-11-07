@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 
 import axios from 'axios';
-import { Post } from '@/app/types/types';
+import { Post, Reaction } from '@/app/types/types';
 
 import EachPost from './eachPost';
 
@@ -37,9 +37,10 @@ const Posts = () => {
             if(!post) return;
 
             if(post.userReacted === 0) {
-                const reaction = 1;
-                console.log(reaction);
-                await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}`,{ reaction });   
+                const newReaction: Reaction = {
+                    reaction: 1
+                }
+                await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}`,{ newReaction });   
             }
 
             setReactionTrigger((prev) => !prev);

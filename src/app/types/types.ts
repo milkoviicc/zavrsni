@@ -27,6 +27,10 @@ export interface Profile {
     id: string,
 }
 
+export interface Reaction {
+    reaction: number
+}
+
 export interface Post {
     id: string,
     content: string,
