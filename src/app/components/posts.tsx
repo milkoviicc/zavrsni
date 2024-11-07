@@ -57,12 +57,12 @@ const Posts = () => {
             }
 
             if(post.userReacted === 1 && isDisliked) {
-                await axios.put(`ttps://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
+                await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
                 setIsLiked(false);
             }
 
             if(post.userReacted === -1 && isLiked) {
-                await axios.put(`ttps://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
+                await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
                 setIsDisliked(false);
             }
 
