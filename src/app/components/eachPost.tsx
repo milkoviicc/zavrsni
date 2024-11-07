@@ -33,16 +33,19 @@ const EachPost = ({post, username, content, date, likes, dislikes, userReacted, 
 
   const [showDelete, setShowDelete] = useState(false);
   
-
-  if(user) {
-    const userData: User = JSON.parse(user);
-
-    if(post.userProfile.id === userData.id) {
-      setShowDelete(true);
-    } else {
-      setShowDelete(false);
+  useEffect(() => {
+    if(user) {
+      const userData: User = JSON.parse(user);
+  
+      if(post.userProfile.id === userData.id) {
+        setShowDelete(true);
+      } else {
+        setShowDelete(false);
+      }
     }
-  }
+  });
+
+  
   
   
   return (
