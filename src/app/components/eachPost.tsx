@@ -43,7 +43,7 @@ const EachPost = ({post, username, content, date, likes, dislikes, userReacted, 
         setShowDelete(false);
       }
     }
-  });
+  }, [user, post.userProfile.id]);
 
   
   

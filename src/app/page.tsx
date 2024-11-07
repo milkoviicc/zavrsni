@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "./context/AuthProvider";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -27,7 +27,8 @@ export default function Home() {
 
   const [content, setContent] = useState('');
 
-  const [msg, setMsg] = useState<string | null>(null);
+
+  const getPostsRef = useRef<(() => void) | undefined>();
 
 
   const sendPost = async () => {
@@ -36,23 +37,22 @@ export default function Home() {
 
       if(res.status === 200) {
         setContent('');
-        setTimeout(() => {
-          setMsg(null);
-        }, 1500);
-        setMsg('Post has been succesfully added')
+      }
+
+      if(getPostsRef.current) {
+        getPostsRef.current();
       }
     } catch(err) {
         console.error('Could not add post', err);
     }
-    
   }
   
 
   return (
-    <div className='h-full'>
+    <div className='h-full flex flex-col'>
       {isAuthenticated && fullyRegistered
       ?
-      <div className="h-full w-full py-[75px] bg-[#f5f4f4]">
+      <div className="h-full flex flex-grow flex-col bg-[#f5f4f4]">
         <div className="border-1 border-gray-900  px-4 py-8 h-full flex flex-col items-center gap-12">
           <div className="flex gap-2 items-center flex-col w-fit">
             <div className="flex flex-row w-fit justify-center items-center gap-4">
@@ -64,15 +64,12 @@ export default function Home() {
             <div className="w-full flex justify-end">
               <Button variant="shine" onClick={() => sendPost()}>Post</Button>
             </div>
-            <div>
-              <h1>{msg === null ? null : `${msg}`}</h1>
-            </div>
           </div>
           <div className="h-full w-full flex flex-col items-center ">
             <h1 className="text-xl text-gray-900 py-4">All posts</h1>
             <hr className="w-[60%] border-gray-900" />
             <div className="w-full flex justify-center">
-              <Posts />
+              <Posts setGetPostsRef={(fn) => (getPostsRef.current = fn)}/>
             </div>
           </div>
         </div>

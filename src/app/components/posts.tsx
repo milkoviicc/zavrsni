@@ -7,7 +7,7 @@ import { Post, User } from '@/app/types/types';
 
 import EachPost from './eachPost';
 
-const Posts = () => {
+const Posts = ({setGetPostsRef}: {setGetPostsRef: (fn: () => void) => void}) => {
 
     const [posts, setPosts] = useState<Post[]>([]);
 
@@ -27,8 +27,9 @@ const Posts = () => {
             }
         }
 
+        setGetPostsRef(getPosts);
         getPosts();
-    }, [reactionTrigger]) 
+    }, [reactionTrigger, setGetPostsRef]);
 
 
     const handleLike = async (postId: string) => {
@@ -109,10 +110,6 @@ const Posts = () => {
     const updatePost = async (postId: string) => {
         return;
     }
-
-
-    
-
 
   return (
     <div className='w-[60%] grid grid-cols-4 gap-4'>
