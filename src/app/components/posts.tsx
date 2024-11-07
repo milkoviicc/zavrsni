@@ -88,7 +88,7 @@ const Posts = () => {
 
             if(!post) return;
 
-            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}`);
+            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/delete/${postId}`);
 
             if(res.status === 200) {
                 setReactionTrigger((prev) => !prev);
