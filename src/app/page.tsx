@@ -20,29 +20,36 @@ import axios from "axios";
 
 export default function Home() {
 
-  const {user, logout, isAuthenticated, fullyRegistered, addDetails } = useAuth();
+  // funckije iz AuthProvider.tsx-a
+  const {isAuthenticated, fullyRegistered, addDetails } = useAuth();
 
+  // stateovi
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-
   const [content, setContent] = useState('');
 
-
+  // getPostRef kako bi se postovi re-renderali na svakom novom dodanom postu
   const getPostsRef = useRef<(() => void) | undefined>();
 
 
+  // async funkcija koja se poziva kada se klikne na gumb 'Send'
   const sendPost = async () => {
     try {
+
+      // šalje se axios post request na API i prenosi se vrijednost content statea, tj. uneseni tekst posta
       const res = await axios.post('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/add-post', {content});
 
+      // ukoliko je res.status jednak 200 novi post je dodan i vrijednost content statea se ponovno stavlja na empty string tj. ''
       if(res.status === 200) {
         setContent('');
       }
 
+      // pošto je sve prošlo poziva se getPosts funkcija kako bi se postovi re-renderali
       if(getPostsRef.current) {
         getPostsRef.current();
       }
     } catch(err) {
+        // ukoliko je došlo do greške, ispisuje se u konzoli
         console.error('Could not add post', err);
     }
   }

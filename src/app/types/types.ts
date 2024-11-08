@@ -1,5 +1,5 @@
 
-
+// useAuth koristi ovu klasu kako bi mogao prenesti sve funkcije i varijable
 export interface AuthContextType {
     user: User | null;
     login: (username: string, password: string) => Promise<void>;
@@ -11,7 +11,8 @@ export interface AuthContextType {
     fullyRegistered: boolean;
     loading: boolean;
 }
-  
+
+// klasa User, koristi klasu Profile
 export interface User {
     id: string;
     username: string;
@@ -20,6 +21,7 @@ export interface User {
     profile: Profile;
 }
 
+// klasa Profile
 export interface Profile {
     username: string,
     firstName: string | null,
@@ -27,10 +29,7 @@ export interface Profile {
     id: string,
 }
 
-export interface Reaction {
-    reaction: number
-}
-
+// klasa Post
 export interface Post {
     id: string,
     content: string,
@@ -39,14 +38,4 @@ export interface Post {
     likes: number,
     dislikes: number,
     userReacted: number
-}
-
-
-export interface LoginFormProps {
-    email: string,
-    password: string,
-    setEmail: (value: string) => void;
-    setPassword: (value: string) => void;
-    error: string | null;
-    handleSignIn: () => void;
 }

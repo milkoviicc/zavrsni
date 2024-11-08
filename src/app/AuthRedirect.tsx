@@ -16,15 +16,15 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/login'); // Redirect to login if not authenticated
+      router.push('/login'); // Preusmjerava na login page ako korisnik nije prijavljen
     }
 
     if(isAuthenticated && isAuthRoute) {
-      router.push('/');
+      router.push('/'); // preusmjerava na home page ako je korisnik prijavljen, a pokušava pristupiti login ili register pageu
     }
 
     if(isAuthenticated && isProfileRoute && !fullyRegistered) {
-      router.push('/');
+      router.push('/'); // preusmjerava na home page ako je korisnik prijavljen, ali nije u potpunosti registriran (nema puno ime i prezime), a pokušava pristupiti profile ili people pageu
     }
   }, [isAuthenticated, router, isAuthRoute, isProfileRoute, fullyRegistered]);
 
@@ -33,7 +33,7 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
       {isAuthenticated === !isAuthRoute && children}
     </>
     
-  ) // Render children if not authenticated and pathname is '/login' or '/register'
+  ) // Rendera children ako je prijavljen, a nije na login ili register pageu
 };
 
 export default AuthRedirect;

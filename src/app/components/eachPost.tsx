@@ -32,12 +32,20 @@ const EachPost = ({post, username, content, date, likes, dislikes, userReacted, 
   // dobivam usera iz localStorage-a
   const user = localStorage.getItem('user');
 
+  // state za prikazivanje Delete gumba
   const [showDelete, setShowDelete] = useState(false);
   
   useEffect(() => {
+
+    // svaki put kad se korisnik dobije iz localstoragea i post.userProfile.id promjeni, re-rendera se sve.
+
+    // ako korisnik postoji ulazi u {}, ako ne ništa se ne dešava
     if(user) {
+
+      // spremam podatke korisnika iz localstoragea u varijablu userData za daljnje provjere. 
       const userData: User = JSON.parse(user);
   
+      // ako je id korisnika koji je objavio post jednak trenutnom korisniku state se stavlja na true kako bi se gumb 'Delete' prikazao, inače na false kako se ne bi prikazao
       if(post.userProfile.id === userData.id) {
         setShowDelete(true);
       } else {
