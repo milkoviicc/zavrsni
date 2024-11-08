@@ -9,8 +9,14 @@ import { User } from '@/app/types/types';
 
 
 const Register = () => {
+
+  // prosljedjuje mi se funkcija register iz AuthProvider.tsx
   const {register} = useAuth();
+
+  // nextJs router za mjenjanje path-a
   const router = useRouter();
+
+  // stateovi
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,18 +26,28 @@ const Register = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
 
+  // funkcija za provjeravanje je li sve u formi korektno napisano tj. uneseno
+
   const validateForm = () => {
+
+    // varijabla za provjeravanje brojeva
     const numberRegex = /\d/;
+
+    // ukoliko nešto od podataka nije uneseno, postavlja se error poruka i vraća false
 
     if(!username || !email || !password || !confirmPassword) {
       setError('You must fill in all fields!');
       return false;
     }
 
+    // ukoliko email ne sadrži '@', postavlja se error poruka i vraća false
+
     if(!email.includes('@')) {
       setError('Email is not in the correct format. ');
       return false;
     }
+
+    // ukoliko lozinka nije jednaka potvrdjenoj lozinki, postavlja se error poruka i vraća false
 
 
     if(password !== confirmPassword) {
@@ -39,34 +55,56 @@ const Register = () => {
       return false;
     }
 
+    // ukoliko lozinka ne sadrži 8 znakova, postavlja se error poruka i vraća false
+
     if(password.length < 8) {
       setError('Password must be at least 8 characters long.');
-      console.log(password.length);
       return false;
     }
+
+    // ukoliko lozinka ne sadrži niti 1 broj, postavlja se error poruka i vraća false
     
     if(!numberRegex.test(password)) {
       setError('Password must contain at least 1 digit!');
       return false;
     }
 
+    // ukoliko je sve dobro vraća se true
+
     return true;
   };
 
 
+  // async funkcija koja se poziva kada se klikne gumb 'Sign up'.
+
   const handleRegister = async () => {
 
+    // radim varijablu isValid kojoj je vrijednost vraćena iz funkcije validateForm()
+
     const isValid = validateForm();
+
+    // ukoliko je vrijednost false vraća se i ništa se dalje ne izvršava, inače ako je true ide dalje
     if(!isValid) return;
+
+    // loading state se postavlja na true
 
     setLoading(true);
 
     try {
+
+      // poziva se register funckija iz AuthProvider.tsx filea, i uz pomoć await čeka se response
       await register(username, email, password, confirmPassword);
+
+      // ukoliko je API call iz funkcije register prošao, postavlja se poruka na true te se prikazuje na stranici 
       setShowMessage(true);
+
+      // nakon 1.5s poruka se postavlja na false te se više ne prikazuje na stranici
       setTimeout(() => setShowMessage(false), 1500);
+
+      // stavljamo loading state na false jer se više ne loada nego je sve gotovo
       setLoading(false);
     } catch(err) {
+      // ukoliko je došlo do greške, postavljamo Error sa određenom porukom
       console.log('Registration failed: ', err);
       setError('This username or email are already registered, try a different one!')
     }

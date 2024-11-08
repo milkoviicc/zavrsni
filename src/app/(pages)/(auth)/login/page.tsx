@@ -8,36 +8,58 @@ import { useAuth } from '@/app/context/AuthProvider';
 
 
 const Login = () => {
-  const {login, isAuthenticated} = useAuth();
+
+
+  // prosljedjuje mi se funkcija login iz AuthProvider.tsx
+  const {login} = useAuth();
+
+  // nextJs router za mjenjanje path-a
   const router = useRouter();
+
+  // stateovi
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [showMessage, setShowMessage] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-
+  // async funkcija koja se poziva kada se klikne gumb 'Sign in'.
 
   const handleSignIn = async () => {
 
+
+    // stavljamo loading state na true
     setLoading(true);
 
 
+    // provjerava se je li unešeno ime i prezime prazno, ukoliko je izbacuje Error i vraća vrijednost 'false'
     if(name === '' || password === '') {
       setError('You must fill in all the fields.');
       return false;
     }
+
+    // ukoliko unešeno ime i prezime nije prazno ulazi u try/catch
     try {
+
+      // poziva se login funckija iz AuthProvider.tsx filea, i uz pomoć await čeka se response
       await login(name,password);
+
+      // ukoliko je API call iz funkcije login prošao, postavlja se poruka na true te se prikazuje na stranici 
       setShowMessage(true);
+
+      // nakon 1.5s poruka se postavlja na false te se više ne prikazuje na stranici
       setTimeout(() => setShowMessage(false), 1500);
+
+      // stavljamo loading state na false jer se više ne loada nego je sve gotovo
       setLoading(false);
     } catch(err) {
+      // ukoliko se username/email ne može pronaći u bazi podataka, postavljamo Error sa određenom porukom
       setError('Invalid username/email or password, try again!');
     }
   }
 
   return (
+
     <div className='h-full flex items-center justify-center px-10'>
       <div className='border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg'>
         <div className='px-8 py-14'>

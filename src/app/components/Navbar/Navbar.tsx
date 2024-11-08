@@ -12,12 +12,17 @@ import { faHouse, faUserGroup, faUser, faRightFromBracket } from '@fortawesome/f
 
 export default function Navbar() {
 
+    // prosljedjuje mi se user state i funkcija logout iz AuthProvider.tsx
+
     const {user, logout} = useAuth();
 
-
+    // nextJs router za mjenjanje path-a
     const router = useRouter();
 
-    if(!user) return null
+    // ukoliko je user state null vraća se null (kao da navbar ne postoji uopće)
+    if(!user) return null;
+
+    // ukoliko je user state User vraća se sve ispod
     
     return (
         <div className="border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg h-[75px] fixed top-0 w-full">

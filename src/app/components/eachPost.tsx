@@ -8,27 +8,28 @@ import { Post, User } from '../types/types';
 
 const EachPost = ({post, username, content, date, likes, dislikes, userReacted, handleLike, handleDislike, deletePost, updatePost}: {post: Post, username: string, content: string, date:string, likes: number, dislikes: number, userReacted: number,  handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string) => void})=> {
   
-  // Your timestamp as a string
+  // spremam preneseni datum u varijablu
   const timestamp = date;
 
-  // Convert to Date object
+  // pretvaram datum u Date objekt
   const pastDate = new Date(timestamp);
 
-  // Get the current date and time
+  // dobivam trenutan datum i vrijeme
   const currentDate = new Date();
 
-  // Calculate the difference in milliseconds
+  // računam razliku između trenutnog i prenesenog vremena u ms
   const differenceMs = currentDate.getTime() - pastDate.getTime();
 
-  // Convert milliseconds to total seconds
+  // pretvaram milisekunde u sekunde
   const totalSeconds = Math.floor(differenceMs / 1000);
 
-  // Calculate days, hours, minutes, and seconds
+  // računam dane, sate, minute i sekunde
   const days = Math.floor(totalSeconds / 86400); // 86400 seconds in a day
   const hours = Math.floor((totalSeconds % 86400) / 3600); // Remaining seconds converted to hours
   const minutes = Math.floor((totalSeconds % 3600) / 60); // Remaining seconds converted to minutes
   const seconds = totalSeconds % 60; // Remaining seconds after full minutes  
 
+  // dobivam usera iz localStorage-a
   const user = localStorage.getItem('user');
 
   const [showDelete, setShowDelete] = useState(false);
