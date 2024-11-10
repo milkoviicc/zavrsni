@@ -1,4 +1,5 @@
 @import "@radix-ui/themes/styles.css";
+@import url('https://fonts.googleapis.com/css2?family=Kaisei+HarunoUmi&family=Ovo&display=swap');
 
 @tailwind base;
 @tailwind components;

@@ -3,8 +3,8 @@
 import React, {useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import axios, {AxiosError} from 'axios';
-import { useAuth } from '@/app/context/AuthProvider';
-import { User } from '@/app/types/types';
+import { useAuth } from '@/src/app/context/AuthProvider';
+import { User } from '@/src/app/types/types';
 
 
 

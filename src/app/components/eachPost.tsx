@@ -8,9 +8,11 @@ import { Post, User } from '../types/types';
 
 const EachPost = ({post, username, content, date, likes, dislikes, userReacted, handleLike, handleDislike, deletePost, updatePost}: {post: Post, username: string, content: string, date:string, likes: number, dislikes: number, userReacted: number,  handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string) => void})=> {
   
-  // spremam preneseni datum u varijablu
+  // spremam preneseni datum u varijable
   const timestamp = date;
-
+  const fullDate = new Date(date);
+  const justDate = fullDate.toLocaleString('en-us', {year: 'numeric', month: 'short', day:'numeric'});
+  
   // pretvaram datum u Date objekt
   const pastDate = new Date(timestamp);
 
@@ -32,8 +34,9 @@ const EachPost = ({post, username, content, date, likes, dislikes, userReacted, 
   // dobivam usera iz localStorage-a
   const user = localStorage.getItem('user');
 
-  // state za prikazivanje Delete gumba
+  // state za prikazivanje Delete i Update gumbova
   const [showDelete, setShowDelete] = useState(false);
+  const [showUpdate, setShowUpdate] = useState(false);
   
   useEffect(() => {
 
@@ -48,8 +51,10 @@ const EachPost = ({post, username, content, date, likes, dislikes, userReacted, 
       // ako je id korisnika koji je objavio post jednak trenutnom korisniku state se stavlja na true kako bi se gumb 'Delete' prikazao, inače na false kako se ne bi prikazao
       if(post.userProfile.id === userData.id) {
         setShowDelete(true);
+        setShowUpdate(true);
       } else {
         setShowDelete(false);
+        setShowUpdate(false);
       }
     }
   }, [user, post.userProfile.id]);
@@ -69,11 +74,10 @@ const EachPost = ({post, username, content, date, likes, dislikes, userReacted, 
           <h1 className='text-sm'>{username}</h1>
           <p className='text-sm'>
             {
-              days > 1 ? (days + 'd ago')
+              days > 1 ? (justDate)
               : days <= 0 && hours > 0 && minutes <= 60 && seconds <= 60 ? (hours + 'h ago')
               : days <= 0 && hours <= 24 && minutes <= 60 && minutes >= 1 ? (minutes + 'm ago')
-              : minutes === 0 && seconds < 60 ? (seconds + 's ago')
-              : seconds < 0 ? 'Just now'
+              : minutes < 1 ? 'Just now'
               : null
             }
           </p>
@@ -88,7 +92,7 @@ const EachPost = ({post, username, content, date, likes, dislikes, userReacted, 
         <div className='w-full flex justify-between'>
           <button className='text-sm px-2'>Comment</button>
           <div className='flex gap-2'>
-            <button className='text-sm' onClick={() => updatePost(post.id)}>update</button>
+            {showUpdate ? <button className='text-sm' onClick={() => updatePost(post.id)}>update</button> : null}
             {showDelete ?  (<button className='text-sm' onClick={() => deletePost(post.id)}>delete</button>) : null}
           </div>
         </div>

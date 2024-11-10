@@ -23,7 +23,7 @@ export default function ClientLayout({
     <AuthRedirect>
       <div className="min-h-screen flex flex-grow">
         {!isAuthRoute && fullyRegistered && <Navbar />}
-        <main className="flex-grow my-[75px]">
+        <main className="flex-grow">
             {children}  
         </main>
         {!isAuthRoute && fullyRegistered && <Footer />}

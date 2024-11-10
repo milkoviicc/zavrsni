@@ -10,8 +10,8 @@ import img from '@/../public/images/test.png';
 
 import {Flex, Avatar} from '@radix-ui/themes'
 
-import { Input } from '@/components/ui/input';
-import { Button } from "@/components/ui/button";
+import { Input } from '@/src/components/ui/input';
+import { Button } from "@/src/components/ui/button";
 import Posts from "./components/posts";
 
 import axios from "axios";
@@ -29,6 +29,7 @@ export default function Home() {
   const [content, setContent] = useState('');
 
   // getPostRef kako bi se postovi re-renderali na svakom novom dodanom postu
+
   const getPostsRef = useRef<(() => void) | undefined>();
 
 
@@ -56,7 +57,7 @@ export default function Home() {
   
 
   return (
-    <div className='h-full flex flex-col'>
+    <div className='h-full flex flex-col my-[75px]'>
       {isAuthenticated && fullyRegistered
       ?
       <div className="h-full flex flex-grow flex-col bg-[#f5f4f4]">

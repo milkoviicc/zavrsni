@@ -3,9 +3,12 @@
 import React, {useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios';
-import { useAuth } from '@/app/context/AuthProvider';
+import { useAuth } from '@/src/app/context/AuthProvider';
+import loginImg from '@/public/images/login-img.png'
+import Image from 'next/image';
 
-
+import FortAwesomeIcon, { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const Login = () => {
 
@@ -60,26 +63,33 @@ const Login = () => {
 
   return (
 
-    <div className='h-full flex items-center justify-center px-10'>
-      <div className='border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg'>
-        <div className='px-8 py-14'>
-          <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
-          <h1 className='text-black font-bold text-3xl'>Welcome back</h1>
-        
-          <div className='my-4'>
-            <input type="text" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Email address or username' id="name" onChange={(e) => setName(e.target.value)}/>
-            <input type="password" className={`w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="password" onChange={(e) => setPassword(e.target.value)} autoComplete="off" />
-            {error !== null ? <p className='text-red-500 text-sm my-2'>{error}</p> : null}
-            {loading ? <h1>Signing you in...</h1> : null}
-            {showMessage ? <p className='text-green-600 text-sm my-2'>You have been succesfully registered. Redirecting you to our login page.</p> : null}
-          </div>
-
-          <div className='my-2'>
-            <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold w-full py-2 border border-blue-700 rounded transition-all' onClick={() => handleSignIn()} >Sign in</button>
+    <div className='w-full min-h-screen flex'>
+      <div className='flex justify-center items-center w-[40%]'>
+        <div className='flex items-center justify-center px-10'>
+          <div className='px-8 py-14'>
+            <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
+            <h1 className='text-black font-bold text-3xl'>Welcome back</h1>
           
-            <p className='my-4 text-gray-400 text-sm'>Don&apos;t have an account? <a onClick={() => router.push('/register')} className='text-blue-500 hover:text-blue-700 underline hover:cursor-pointer transition-all'>Sign up</a></p>
+            <div className='my-4'>
+              <input type="text" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Email address or username' id="name" onChange={(e) => setName(e.target.value)}/>
+              <input type="password" className={`w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="password" onChange={(e) => setPassword(e.target.value)} autoComplete="off" />
+              {error !== null ? <p className='text-red-500 text-sm my-2'>{error}</p> : null}
+              {loading ? <h1>Signing you in...</h1> : null}
+              {showMessage ? <p className='text-green-600 text-sm my-2'>You have been succesfully registered. Redirecting you to our login page.</p> : null}
+            </div>
+
+            <div className='my-2'>
+              <button className='bg-[#2F2F2F] hover:bg-[#232F5C] text-white font-bold w-full py-2 border border-[#232F5C] rounded transition-all' onClick={() => handleSignIn()} >Sign in <FontAwesomeIcon icon={faArrowRight} className='px-2'/></button>
+            
+              <p className='my-4 text-sm text-black text-opacity-[42%] text-center'>Not a member? <a onClick={() => router.push('/register')} className='text-black hover:text-[#232F5C] underline hover:cursor-pointer transition-all'>Create an account</a></p>
+            </div>
           </div>
         </div>
+      </div>
+      <div className='relative w-[60%] bg-[#323232] flex flex-col pt-40 items-center gap-6'>
+        <h1 className='font-Kaisei text-7xl text-white'>Meet new people</h1>
+        <p className='text-white text-opacity-[42%] font-Ovo text-xl'>Make your boing days less boring!</p>
+        <Image src={loginImg} alt="login img" className='w-1/2' />
       </div>
     </div>
   )

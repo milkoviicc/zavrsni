@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 
-import { useAuth } from '@/app/context/AuthProvider'
+import { useAuth } from '@/src/app/context/AuthProvider'
 
 const Profile = () => {
 

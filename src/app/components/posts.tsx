@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 
 import axios from 'axios';
-import { Post, User } from '@/app/types/types';
+import { Post, User } from '@/src/app/types/types';
 
 import EachPost from './eachPost';
 
@@ -37,7 +37,7 @@ const Posts = ({setGetPostsRef}: {setGetPostsRef: (fn: () => void) => void}) => 
         }
 
         // pozivam setGetPostsRef(getPosts) kako bi svaki put kad se reactionTrigger promjeni, getPosts funkcija prenesla u page.tsx
-
+        
         setGetPostsRef(getPosts);
 
         // pozivam funkciju getPosts kako bi dobio sve postove

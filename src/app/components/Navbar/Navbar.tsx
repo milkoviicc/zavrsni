@@ -2,10 +2,10 @@
 'use client';
 
 import React, {useEffect, useState} from "react"
-import { useAuth } from '@/app/context/AuthProvider';
+import { useAuth } from '@/src/app/context/AuthProvider';
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/src/components/ui/button";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHouse, faUserGroup, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
