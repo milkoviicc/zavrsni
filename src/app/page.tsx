@@ -8,7 +8,7 @@ import Image from "next/image";
 
 import img from '@/../public/images/test.png';
 
-import {Flex, Avatar} from '@radix-ui/themes'
+import {Flex, Avatar} from '@radix-ui/themes';
 
 import { Input } from '@/src/components/ui/input';
 import { Button } from "@/src/components/ui/button";
