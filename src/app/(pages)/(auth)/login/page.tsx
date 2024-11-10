@@ -29,8 +29,6 @@ const Login = () => {
   // async funkcija koja se poziva kada se klikne gumb 'Sign in'.
 
   const handleSignIn = async () => {
-
-
     // stavljamo loading state na true
     setLoading(true);
 
@@ -57,6 +55,7 @@ const Login = () => {
       setLoading(false);
     } catch(err) {
       // ukoliko se username/email ne može pronaći u bazi podataka, postavljamo Error sa određenom porukom
+      setLoading(false);
       setError('Invalid username/email or password, try again!');
     }
   }
