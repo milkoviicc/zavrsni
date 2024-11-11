@@ -15,28 +15,26 @@ const Posts = ({setGetPostsRef}: {setGetPostsRef: (fn: () => void) => void}) => 
 
     const [reactionTrigger, setReactionTrigger] = useState(false);
 
+    const getPosts = async () => {
+        try {
+
+            // šaljem get request i spremam response u varijablu res
+            const res = await axios.get<Post[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts');
+
+            // ako je res.status jednak 200 znači kako sam uspio dobiti sve postove
+            if(res.status === 200) {
+                // spremam res.data u posts state tipa Post[], a pošto je res.data array objekata, spremam sve postove (objekte) u array 'posts'
+                setPosts(res.data);
+            }
+        } catch(err) {
+            // ukoliko dođe do greške u konzoli će se ispisati ova poruka sa greškom.
+            console.error('Could not fetch posts', err);
+        }
+    }
+
     // re-rendera se na svakoj promjeni reactionTrigger statea i na svakom pozivu setGetPostsRef
     useEffect(() => {
 
-        // async funkcija koja šalje axios get requst na API da dobijem sve postove
-        const getPosts = async () => {
-            try {
-
-                // šaljem get request i spremam response u varijablu res
-                const res = await axios.get<Post[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts');
-
-                // ako je res.status jednak 200 znači kako sam uspio dobiti sve postove
-                if(res.status === 200) {
-                    // spremam res.data u posts state tipa Post[], a pošto je res.data array objekata, spremam sve postove (objekte) u array 'posts'
-                    setPosts(res.data);
-                }
-            } catch(err) {
-                // ukoliko dođe do greške u konzoli će se ispisati ova poruka sa greškom.
-                console.error('Could not fetch posts', err);
-            }
-        }
-
-        // pozivam setGetPostsRef(getPosts) kako bi svaki put kad se reactionTrigger promjeni, getPosts funkcija prenesla u page.tsx
         
         setGetPostsRef(getPosts);
 
@@ -134,8 +132,8 @@ const Posts = ({setGetPostsRef}: {setGetPostsRef: (fn: () => void) => void}) => 
     }
 
   return (
-    <div className='w-[60%] grid grid-cols-4 gap-4'>
-        {posts.length > 0 ? posts?.map((post, index) => (<EachPost key={index} post={post} username={post.userProfile.username} content={post.content} date={post.createdOn} likes={post.likes} dislikes={post.dislikes} userReacted={post.userReacted} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost}/>)) : posts.length === 0 ? <h1>There are no posts to load</h1> : <h1>Loading...</h1>}
+    <div className='w-full flex flex-col items-center gap-4'>
+        {posts.length > 0 ? posts?.map((post, index) => (<EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={getPosts}/>)) : posts.length === 0 ? <h1>There are no posts to load</h1> : <h1>Loading...</h1>}
     </div>
   )
 }

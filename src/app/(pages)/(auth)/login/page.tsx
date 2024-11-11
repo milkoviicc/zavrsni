@@ -62,7 +62,7 @@ const Login = () => {
 
   return (
 
-    <div className='w-full min-h-screen flex sm:flex-row flex-col'>
+    <div className='w-full min-h-screen flex sm:flex-row flex-col overflow-y-hidden'>
       <div className='flex justify-center items-center sm:w-[40%] w-full'>
         <div className='flex items-center justify-center md:px-2 sm:px-2 px-1'>
           <div className='md:px-8 px-0 sm:py-14 py-10'>
@@ -85,7 +85,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <div className='relative sm:w-[60%] w-full sm:min-h-screen h-full bg-[#323232] flex flex-1 flex-col sm:pt-40 py-2 items-center gap-6'>
+      <div className='relative sm:w-[60%] w-full sm:min-h-screen h-full bg-[#323232] flex flex-1 flex-col sm:pt-40 pt-2 items-center gap-6'>
         <h1 className='font-Kaisei lg:text-6xl md:text-5xl text-4xl text-white'>Meet new people</h1>
         <p className='text-white text-opacity-[42%] font-Ovo lg:text-xl md:text-base text-sm'>Make your boring days less boring!</p>
         <Image src={loginImg} alt="login img" className='w-1/2 sm:px-10 sm:w-full md:w-full md:px-10 lg:w-full lg:px-40 xl:w-1/2 xl:px-0' />

@@ -15,6 +15,7 @@ import { Button } from "@/src/components/ui/button";
 import Posts from "./components/posts";
 
 import axios from "axios";
+import ResizableTextarea from "./components/ResizableTextarea";
 
 
 
@@ -63,11 +64,11 @@ export default function Home() {
       <div className="h-full flex flex-grow flex-col bg-[#f5f4f4]">
         <div className="border-1 border-gray-900  px-4 py-8 h-full flex flex-col items-center gap-12">
           <div className="flex gap-2 items-center flex-col w-fit">
-            <div className="flex flex-row w-fit justify-center items-center gap-4">
-              <Flex gap="2">
+            <div className="flex flex-row w-fit justify-center gap-4">
+              <Flex gap="2" className="pt-2">
                 <Avatar src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=256&h=256&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop" fallback="A" />
               </Flex>
-              <textarea placeholder="Tell us what you think." value={content} rows={2} cols={50} onChange={(e) => setContent(e.target.value)} className="w-full placeholder-gray-900 text-gray-900 bg-transparent resize-none border-b-2 px-2 py-1 border-gray-800 hover:border-gray-600 focus:border-gray-600 transition-all outline-none"></textarea>
+              <ResizableTextarea placeholder="Tell us what you think." value={content} onChange={(e) => setContent(e.target.value)} className="w-[500px] max-h-[150px] outline-none border-b-2 px-2 py-1 rounded resize-none overflow-hidden border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 text-gray-900 bg-transparent transition-all"/>
             </div>
             <div className="w-full flex justify-end">
               <Button variant="shine" onClick={() => sendPost()}>Post</Button>
