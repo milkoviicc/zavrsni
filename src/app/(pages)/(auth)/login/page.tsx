@@ -63,7 +63,7 @@ const Login = () => {
   return (
 
     <div className='w-full min-h-screen flex sm:flex-row flex-col'>
-      <div className='flex justify-center items-center sm:w-[40%] w-full'>
+      <div className='flex justify-center items-center sm:w-[40%] sm:h-full h-[40%] w-full'>
         <div className='flex items-center justify-center px-10'>
           <div className='px-8 py-14'>
             <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
@@ -85,7 +85,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <div className='relative sm:w-[60%] w-full bg-[#323232] flex flex-col pt-40 items-center gap-6'>
+      <div className='relative sm:w-[60%] w-full sm:h-full h-[60%] bg-[#323232] flex flex-col pt-40 items-center gap-6'>
         <h1 className='font-Kaisei text-7xl text-white'>Meet new people</h1>
         <p className='text-white text-opacity-[42%] font-Ovo text-xl'>Make your boing days less boring!</p>
         <Image src={loginImg} alt="login img" className='w-1/2' />
