@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation'
 import axios, {AxiosError} from 'axios';
 import { useAuth } from '@/src/app/context/AuthProvider';
 import { User } from '@/src/app/types/types';
-
+import loginImg from '@/public/images/login-img.png';
+import Image from 'next/image';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import {motion} from 'framer-motion';
 
 
 const Register = () => {
@@ -24,6 +28,7 @@ const Register = () => {
   const [showMessage, setShowMessage] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isVisible, setIsVisible] = useState(false);
 
 
   // funkcija za provjeravanje je li sve u formi korektno napisano tj. uneseno
@@ -111,28 +116,33 @@ const Register = () => {
   }
 
   return (
-    <div className='h-full flex items-center justify-center px-10'>
-      <div className='border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg xl:w-1/3 md:w-1/2 sm:w-full'>
-        <div className='px-8 py-14'>
-          <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
-          <h1 className='text-black font-bold text-3xl'>Create account</h1>
-        
-          <div className='my-4'>
-            <div className='flex gap-6'>
-              <input type="text" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Username' id="username" onChange={(e) => setUsername(e.target.value)} autoComplete="off"/>
-            </div>
-            <input type="email" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Email address' id="email" onChange={(e) => setEmail(e.target.value)}/>
-            <input type="password" className={`w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="password" onChange={(e) => setPassword(e.target.value)} autoComplete="off"/>
-            <input type="password" className={`w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Confirm password' id="confirmPassword" onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="off"/>
-            {error !== null ? <p className='text-red-500 text-sm my-2'>{error}</p> : null}
-            {loading ? <h1>Registering you, please wait.</h1> : null}
-            {showMessage ? <p className='text-green-600 text-sm my-2'>You have been succesfully registered. Redirecting you to our home page.</p> : null}
-          </div>
-
-          <div className='my-2'>
-            <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold w-full py-2 border border-blue-700 rounded transition-all' onClick={() => handleRegister()} >Sign up</button>
+    <div className='w-full min-h-screen flex sm:flex-row flex-col overflow-y-hidden'>
+      <div className='relative sm:w-[60%] w-full sm:min-h-screen h-full bg-[#323232] flex flex-1 flex-col sm:pt-40 pt-2 items-center gap-6'>
+        <h1 className='font-Kaisei lg:text-6xl md:text-5xl text-4xl text-white'>Meet new people</h1>
+        <p className='text-white text-opacity-[42%] font-Ovo lg:text-xl md:text-base text-sm'>Make your boring days less boring!</p>
+        <Image src={loginImg} alt="login img" className='w-1/2 sm:px-10 sm:w-full md:w-full md:px-10 lg:w-full lg:px-40 xl:w-1/2 xl:px-0' />
+      </div>
+      <div className='flex justify-center items-center sm:w-[40%] w-full'>
+        <div className='flex items-center justify-center md:px-2 sm:px-2 px-1'>
+          <div className='md:px-8 px-0 sm:py-14 py-10'>
+            <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
+            <h1 className='text-black font-bold text-3xl'>Create an account</h1>
           
-            <p className='my-4 text-gray-400 text-sm'>Already have an account? <a onClick={() => router.push('/login')} className='text-blue-500 hover:text-blue-700 underline hover:cursor-pointer transition-all'>Sign in</a></p>
+            <div className='my-4'>
+              <input type="text" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Username' id="username" onChange={(e) => setUsername(e.target.value)} autoComplete="off"/>
+              <input type="email" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Email address' id="email" onChange={(e) => setEmail(e.target.value)}/>
+              <input type="password" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="password" onChange={(e) => setPassword(e.target.value)} autoComplete="off"/>
+              <input type="password" className={`w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Confirm password' id="confirmPassword" onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="off" />
+              {error !== null ? <p className='text-red-500 text-sm my-2'>{error}</p> : null}
+              {loading ? <h1>Registering your account...</h1> : null}
+              {showMessage ? <p className='text-green-600 text-sm my-2'>You have been succesfully registered. Redirecting you to our home page.</p> : null}
+            </div>
+
+            <div className='my-2'>
+              <button className='bg-[#2F2F2F] hover:bg-[#232F5C] text-white font-bold w-full py-2 border border-[#232F5C] rounded transition-all' onClick={() => handleRegister()} >Sign up <FontAwesomeIcon icon={faArrowRight} className='px-2'/></button>
+            
+              <p className='my-4 text-sm text-black text-opacity-[42%] text-center'>Already have an account? <a onClick={() => router.push('/login')} className='text-black hover:text-[#232F5C] underline hover:cursor-pointer transition-all'>Sign in.</a></p>
+            </div>
           </div>
         </div>
       </div>
