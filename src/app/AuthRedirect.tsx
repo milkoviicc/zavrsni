@@ -16,15 +16,7 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/login'); // Preusmjerava na login page ako korisnik nije prijavljen
-    }
-
-    if(isAuthenticated && isAuthRoute) {
-      router.push('/'); // preusmjerava na home page ako je korisnik prijavljen, a pokušava pristupiti login ili register pageu
-    }
-
-    if(isAuthenticated && isProfileRoute && !fullyRegistered) {
-      router.push('/'); // preusmjerava na home page ako je korisnik prijavljen, ali nije u potpunosti registriran (nema puno ime i prezime), a pokušava pristupiti profile ili people pageu
+      router.push('/auth'); // Preusmjerava na login page ako korisnik nije prijavljen
     }
   }, [isAuthenticated, router, isAuthRoute, isProfileRoute, fullyRegistered]);
 

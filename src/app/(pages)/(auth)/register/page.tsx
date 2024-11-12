@@ -115,8 +115,9 @@ const Register = () => {
     }
   }
 
+
   return (
-    <div className='w-full min-h-screen flex sm:flex-row flex-col overflow-y-hidden'>
+    <div className='w-full min-h-screen flex sm:flex-row flex-col overflow-y-hidden -z-10'>
       <div className='relative sm:w-[60%] w-full sm:min-h-screen h-full bg-[#323232] flex flex-1 flex-col sm:pt-40 pt-2 items-center gap-6'>
         <h1 className='font-Kaisei lg:text-6xl md:text-5xl text-4xl text-white'>Meet new people</h1>
         <p className='text-white text-opacity-[42%] font-Ovo lg:text-xl md:text-base text-sm'>Make your boring days less boring!</p>

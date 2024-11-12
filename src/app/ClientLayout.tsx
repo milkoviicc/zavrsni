@@ -22,11 +22,11 @@ export default function ClientLayout({
 
   const pathname = usePathname();
 
-  const isAuthRoute = pathname === '/login' || pathname === '/register';
+  const isAuthRoute = pathname === '/auth';
 
   useEffect(() => {
-    if(!isAuthenticated && !isAuthRoute) {
-      router.push('/login');
+    if(!isAuthenticated) {
+      router.push('/auth');
     }
   })
 

@@ -17,6 +17,7 @@ body {
   height: 100%;
   width: 100%;
   background-color: #f5f4f4;
+  overflow-x: hidden;
 }
 
 .slide-in {
@@ -27,6 +28,7 @@ body {
   height: 100vh;
   background: #0f0f0f;
   transform-origin: bottom;
+  z-index: 10;
 }
 
 .slide-out {
@@ -37,6 +39,7 @@ body {
   height: 100vh;
   background: #0f0f0f;
   transform-origin: top;
+  z-index: 10;
 }
 
 @layer base {

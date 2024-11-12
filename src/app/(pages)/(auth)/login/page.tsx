@@ -7,7 +7,7 @@ import { useAuth } from '@/src/app/context/AuthProvider';
 import loginImg from '@/public/images/login-img.png'
 import Image from 'next/image';
 
-import FortAwesomeIcon, { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const Login = () => {
@@ -62,7 +62,7 @@ const Login = () => {
 
   return (
 
-    <div className='w-full min-h-screen flex sm:flex-row flex-col overflow-y-hidden'>
+    <div className='w-full min-h-screen flex sm:flex-row flex-col overflow-y-hidden -z-10'>
       <div className='flex justify-center items-center sm:w-[40%] w-full'>
         <div className='flex items-center justify-center md:px-2 sm:px-2 px-1'>
           <div className='md:px-8 px-0 sm:py-14 py-10'>
