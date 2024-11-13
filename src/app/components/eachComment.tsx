@@ -57,46 +57,46 @@ const EachComment = ({post, comment, handleLike, handleDislike, deleteComment, u
 
   return (
     <div className="flex gap-2 flex-1">
-    <div>
-      <Flex gap="2">
-        <Avatar src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=256&h=256&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop" fallback="A" />
-      </Flex>
-    </div>
-    <div className="w-full flex flex-1 flex-col justify-between">
-      <div className="flex gap-2 items-center">
-        <h1 className="text-base uppercase font-Kaisei">{comment.userProfile.username}</h1>
-        <p className="text-sm text-gray-500">
-          {commentDays >= 1 ? justCommentDate : commentDays <= 0 && commentHours > 0 && commentMinutes <= 60 ? `${commentHours}h ago` : commentDays < 1 && commentHours <= 24 && commentMinutes <= 60 && commentMinutes >= 1 ? `${commentMinutes}m ago` : "Just now"}
-        </p>
+      <div>
+        <Flex gap="2">
+          <Avatar src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=256&h=256&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop" style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
+        </Flex>
       </div>
-      <p className="py-2 max-w-full break-words">{comment.content}</p>
-      <div className="flex gap-4 py-4 items-center justify-between">
-        <div className="flex gap-3">
-          <FontAwesomeIcon
-            icon={faThumbsUp}
-            className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${comment.userReacted === 1 ? "text-blue-600" : ""}`}
-            onClick={() => handleLike(comment.id)}
-          />
-          <p>{comment.likes}</p>
-          <FontAwesomeIcon
-            icon={faThumbsDown}
-            className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${comment.userReacted === -1 ? "text-blue-600" : ""}`}
-            onClick={() => handleDislike(comment.id)}
-          />
-          <p>{comment.dislikes}</p>
+      <div className="w-full flex flex-1 flex-col justify-between">
+        <div className="flex gap-2 items-center">
+          <h1 className="text-base uppercase font-Kaisei">{comment.userProfile.username}</h1>
+          <p className="text-sm text-gray-500">
+            {commentDays >= 1 ? justCommentDate : commentDays <= 0 && commentHours > 0 && commentMinutes <= 60 ? `${commentHours}h ago` : commentDays < 1 && commentHours <= 24 && commentMinutes <= 60 && commentMinutes >= 1 ? `${commentMinutes}m ago` : "Just now"}
+          </p>
         </div>
-        <div className="flex gap-4 pr-4">
-          {showUpdate && (
-            <button className="text-sm" onClick={() => updateComment(comment.id)}>
-              <FontAwesomeIcon icon={faPen} className="text-xl" />
-            </button>
-          )}
-          {showDelete && (
-            <button className="text-sm" onClick={() => deleteComment(comment.id)}>
-              <FontAwesomeIcon icon={faTrash} className="text-xl" />
-            </button>
-          )}
-        </div>
+        <p className="py-2 max-w-full break-words">{comment.content}</p>
+        <div className="flex gap-4 py-4 items-center justify-between">
+          <div className="flex gap-3">
+            <FontAwesomeIcon
+              icon={faThumbsUp}
+              className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${comment.userReacted === 1 ? "text-blue-600" : ""}`}
+              onClick={() => handleLike(comment.id)}
+            />
+            <p>{comment.likes}</p>
+            <FontAwesomeIcon
+              icon={faThumbsDown}
+              className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${comment.userReacted === -1 ? "text-blue-600" : ""}`}
+              onClick={() => handleDislike(comment.id)}
+            />
+            <p>{comment.dislikes}</p>
+          </div>
+          <div className="flex gap-4 pr-4">
+            {showUpdate && (
+              <button className="text-sm" onClick={() => updateComment(comment.id)}>
+                <FontAwesomeIcon icon={faPen} className="text-xl" />
+              </button>
+            )}
+            {showDelete && (
+              <button className="text-sm" onClick={() => deleteComment(comment.id)}>
+                <FontAwesomeIcon icon={faTrash} className="text-xl" />
+              </button>
+            )}
+          </div>
       </div>
     </div>
   </div>

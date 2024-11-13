@@ -8,6 +8,9 @@ import { Post, User } from '../types/types';
 import PostComment from './PostComment';
 import EachComment from './eachComment';
 
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger} from '@/src/components/ui/dialog';
+import { ScrollArea } from "@/src/components/ui/scroll-area"
+
 const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refreshPosts}: {post: Post, handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string) => void, refreshPosts: () => void})=> {
   
   // DATUM POSTA
@@ -41,6 +44,8 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   // state za prikazivanje Delete i Update gumbova
   const [showDelete, setShowDelete] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
+
+  const [showMore, setShowMore] = useState(false);
 
   
   useEffect(() => {
@@ -154,7 +159,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
       <div className="flex gap-2 flex-1">
         <div>
           <Flex gap="2">
-            <Avatar src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=256&h=256&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop" fallback="A" />
+            <Avatar src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=256&h=256&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop" style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
           </Flex>
         </div>
         <div className="w-full flex flex-1 flex-col justify-between">
@@ -196,10 +201,78 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
         </div>
       </div>
       <PostComment postId={post.id} refreshPosts={refreshPosts}/>
-      <div>
-        {post.comments.length > 0 ? post.comments.map((comment, index) => (
+      <div className='flex flex-col'>
+        {post.comments.length > 0 && !showMore ? post.comments.slice(0,3).map((comment, index) => (
+          <EachComment key={index} post={post} comment={comment} handleLike={handleCommentLike} handleDislike={handleCommentDislike} deleteComment={deleteComment} updateComment={updateComment}/>
+        )) : post.comments.length > 0 && showMore ? post.comments.map((comment, index) => (
           <EachComment key={index} post={post} comment={comment} handleLike={handleCommentLike} handleDislike={handleCommentDislike} deleteComment={deleteComment} updateComment={updateComment}/>
         )) : null}
+
+          {post.comments.length > 3 && !showMore ?
+          (
+            <Dialog>
+              <DialogTrigger className='px-4 py-2 border-gray-900 bg-gray-700 rounded-md w-1/2 '>Show more</DialogTrigger>
+              <DialogContent className='w-full h-[75vh] bg-gray-900 text-white'>
+                <DialogHeader>
+                  <DialogTitle>All comments</DialogTitle>
+                </DialogHeader>
+                <ScrollArea className="rounded-md p-4">
+                  <DialogDescription className='w-[75%] flex flex-col py-4 text-white'>
+                    <div className="flex gap-2 flex-1">
+                      <div>
+                        <Flex gap="2">
+                          <Avatar src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=256&h=256&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop" style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
+                        </Flex>
+                      </div>
+                      <div className="w-full flex flex-1 flex-col justify-between">
+                        <div className="flex gap-2 items-center">
+                          <h1 className="text-base uppercase font-Kaisei">{post.userProfile.username}</h1>
+                          <p className="text-sm text-gray-500">
+                            {days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}
+                          </p>
+                        </div>
+                        <p className="py-2 max-w-full break-words">{post.content}</p>
+                        <div className="flex gap-4 py-4 items-center justify-between">
+                          <div className="flex gap-3">
+                            <FontAwesomeIcon
+                              icon={faThumbsUp}
+                              className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${post.userReacted === 1 ? "text-blue-600" : ""}`}
+                              onClick={() => handleLike(post.id)}
+                            />
+                            <p>{post.likes}</p>
+                            <FontAwesomeIcon
+                              icon={faThumbsDown}
+                              className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${post.userReacted === -1 ? "text-blue-600" : ""}`}
+                              onClick={() => handleDislike(post.id)}
+                            />
+                            <p>{post.dislikes}</p>
+                          </div>
+                          <div className="flex gap-4 pr-4">
+                            {showUpdate && (
+                              <button className="text-sm" onClick={() => updatePost(post.id)}>
+                                <FontAwesomeIcon icon={faPen} className="text-xl" />
+                              </button>
+                            )}
+                            {showDelete && (
+                              <button className="text-sm" onClick={() => deletePost(post.id)}>
+                                <FontAwesomeIcon icon={faTrash} className="text-xl" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <PostComment postId={post.id} refreshPosts={refreshPosts}/>
+                    {post.comments.map((comment, index) => (
+                      <div key={index} className='py-2'>
+                        <EachComment post={post} comment={comment} handleLike={handleCommentLike} handleDislike={handleCommentDislike} deleteComment={deleteComment} updateComment={updateComment} />
+                      </div>
+                    ))}
+                  </DialogDescription>
+                </ScrollArea>
+              </DialogContent>
+            </Dialog>
+          ) : null}
       </div>
     </div>
   )

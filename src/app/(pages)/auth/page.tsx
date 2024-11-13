@@ -157,10 +157,6 @@ const Auth = () => {
       setError('This username or email are already registered, try a different one!')
     }
   }
-
-    useEffect(() => {
-      console.log(loginRoute);
-    })
   
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
 
@@ -183,7 +179,7 @@ const Auth = () => {
               <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
               <h1 className='text-black font-bold text-3xl'>Welcome back</h1>
             
-              <div className='my-4 '>
+              <div className='my-4 flex flex-col'>
                 <input type="text" className={`lg:w-80 md:w-64 sm:w-56 w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Email address or username' id="name" onChange={(e) => setName(e.target.value)}/>
                 <input type="password" className={`lg:w-80 md:w-64 sm:w-56 w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="password" onChange={(e) => setLoginPassword(e.target.value)} autoComplete="off" />
                 {error !== null ? <p className='text-red-500 text-sm my-2'>{error}</p> : null}

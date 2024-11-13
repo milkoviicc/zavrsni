@@ -8,6 +8,9 @@ import axios from 'axios';
 import { AuthContextType, User, Profile } from '../types/types';
 import { error } from 'console';
 
+import {jwtDecode} from 'jwt-decode';
+import jwt from 'jsonwebtoken';
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -27,8 +30,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
 
+
     // ukoliko token i korisnik postoje ulazi u {} i izvršava se dalje
     if (token && storedUser) {
+
+      if(isTokenExpired(token)) {
+        localStorage.removeItem('token');
+        router.push('/auth');
+      }
+
       // spremam korisnikove podatke u varijablu 'userData'
       const userData = JSON.parse(storedUser);
 
@@ -44,7 +54,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // postavljam loading state na false nakon provjere
     setLoading(false); 
-  }, [isLoggedIn ]);
+  }, [isLoggedIn, router]);
+
+
+  const isTokenExpired = (token: string) => {
+    if (!token) return true;
+  
+    try {
+      const decodedToken = jwtDecode<{ exp?: number }>(token); // TypeScript type with optional `exp`
+      const currentTime = Date.now() / 1000;
+
+      // Check if `exp` exists and compare; if not, treat it as expired
+      if (decodedToken.exp === undefined) {
+        return true;
+      }
+
+      return decodedToken.exp < currentTime;
+    } catch (error) {
+      console.error('Error decoding token: ', error);
+      return true;
+    }
+  };
 
 
   // async funkcija koja prima ime i prezime varijable, oba tipa string, nakon unošenja punog imena i prezimena na stranici.
@@ -156,8 +186,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // provjeravam sadrže li primljeni podatci token, id, username i email
       if(loggedUser.token && loggedUser.id && loggedUser.username && loggedUser.email) {
         if(name === loggedUser.username || name === loggedUser.email) {
+
           // ukoliko je uneseni username jednak usernameu vraćenog korisnika ili unešeni email jednak emailu vraćenog korisnika, spremam token u localStorage
           localStorage.setItem('token', loggedUser.token);
+
 
           // spremam korisnika u state 'user'
           setUser(loggedUser);
@@ -196,7 +228,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoggedIn(false);
 
     // preusmjerava se na login page
-    router.push('/login');
+    router.push('/auth');
   };
 
   // async funkcija za brisanje računa
