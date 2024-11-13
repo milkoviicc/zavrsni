@@ -14,8 +14,8 @@
 
 body {
   font-family: 'Bahnschrift', sans-serif;
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   background-color: #f5f4f4;
   overflow-x: hidden;
 }
