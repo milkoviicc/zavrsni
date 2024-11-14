@@ -25,9 +25,7 @@ const PostComment = ({postId, refreshPosts}: {postId: string, refreshPosts: () =
   }
 
   return (
-    <div>
-      <hr className='w-full mt-4 mx-auto'/>
-      <h1 className='text-center py-4'>Comments</h1>
+    <div className='relative w-full h-full'>
       <div className="flex gap-2 items-center flex-col w-full">
           <div className="flex flex-row w-full justify-center items-center gap-4">
             <Flex gap="2">

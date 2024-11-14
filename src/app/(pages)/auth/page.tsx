@@ -23,6 +23,7 @@ const Auth = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [showMessage, setShowMessage] = useState(false);
   const [isHorizontal, setIsHorizontal] = useState(window.innerWidth > 768);
+  const [initialRender, setInitialRender] = useState(true);
 
   // stateovi za login
   const [name, setName] = useState('');
@@ -36,12 +37,16 @@ const Auth = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsHorizontal(window.innerWidth > 768); // Toggle to horizontal if width is more than 768px
+      setIsHorizontal(window.innerWidth > 768);
     };
 
     window.addEventListener('resize', handleResize);
+
+    // Set initialRender to false after the first render
+    setInitialRender(false);
+
     return () => window.removeEventListener('resize', handleResize);
-  })
+  }, []);
 
   // async funkcija koja se poziva kada se klikne gumb 'Sign in'.
   const handleSignIn = async () => {
@@ -162,18 +167,18 @@ const Auth = () => {
 
     const slideVariants = {
       initial: isMobile 
-        ? { y: loginRoute ? '100%' : '0%' } // Slide vertically out of view for mobile
-        : { x: loginRoute ? '60%' : '0%' },   // Slide horizontally on larger screens
+        ? { y: loginRoute ? '0%' : '100%' } // Slide vertically out of view for mobile
+        : { x: loginRoute ? '0%' : '60%' },   // Slide horizontally on larger screens
       animate: isMobile 
-        ? { y: loginRoute ? '0%' : '100%' } // Slide vertically into view for mobile
-        : { x: loginRoute ? '0%' : '60%' }, // Slide horizontally on larger screens
-      transition: { duration: 0.3 },
+        ? { y: loginRoute ? '100%' : '0%' } // Slide vertically into view for mobile
+        : { x: loginRoute ? '60%' : '0%' }, // Slide horizontally on larger screens
+      transition: { duration: 0.8 },
     };
 
   return (
     <AnimatePresence mode="wait">
     <div className='min-w-screen min-h-screen flex sm:flex-row sm:justify-between flex-col overflow-y-hidden overflow-x-hidden relative'>
-        <div className='flex justify-center items-center sm:w-[40%] w-full'>
+        <div className='flex justify-center items-center sm:w-[37%] w-full'>
           <div className='flex items-center justify-center'>
             <div className='md:px-4 px-2 sm:py-14 py-10'>
               <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
@@ -195,12 +200,11 @@ const Auth = () => {
             </div>
           </div>
         </div>
-        <div className='flex justify-center items-center sm:w-[40%] w-full'>
+        <div className='flex justify-center items-center sm:w-[37%] w-full'>
           <div className='flex items-center justify-center md:px-2 sm:px-2 px-1'>
             <div className='md:px-8 px-0 sm:py-14 py-0'>
               <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
               <h1 className='text-black font-bold lg:text-4xl md:text-2xl sm:text-xl text-2xl'>Create an account</h1>
-            
               <div className='my-4'>
                 <div className='md:block sm:flex sm:flex-col flex flex-row gap-2'>
                   <input type="text" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Username' id="username" onChange={(e) => setUsername(e.target.value)} autoComplete="off"/>
@@ -225,8 +229,8 @@ const Auth = () => {
         </div>
         <motion.div
         key={loginRoute ? 'Login' : 'Register'}
-        className={`absolute top-0 sm:w-[63%] w-full sm:min-h-screen h-[50%] bg-[#323232] flex flex-col sm:pt-40 pt-4 items-center gap-6`}
-        initial={slideVariants.initial}
+        className={`absolute top-0 sm:w-[63%] w-full sm:min-h-screen max-h-screen h-[50%] bg-[#323232] flex flex-col sm:pt-40 pt-4 items-center gap-6`}
+        initial={initialRender ? false : slideVariants.initial}
         animate={slideVariants.animate}
         transition={slideVariants.transition}
       >
