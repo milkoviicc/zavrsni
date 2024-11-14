@@ -57,6 +57,7 @@ const Auth = () => {
     // provjerava se je li unešeno ime i prezime prazno, ukoliko je izbacuje Error i vraća vrijednost 'false'
     if(name === '' || loginPassword === '') {
       setError('You must fill in all the fields.');
+      setLoading(false);
       return false;
     }
 
@@ -157,6 +158,7 @@ const Auth = () => {
       // stavljamo loading state na false jer se više ne loada nego je sve gotovo
       setLoading(false);
     } catch(err) {
+      setLoading(false);
       // ukoliko je došlo do greške, postavljamo Error sa određenom porukom
       console.log('Registration failed: ', err);
       setError('This username or email are already registered, try a different one!')
