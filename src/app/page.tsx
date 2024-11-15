@@ -33,6 +33,8 @@ export default function Home() {
 
   const getPostsRef = useRef<(() => void) | undefined>();
 
+  const user = JSON.stringify(localStorage.getItem('user'));
+
 
   // async funkcija koja se poziva kada se klikne na gumb 'Send'
   const sendPost = async () => {
@@ -62,16 +64,20 @@ export default function Home() {
       {isAuthenticated && fullyRegistered
       ?
       <div className="h-full flex flex-grow flex-col bg-[#f5f4f4]">
-        <div className="border-1 border-gray-900  px-4 py-8 h-full flex flex-col items-center gap-12">
-          <div className="flex gap-2 items-center flex-col w-fit">
-            <div className="flex flex-row w-fit justify-center gap-4">
+        <div className="border-1 border-gray-900  px-4 py-8 h-full flex flex-col items-center gap-12 ">
+          <div className="flex gap-2 items-center flex-col w-fit bg-[#EDEDED] rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)]">
+            <div className="flex flex-row w-fit justify-center gap-4 py-4 px-4">
               <Flex gap="2" className="pt-2">
-                <Avatar src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=256&h=256&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop" fallback="A" />
+                <Avatar src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=256&h=256&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop" style={{  borderRadius: '25px'}} fallback="A" />
               </Flex>
-              <ResizableTextarea placeholder="Tell us what you think." value={content} onChange={(e) => setContent(e.target.value)} className="w-[500px] max-h-[150px] outline-none border-b-2 px-2 py-1 rounded resize-none overflow-hidden border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 text-gray-900 bg-transparent transition-all"/>
-            </div>
-            <div className="w-full flex justify-end">
-              <Button variant="shine" onClick={() => sendPost()}>Post</Button>
+              <div className="flex flex-col">
+                <div className="flex flex-row">
+                  <ResizableTextarea placeholder={`What's on your mind, Eminem`} value={content} onChange={(e) => setContent(e.target.value)} className="w-[500px] max-h-[150px] text-[#363636] outline-none px-2 py-1 rounded resize-none overflow-hidden border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900  bg-transparent transition-all"/>
+                  <Button variant="shine" onClick={() => sendPost()} className="rounded-full">Post</Button>
+                </div>
+                <h1>Add file</h1>
+              </div>
+              
             </div>
           </div>
           <div className="h-full w-full flex flex-col items-center ">

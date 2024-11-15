@@ -26,7 +26,7 @@ const PostComment = ({postId, refreshPosts}: {postId: string, refreshPosts: () =
 
   return (
     <div className='relative w-full h-full'>
-      <div className="flex gap-2 items-center flex-col w-full">
+      <div className="flex gap-2 items-center flex-col w-full ">
           <div className="flex flex-row w-full justify-center items-center gap-4">
             <Flex gap="2">
               <Avatar src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=256&h=256&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop" style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
