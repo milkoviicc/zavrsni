@@ -38,6 +38,7 @@ export interface Post {
     likes: number,
     dislikes: number,
     userReacted: number,
+    commentsCount: number,
     comments: Comment[]
 }
 
