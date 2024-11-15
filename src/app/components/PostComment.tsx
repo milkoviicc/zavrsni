@@ -6,7 +6,7 @@ import ResizableTextarea from './ResizableTextarea';
 import axios from 'axios';
 import { Post } from '../types/types';
 
-const PostComment = ({postId, refreshPosts}: {postId: string, refreshPosts: () => void}) => {
+const PostComment = ({postId, refreshPosts, refreshComments}: {postId: string, refreshPosts: () => void, refreshComments: () => void}) => {
 
   const [content, setContent] = useState('');
   const [commentTrigger, setCommentTrigger] = useState(false);
@@ -18,6 +18,7 @@ const PostComment = ({postId, refreshPosts}: {postId: string, refreshPosts: () =
       if(res.status === 200) {
         setContent('');
         refreshPosts();
+        refreshComments();
       }
     } catch(err) {
       console.error(err);
