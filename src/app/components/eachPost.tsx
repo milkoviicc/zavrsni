@@ -50,8 +50,16 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
 
-  const imageUrl = post.fileUrls?.[0];
-  
+  const [postFiles, setPostFiles] = useState<string[]>([]);
+
+  const [isPortrait, setIsPortrait] = useState(false);
+
+  const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    const { naturalWidth, naturalHeight } = event.currentTarget;
+    setIsPortrait(naturalHeight > naturalWidth);
+  };
+
+
   useEffect(() => {
 
     // svaki put kad se korisnik dobije iz localstoragea i post.userProfile.id promjeni, re-rendera se sve.
@@ -59,6 +67,10 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
     // ako korisnik postoji ulazi u {}, ako ne ništa se ne dešava
     if(user) {
 
+      if (post.fileUrls.length !== 0) {
+        setPostFiles(post.fileUrls);
+      }
+    
       // spremam podatke korisnika iz localstoragea u varijablu userData za daljnje provjere. 
       const userData: User = JSON.parse(user);
   
@@ -72,7 +84,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
       }
     }
 
-  }, [user, post.userProfile.id]);  
+  }, [user, post.userProfile.id, post.fileUrls]);  
 
   const handleCommentLike = async (commentId: string) => {
     try {
@@ -188,8 +200,10 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
               {days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}
             </p>
           </div>
-          <p className="py-2 pr-8 max-w-full break-all">{post.content}</p>
-          {imageUrl ? <Image src={imageUrl} alt="a" width="100" height="100" /> : null}
+          <div className={`flex ${isPortrait ? 'flex-row' : 'flex-col'}`}>
+            <p className="py-2 pr-8 max-w-full break-all">{post.content}</p>
+            {postFiles.length != 0 ? postFiles.map((post, index) => (<Image key={index} src={post} alt="a" sizes="100vw" width={0} height={0} className={`w-[70%] h-auto py-6 ${isPortrait ? 'mr-4' : ''}`}  onLoad={handleImageLoad} />)) : null}
+          </div>
           <div className="flex gap-4 py-4 items-center justify-between">
             <div className="flex gap-3">
               <FontAwesomeIcon

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
@@ -17,6 +18,8 @@ import Posts from "./components/posts";
 import axios from "axios";
 import ResizableTextarea from "./components/ResizableTextarea";
 import { User } from "./types/types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
 
 
 
@@ -30,7 +33,7 @@ export default function Home() {
   const [lastName, setLastName] = useState('');
   const [content, setContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [postFile, setPostFile] = useState<string | null>(null);
+  const [postFile, setPostFile] = useState<File[]>([]);
 
   // getPostRef kako bi se postovi re-renderali na svakom novom dodanom postu
 
@@ -51,8 +54,10 @@ export default function Home() {
 
   const handlePostFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      const fileUrl = URL.createObjectURL(event.target.files[0]);
-      setPostFile(fileUrl);
+      const filesArray = Array.from(event.target.files);
+      
+      // Use the spread operator to append new files without removing previous ones.
+      setPostFile((prevFiles) => [...prevFiles, ...filesArray]);
     }
   };
 
@@ -61,18 +66,20 @@ export default function Home() {
     try {
 
       const formData = new FormData();
+      formData.append('Content', content);
 
-      // Append files (you can append multiple files if needed)
-      if (postFile) {
-        formData.append('Files', postFile);  // If you have multiple files, you can loop through and append each one
-      } 
+      // If there are files, append them to FormData
+      postFile.forEach((file) => {
+        formData.append(`Files`, file);
+      })  
 
       // šalje se axios post request na API i prenosi se vrijednost content statea, tj. uneseni tekst posta
-      const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/add-post?Content=${content}`, {formData});
+      const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/add-post`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 
       // ukoliko je res.status jednak 200 novi post je dodan i vrijednost content statea se ponovno stavlja na empty string tj. ''
       if(res.status === 200) {
         setContent('');
+        setPostFile([]);
       }
 
       // pošto je sve prošlo poziva se getPosts funkcija kako bi se postovi re-renderali
@@ -97,15 +104,19 @@ export default function Home() {
           <div className="flex gap-2 items-center flex-col w-fit bg-[#EDEDED] rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)]">
             <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
               <Flex gap="2">
-                <Avatar src={`${user.profile.pictureUrl}`} size="5" style={{borderRadius: '25px'}} fallback="A" />
+                <Avatar src={`${user.profile.pictureUrl}`} size="5" fallback="A" style={{borderRadius: '50%'}}/>
               </Flex>
               <div className="flex flex-col">
                 <div className="flex flex-row">
-                  <ResizableTextarea placeholder={`What's on your mind, Eminem`} value={content} onChange={(e) => setContent(e.target.value)} className="w-[500px] max-h-[150px] text-[#363636] outline-none py-1 rounded resize-none overflow-hidden border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900  bg-transparent transition-all"/>
+                  <ResizableTextarea placeholder={`What's on your mind, Eminem`} value={content} onChange={(e) => setContent(e.target.value)} className="w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-1 rounded resize-none overflow-hidden border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900  bg-transparent transition-all"/>
                 </div>
-                <input type="file" id="file-input" placeholder="Add file" className="hidden" onChange={handlePostFile}/>
-                <label htmlFor="file-input" className="underline hover:cursor-pointer">Add file </label>
-                {postFile ? <Image src={postFile} width="50" height="50" alt="aaaaaaa"/> : null}
+                <input type="file" id="file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
+                <label htmlFor="file-input" className="underline hover:cursor-pointer w-fit">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
+                <div className="flex items-start">
+                  {postFile ? postFile.map((file, index) => (<Image key={index} src={URL.createObjectURL(file)} width={100} height={64} alt="aaaaaaa"/>)) : null}
+                  {postFile.length > 0 ? <button className="w-fit px-2" onClick={() => setPostFile([])}>X</button> : null}
+                </div>
+                
               </div>
               <Button variant="shine" onClick={() => sendPost()} className="rounded-full w-[100px]">Post</Button>
             </div>
