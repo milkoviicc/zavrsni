@@ -10,6 +10,7 @@ import EachComment from './eachComment';
 
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger} from '@/src/components/ui/dialog';
 import { ScrollArea } from "@/src/components/ui/scroll-area"
+import Image from 'next/image';
 
 const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refreshPosts}: {post: Post, handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string) => void, refreshPosts: () => void})=> {
   
@@ -49,6 +50,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
 
+  const imageUrl = post.fileUrls?.[0];
   
   useEffect(() => {
 
@@ -176,7 +178,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
       <div className="flex gap-2 flex-1">
         <div>
           <Flex gap="2">
-            <Avatar src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=256&h=256&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop" style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
+            <Avatar src={`${post.userProfile.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
           </Flex>
         </div>
         <div className="w-full flex flex-1 flex-col justify-between">
@@ -187,6 +189,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
             </p>
           </div>
           <p className="py-2 pr-8 max-w-full break-all">{post.content}</p>
+          {imageUrl ? <Image src={imageUrl} alt="a" width="100" height="100" /> : null}
           <div className="flex gap-4 py-4 items-center justify-between">
             <div className="flex gap-3">
               <FontAwesomeIcon

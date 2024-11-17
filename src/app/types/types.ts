@@ -5,10 +5,12 @@ export interface AuthContextType {
     login: (username: string, password: string) => Promise<void>;
     register: (username: string, email: string, password: string, confirmPassword: string) => Promise<void>;
     addDetails: (firstName: string, lastName: string) => Promise<void>;
+    addImage: (selectedImage: File) => Promise<void>;
     logout: () => void;
     deleteAccount: () => void;
     isAuthenticated: boolean;
     fullyRegistered: boolean;
+    defaultPicture: boolean;
     loading: boolean;
 }
 
@@ -27,6 +29,7 @@ export interface Profile {
     firstName: string | null,
     lastName: string | null,
     id: string,
+    pictureUrl : string
 }
 
 // klasa Post
@@ -39,7 +42,8 @@ export interface Post {
     dislikes: number,
     userReacted: number,
     commentsCount: number,
-    comments: Comment[]
+    comments: Comment[],
+    fileUrls: string[]
 }
 
 export interface Comment {

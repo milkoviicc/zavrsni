@@ -103,7 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if(token && userData.id && firstname && lastname) {
 
           // ukoliko sve postoji, spremam id, username, ime i prezime u varijablu updatedProfile tipa 'Profile'
-          const updatedProfile: Profile = {id, username, firstName, lastName};
+          const updatedProfile: Profile = res.data;
 
           // u varijablu updatedUser spremam id prijavljenog korisnika, njegov email, token i nove profile podatke
           const updatedUser = {id, username, email: userData.email, token: userData.token, profile: updatedProfile};
@@ -130,6 +130,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Updating user data failed:', error);
     }
   };
+
+  const addImage = async (selectedImage: File) => {
+    try {
+      if(!selectedImage) {
+        console.error('No image selected');
+        return;
+      }
+
+      const user = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
+
+      if (user) {
+        // spremam korisnikove podatke u varijablu 'userData'
+        const userData: User = JSON.parse(user);
+
+        const formData = new FormData();
+        formData.append('image', selectedImage);
+
+        // šaljem axios put request na API, primam nazad response tipa 'Profile', a prenosim username, firstName i lastName
+        const res = await axios.put<Profile>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile-picture', formData, {headers: {
+          'Content-Type': 'multipart/form-data'}});
+
+        // provjeravam postoji li token, korisnikov id, ime i prezime
+        if(token && userData.id) {
+
+          // ukoliko sve postoji, spremam id, username, ime i prezime u varijablu updatedProfile tipa 'Profile'
+          const updatedProfile: Profile = res.data;
+
+          // u varijablu updatedUser spremam id prijavljenog korisnika, njegov email, token i nove profile podatke
+          const updatedUser: User = {id: userData.id, username: userData.username, email: userData.email, token, profile: updatedProfile};
+
+          // brišem localStorage
+          localStorage.clear();
+
+          // spremam u localStorage korisnika sa svim novim podatcima
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+
+          // spremam u localStorage token tog korisnika
+          localStorage.setItem('token', userData.token);
+
+          // spremam u 'user' state korisnika sa svim novim podatcima
+          setUser(updatedUser);
+        }
+      }
+    } catch(error) {
+      console.error('Could not update image: ', error);
+    }
+  }
   
 
   // async funkcija register koja služi za registriranje novih korisnika, prima username, email, lozinku i potvrdjenu lozinku
@@ -269,12 +317,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // fullyRegistered provjerava jel prijavljen korisnik ima unešeno puno ime i prezime ili ne
   const fullyRegistered = user?.profile?.firstName !== null && user?.profile?.lastName !== null;
 
+  const defaultPicture = user?.profile?.pictureUrl === 'https://snetblobstorage.blob.core.windows.net/snetprofiles/default.jpg';
+
   // ukoliko je trenutno stanje loading statea true vraća null
   if(loading) return null;
 
   // AuthContext.Provider prenosi unešene vrijednosti kako bi ih mogao koristiti u drugim fileovima
   return (
-    <AuthContext.Provider value={{ user, login, register, addDetails, logout, deleteAccount, isAuthenticated, fullyRegistered, loading }}>
+    <AuthContext.Provider value={{ user, login, register, addDetails, addImage, logout, deleteAccount, isAuthenticated, fullyRegistered, defaultPicture, loading }}>
       {children}
     </AuthContext.Provider>
   );
