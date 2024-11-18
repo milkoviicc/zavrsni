@@ -50,8 +50,6 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
 
-  const [postFiles, setPostFiles] = useState<string[]>([]);
-
   const [isPortrait, setIsPortrait] = useState(false);
 
   const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
@@ -66,10 +64,6 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
 
     // ako korisnik postoji ulazi u {}, ako ne ništa se ne dešava
     if(user) {
-
-      if (post.fileUrls.length !== 0) {
-        setPostFiles(post.fileUrls);
-      }
     
       // spremam podatke korisnika iz localstoragea u varijablu userData za daljnje provjere. 
       const userData: User = JSON.parse(user);
@@ -169,8 +163,6 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
       return;
   }
 
-  const getCommentsRef = useRef<(() => void) | undefined>();
-
   const handleComments = async () => {
     try {
       // Fetch the post data from the API
@@ -200,9 +192,40 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
               {days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}
             </p>
           </div>
-          <div className={`flex ${isPortrait ? 'flex-row' : 'flex-col'}`}>
-            <p className="py-2 pr-8 max-w-full break-all">{post.content}</p>
-            {postFiles.length != 0 ? postFiles.map((post, index) => (<Image key={index} src={post} alt="a" sizes="100vw" width={0} height={0} className={`w-[70%] h-auto py-6 ${isPortrait ? 'mr-4' : ''}`}  onLoad={handleImageLoad} />)) : null}
+          <div className={`flex ${post.fileUrls.length === 1 && isPortrait ? 'flex-row' : 'flex-col'}`}>
+            {/* Image content for single portrait */}
+            {post.fileUrls.length === 1 && isPortrait && (
+              <Image
+                src={post.fileUrls[0]}
+                alt="a"
+                sizes="100vw"
+                width={0}
+                height={0}
+                className="w-[30%] h-auto py-6 mr-4"
+                onLoad={handleImageLoad}
+              />
+            )}
+
+            {/* Paragraph content */}
+            <p className={`py-2 ${post.fileUrls.length > 2 || (post.fileUrls.length === 1 && isPortrait) ? 'pr-0' : 'pr-8'} max-w-full break-all pt-6`}>
+              {post.content}
+            </p>
+
+            {/* Image content for multiple images or non-portrait cases */}
+            {post.fileUrls.length !== 0 &&
+              (post.fileUrls.length > 1 || !isPortrait) &&
+              post.fileUrls.map((file, index) => (
+                  <Image
+                  key={index}
+                  src={file}
+                  alt="a"
+                  sizes="100vw"
+                  width={0}
+                  height={0}
+                  className="w-[70%] h-auto py-6"
+                  onLoad={handleImageLoad}
+                />
+              ))}
           </div>
           <div className="flex gap-4 py-4 items-center justify-between">
             <div className="flex gap-3">

@@ -35,7 +35,7 @@ const Posts = ({setGetPostsRef}: {setGetPostsRef: (fn: () => void) => void}) => 
     // re-rendera se na svakoj promjeni reactionTrigger statea i na svakom pozivu setGetPostsRef
     useEffect(() => {
 
-        
+    
         setGetPostsRef(getPosts);
 
         // pozivam funkciju getPosts kako bi dobio sve postove
@@ -120,6 +120,7 @@ const Posts = ({setGetPostsRef}: {setGetPostsRef: (fn: () => void) => void}) => 
             // ako je res.status jednak 200 znači da je post obrisan i onda mjenjam reactionTrigger state kako bi se postovi re-renderali na stranici.
             if(res.status === 200) {
                 setReactionTrigger((prev) => !prev);
+                await getPosts();
             }
         } catch(err) {
             // ukoliko dođe do greške ispisat će se u konzoli
@@ -130,6 +131,7 @@ const Posts = ({setGetPostsRef}: {setGetPostsRef: (fn: () => void) => void}) => 
     const updatePost = async (postId: string) => {
         return;
     }
+    
 
   return (
     <div className='w-full flex flex-col items-center gap-4'>

@@ -116,7 +116,6 @@ export default function Home() {
                   {postFile ? postFile.map((file, index) => (<Image key={index} src={URL.createObjectURL(file)} width={100} height={64} alt="aaaaaaa"/>)) : null}
                   {postFile.length > 0 ? <button className="w-fit px-2" onClick={() => setPostFile([])}>X</button> : null}
                 </div>
-                
               </div>
               <Button variant="shine" onClick={() => sendPost()} className="rounded-full w-[100px]">Post</Button>
             </div>
