@@ -39,9 +39,6 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   const minutes = Math.floor((totalSeconds % 3600) / 60); // Remaining seconds converted to minutes
   const seconds = totalSeconds % 60; // Remaining seconds after full minutes  
 
-  // dobivam usera iz localStorage-a
-  const user = localStorage.getItem('user');
-
   // state za prikazivanje Delete i Update gumbova
   const [showDelete, setShowDelete] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
@@ -51,6 +48,10 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   const [comments, setComments] = useState<Comment[]>([]);
 
   const [isPortrait, setIsPortrait] = useState(false);
+
+      // dobivam usera iz localStorage-a
+  const user = localStorage.getItem('user');
+    
 
   const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
     const { naturalWidth, naturalHeight } = event.currentTarget;
@@ -195,15 +196,15 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
           <div className={`flex ${post.fileUrls.length === 1 && isPortrait ? 'flex-row' : 'flex-col'}`}>
             {/* Image content for single portrait */}
             {post.fileUrls.length === 1 && isPortrait && (
-              <Image
-                src={post.fileUrls[0]}
-                alt="a"
-                sizes="100vw"
-                width={0}
-                height={0}
-                className="w-[30%] h-auto py-6 mr-4"
-                onLoad={handleImageLoad}
-              />
+                <Image
+                  src={post.fileUrls[0]}
+                  alt="a"
+                  sizes="100vw"
+                  width={0}
+                  height={0}
+                  className="w-[30%] h-auto py-6 mr-4"
+                  onLoad={handleImageLoad}
+                />
             )}
 
             {/* Paragraph content */}
@@ -264,7 +265,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
           <DialogContent className='w-full h-[85vh] flex flex-col bg-gray-900 text-white overflow-y-auto max-w-[35%]'>
             <DialogHeader className='flex flex-row gap-2'>
               <Flex gap="2">
-                <Avatar src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=256&h=256&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop" style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
+                <Avatar src={`${post.userProfile.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
               </Flex>
               <div className='flex justify-between w-full pr-8'>
                 <div className='flex flex-col'>

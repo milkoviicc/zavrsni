@@ -4,12 +4,18 @@ import {Flex, Avatar} from '@radix-ui/themes'
 import { Button } from '@/src/components/ui/button';
 import ResizableTextarea from './ResizableTextarea';
 import axios from 'axios';
-import { Post } from '../types/types';
+import { Post, User } from '../types/types';
 
 const PostComment = ({postId, refreshPosts, refreshComments}: {postId: string, refreshPosts: () => void, refreshComments: () => void}) => {
 
   const [content, setContent] = useState('');
   const [commentTrigger, setCommentTrigger] = useState(false);
+
+  const user: User = JSON.parse(localStorage.getItem('user') || '{}');
+
+  if(!user) {
+    return false;
+  }
 
   const PostComment = async () => {
     try {
@@ -30,7 +36,7 @@ const PostComment = ({postId, refreshPosts, refreshComments}: {postId: string, r
       <div className="flex gap-2 items-center flex-col w-full ">
           <div className="flex flex-row w-full justify-center items-center gap-4">
             <Flex gap="2">
-              <Avatar src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=256&h=256&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop" style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
+              <Avatar src={`${user.profile.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
             </Flex>
             <ResizableTextarea placeholder="Tell us what you think." value={content} onChange={(e) => setContent(e.target.value)} className="text-gray-400 w-[500px] max-h-[150px] outline-none border-b-2 px-2 py-1 rounded resize-none overflow-hidden border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-400 bg-transparent transition-all"/>
           </div>
