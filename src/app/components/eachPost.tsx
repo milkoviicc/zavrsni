@@ -208,7 +208,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
             )}
 
             {/* Paragraph content */}
-            <p className={`py-2 ${post.fileUrls.length > 2 || (post.fileUrls.length === 1 && isPortrait) ? 'pr-0' : 'pr-8'} max-w-full break-all pt-6`}>
+            <p className={`${post.fileUrls.length > 2 || (post.fileUrls.length === 1 && isPortrait) ? 'pr-0' : 'pr-8'} max-w-full break-all pt-4`}>
               {post.content}
             </p>
 

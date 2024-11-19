@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
 
 import {Flex, Avatar} from '@radix-ui/themes'
-import { Button } from '@/src/components/ui/button';
 import ResizableTextarea from './ResizableTextarea';
 import axios from 'axios';
 import { Post, User } from '../types/types';
+import { EnhancedButton } from '@/src/components/ui/enhancedButton';
 
 const PostComment = ({postId, refreshPosts, refreshComments}: {postId: string, refreshPosts: () => void, refreshComments: () => void}) => {
 
@@ -41,7 +41,7 @@ const PostComment = ({postId, refreshPosts, refreshComments}: {postId: string, r
             <ResizableTextarea placeholder="Tell us what you think." value={content} onChange={(e) => setContent(e.target.value)} className="text-gray-400 w-[500px] max-h-[150px] outline-none border-b-2 px-2 py-1 rounded resize-none overflow-hidden border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-400 bg-transparent transition-all"/>
           </div>
           <div className="w-full flex justify-end">
-            <Button variant="shine" className='bg-gray-500' onClick={() => PostComment()}>Post</Button>
+            <EnhancedButton variant="shine" className='bg-gray-500' onClick={() => PostComment()}>Post</EnhancedButton>
           </div>
         </div>
     </div>

@@ -68,7 +68,8 @@ const config: Config = {
   		fontFamily: {
   			sans: ['Montserrat', 'sans-serif'],
 			Kaisei: ['Kaisei HarunoUmi', 'sans-serif'],
-			Ovo: ['Ovo', 'sans-serif']
+			Ovo: ['Ovo', 'sans-serif'],
+			Roboto: ['Roboto','sans-serif']
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

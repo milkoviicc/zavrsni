@@ -12,7 +12,6 @@ import img from '@/../public/images/test.png';
 import {Flex, Avatar} from '@radix-ui/themes';
 
 import { Input } from '@/src/components/ui/input';
-import { Button } from "@/src/components/ui/button";
 import Posts from "./components/posts";
 
 import axios from "axios";
@@ -20,6 +19,7 @@ import ResizableTextarea from "./components/ResizableTextarea";
 import { User } from "./types/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
+import { EnhancedButton } from "../components/ui/enhancedButton";
 
 
 
@@ -117,7 +117,7 @@ export default function Home() {
                   {postFile.length > 0 ? <button className="w-fit px-2" onClick={() => setPostFile([])}>X</button> : null}
                 </div>
               </div>
-              <Button variant="shine" onClick={() => sendPost()} className="rounded-full w-[100px]">Post</Button>
+              <EnhancedButton variant="shine" onClick={() => sendPost()} className="rounded-full w-[100px]">Post</EnhancedButton>
             </div>
           </div>
           <div className="h-full w-full flex flex-col items-center ">
