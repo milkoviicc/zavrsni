@@ -59,7 +59,7 @@ const EachComment = ({post, comment, handleLike, handleDislike, deleteComment, u
     <div className="flex gap-2 flex-1 max-w-full">
       <div>
         <Flex gap="2">
-          <Avatar src={`${post.userProfile.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
+          <Avatar src={`${comment.userProfile.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
         </Flex>
       </div>
       <div className="w-full flex flex-1 flex-col justify-between">

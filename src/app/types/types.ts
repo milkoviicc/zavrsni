@@ -41,7 +41,7 @@ export interface Post {
     likes: number,
     dislikes: number,
     userReacted: number,
-    commentsCount: number,
+    commentCount: number,
     comments: Comment[],
     fileUrls: string[]
 }
