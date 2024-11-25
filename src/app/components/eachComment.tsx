@@ -2,9 +2,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Avatar, Flex } from '@radix-ui/themes'
 import React, {useEffect, useState} from 'react'
 import { Post, Comment, User } from '../types/types'
-import { faPen, faThumbsDown, faThumbsUp, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faDownLong, faPen, faThumbsDown, faThumbsUp, faTrash, faUpLong } from '@fortawesome/free-solid-svg-icons'
+import axios from 'axios'
 
-const EachComment = ({post, comment, handleLike, handleDislike, deleteComment, updateComment}: {post: Post, comment: Comment, handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deleteComment: (postId: string) => void, updateComment: (postId: string) => void})=> {
+const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Comment, refreshComments: () => void })=> {
 
     const commentDate = comment.createdOn;
 
@@ -52,54 +53,131 @@ const EachComment = ({post, comment, handleLike, handleDislike, deleteComment, u
           setShowUpdate(false);
         }
       }
-  
+
+     
     }, [user, comment.userProfile.id]);
 
+    const handleCommentLike = async (commentId: string) => {
+      try {
+  
+          // pokušavam pronaći post koji je likean tako što prolazim kroz sve postove i pronalazim koji post.id je jednak primljenom postId-u
+
+          console.log(comment.content);
+  
+          // ukoliko je trenutan post likean (1) briše se like axios delete requestom na API
+          if(comment.userReacted === 1) {
+              await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/comments/delete/${commentId}`);
+          }
+  
+          // ukoliko je trenutan post dislikean (-1) mjenja se iz dislike u like axios put requestom na API
+          if(comment.userReacted === -1) {
+              await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/comments/update/${commentId}`);
+          }
+  
+          // ukoliko trenutan post nije ni likean ni dislikean, šalje se axios post request na API sa query vrijednošću 1 kako bi se post likeao
+          if (comment.userReacted === 0) {
+              await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/comments/add/${commentId}?reaction=1`);   
+          }
+  
+          refreshComments();
+          
+      } catch(err) {
+          // ukoliko dođe do greške ispisat će se u konzoli
+          console.error(err);
+      }
+    }
+    // async funckija koja se poziva klikom na gumb 'Dislike'
+    const handleCommentDislike = async (commentId: string) => {
+      try {
+  
+          // ukoliko je trenutan post likean (1) mjenja se iz likean u dislikean axios put requestom na API
+          if(comment.userReacted === 1) {
+              await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/comments/update/${commentId}`);
+          }
+  
+          // ukoliko je trenutan post dislikean (-1) briše se dislike axios delete requestom na API
+          if(comment.userReacted === -1) {
+              await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/comments/delete/${commentId}`);
+          }
+  
+           // ukoliko trenutan post nije ni likean ni dislikean, šalje se axios post request na API sa query vrijednošću -1 kako bi se post dislikeao
+          if (comment.userReacted === 0) {
+              await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/comments/add/${commentId}?reaction=-1`);   
+          }
+  
+          refreshComments();
+      } catch(err) {
+          // ukoliko dođe do greške ispisat će se u konzoli
+          console.error(err);
+      }
+    }
+  
+    // async funckija koja se poziva klikom na gumb 'delete'
+    const deleteComment = async (commentId: string) => {
+      try {
+          // šaljem axios delete request na API sa id-em posta i spremam response u varijablu 'res'
+          const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/comments/delete/${commentId}`);
+          
+          // ako je res.status jednak 200 znači da je post obrisan i onda mjenjam reactionTrigger state kako bi se postovi re-renderali na stranici.
+          if(res.status === 200) {
+            refreshComments();
+          }
+      } catch(err) {
+          // ukoliko dođe do greške ispisat će se u konzoli
+          console.error('Could not delete post: ', err);
+      }
+    } 
+  
+    const updateComment = async (commentId: string) => {
+        return;
+    }
+
   return (
-    <div className="flex gap-2 flex-1 max-w-full">
-      <div>
-        <Flex gap="2">
+    <div className='py-2 flex-col'>
+      <div className='flex flex-row'>
+        <Flex gap="2" className='items-center w-fit'>
           <Avatar src={`${comment.userProfile.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
         </Flex>
-      </div>
-      <div className="w-full flex flex-1 flex-col justify-between">
-        <div className="flex gap-2 items-center">
-          <h1 className="text-base uppercase font-Kaisei">{comment.userProfile.username}</h1>
-          <p className="text-sm text-gray-500">
-            {commentDays >= 1 ? justCommentDate : commentDays <= 0 && commentHours > 0 && commentMinutes <= 60 ? `${commentHours}h ago` : commentDays < 1 && commentHours <= 24 && commentMinutes <= 60 && commentMinutes >= 1 ? `${commentMinutes}m ago` : "Just now"}
-          </p>
+        <div className="flex flex-col px-4 w-full">
+          <div className='flex justify-between'>
+            <div className='flex gap-2 items-center'>
+              <h1 className="text-base font-Roboto">{comment.userProfile.firstName} {comment.userProfile.lastName}</h1>
+              <p className="text-sm text-gray-500">
+                {commentDays >= 1 ? justCommentDate : commentDays <= 0 && commentHours > 0 && commentMinutes <= 60 ? `${commentHours}h ago` : commentDays < 1 && commentHours <= 24 && commentMinutes <= 60 && commentMinutes >= 1 ? `${commentMinutes}m ago` : "Just now"}
+              </p>
+            </div>
+            <div>
+              {showUpdate && (
+                <button className="text-sm">
+                  <FontAwesomeIcon icon={faPen} className="text-xl" />
+                </button>
+              )}
+              {showDelete && (
+                <button className="text-sm px-2">
+                  <FontAwesomeIcon icon={faTrash} className="text-xl" onClick={(() => deleteComment(comment.id))}/>
+                </button>
+              )}
+            </div>
+          </div>
+          <p className='text-sm font-Roboto text-[#656565]'>@{comment.userProfile.username}</p>
         </div>
-        <p className="py-2 max-w-full break-words">{comment.content}</p>
-        <div className="flex gap-4 py-4 items-center justify-between">
-          <div className="flex gap-3">
-            <FontAwesomeIcon
-              icon={faThumbsUp}
-              className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${comment.userReacted === 1 ? "text-blue-600" : ""}`}
-              onClick={() => handleLike(comment.id)}
-            />
-            <p>{comment.likes}</p>
-            <FontAwesomeIcon
-              icon={faThumbsDown}
-              className={`text-2xl hover:cursor-pointer hover:text-blue-600 transition-all ${comment.userReacted === -1 ? "text-blue-600" : ""}`}
-              onClick={() => handleDislike(comment.id)}
-            />
-            <p>{comment.dislikes}</p>
-          </div>
-          <div className="flex gap-4 pr-4">
-            {showUpdate && (
-              <button className="text-sm" onClick={() => updateComment(comment.id)}>
-                <FontAwesomeIcon icon={faPen} className="text-xl" />
-              </button>
-            )}
-            {showDelete && (
-              <button className="text-sm" onClick={() => deleteComment(comment.id)}>
-                <FontAwesomeIcon icon={faTrash} className="text-xl" />
-              </button>
-            )}
-          </div>
+       </div>
+      <p className='py-4 max-w-full break-all'>{comment.content}</p>
+      <div className='flex gap-2'>
+        <FontAwesomeIcon
+          icon={faUpLong}
+          className={`text-2xl hover:cursor-pointer hover:text-green-600 transition-all ${comment.userReacted === 1 ? "text-green-600" : "text-gray-500"}`}
+          onClick={() => handleCommentLike(comment.id)}
+        />
+        <p>{comment.likes}</p>
+        <FontAwesomeIcon
+          icon={faDownLong}
+          className={`text-2xl hover:cursor-pointer hover:text-red-600 transition-all ${comment.userReacted === -1 ? "text-red-600" : "text-gray-500"}`}
+          onClick={() => handleCommentDislike(comment.id)}
+        />
+        <p>{comment.dislikes}</p>
       </div>
     </div>
-  </div>
   )
 }
 

@@ -81,88 +81,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
 
   }, [user, post.userProfile.id, post.fileUrls]);  
 
-  const handleCommentLike = async (commentId: string) => {
-    try {
-
-        // pokušavam pronaći post koji je likean tako što prolazim kroz sve postove i pronalazim koji post.id je jednak primljenom postId-u
-        const comment = post.comments.find((comment) => comment.id === commentId);
-
-        // ukoliko se ne uspije pronaći post vraća se tj izlazi iz funkcije.
-        if(!comment) return;
-
-        // ukoliko je trenutan post likean (1) briše se like axios delete requestom na API
-        if(comment.userReacted === 1) {
-            await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/comments/delete/${commentId}`);
-        }
-
-        // ukoliko je trenutan post dislikean (-1) mjenja se iz dislike u like axios put requestom na API
-        if(comment.userReacted === -1) {
-            await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/comments/update/${commentId}`);
-        }
-
-        // ukoliko trenutan post nije ni likean ni dislikean, šalje se axios post request na API sa query vrijednošću 1 kako bi se post likeao
-        if (comment.userReacted === 0) {
-            await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/comments/add/${commentId}?reaction=1`);   
-        }
-
-        refreshPosts();
-        
-    } catch(err) {
-        // ukoliko dođe do greške ispisat će se u konzoli
-        console.error(err);
-    }
-  }
-  // async funckija koja se poziva klikom na gumb 'Dislike'
-  const handleCommentDislike = async (commentId: string) => {
-    try {
-
-        // pokušavam pronaći post koji je dislikean tako što prolazim kroz sve postove i pronalazim koji post.id je jednak primljenom postId-u
-        const comment = post.comments.find((comment) => comment.id === commentId);
-
-        // ukoliko se ne uspije pronaći post vraća se tj izlazi iz funkcije.
-        if(!comment) return;
-
-        // ukoliko je trenutan post likean (1) mjenja se iz likean u dislikean axios put requestom na API
-        if(comment.userReacted === 1) {
-            await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/comments/update/${commentId}`);
-        }
-
-        // ukoliko je trenutan post dislikean (-1) briše se dislike axios delete requestom na API
-        if(comment.userReacted === -1) {
-            await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/comments/delete/${commentId}`);
-        }
-
-         // ukoliko trenutan post nije ni likean ni dislikean, šalje se axios post request na API sa query vrijednošću -1 kako bi se post dislikeao
-        if (comment.userReacted === 0) {
-            await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/comments/add/${commentId}?reaction=-1`);   
-        }
-
-        refreshPosts();
-    } catch(err) {
-        // ukoliko dođe do greške ispisat će se u konzoli
-        console.error(err);
-    }
-  }
-
-  // async funckija koja se poziva klikom na gumb 'delete'
-  const deleteComment = async (commentId: string) => {
-    try {
-        // šaljem axios delete request na API sa id-em posta i spremam response u varijablu 'res'
-        const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/comments/delete/${commentId}`);
-        
-        // ako je res.status jednak 200 znači da je post obrisan i onda mjenjam reactionTrigger state kako bi se postovi re-renderali na stranici.
-        if(res.status === 200) {
-            refreshPosts();
-        }
-    } catch(err) {
-        // ukoliko dođe do greške ispisat će se u konzoli
-        console.error('Could not delete post: ', err);
-    }
-  } 
-
-  const updateComment = async (commentId: string) => {
-      return;
-  }
+  
 
   const handleComments = async () => {
     try {
@@ -183,7 +102,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
       <div className="flex gap-2 flex-1">
         <div className='flex flex-col w-full'>
           <div className='py-2 px-4 flex'>
-            <Flex gap="2">
+            <Flex gap="2" className='items-center'>
               <Avatar src={`${post.userProfile.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
             </Flex>
             <div className="flex flex-col w-full px-4">
@@ -263,63 +182,77 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
               </div>
               <Dialog>
                 <DialogTrigger className='flex px-8 py-2 rounded-md w-fit' onClick={() => handleComments()}><svg className='mr-2' width="24" height="24" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_54_1461)"> <path d="M7.34927 2.1044C7.12027 1.42273 6.57694 0.879395 5.89561 0.650729C4.63761 0.228729 3.36194 0.228729 2.10427 0.650729C1.42261 0.879395 0.879273 1.42273 0.650606 2.10406C0.228606 3.36206 0.228606 4.6374 0.650606 5.8954C0.879273 6.57673 1.42261 7.1204 2.10427 7.34906C2.73227 7.55973 3.36994 7.6664 3.99994 7.6664C5.00727 7.6664 6.02794 7.53373 7.03361 7.27206C7.15061 7.24173 7.24194 7.1504 7.27227 7.0334C7.53394 6.02773 7.66661 5.00706 7.66661 3.99973C7.66661 3.37006 7.55994 2.7324 7.34927 2.10406V2.1044ZM6.67527 6.67506C5.78627 6.89073 4.88727 7.00006 4.00027 7.00006C3.44294 7.00006 2.87627 6.90473 2.31694 6.71706C1.83227 6.55439 1.44594 6.16806 1.28327 5.68339C0.908273 4.56639 0.908273 3.4334 1.28327 2.3164C1.44561 1.83173 1.83194 1.4454 2.31694 1.28306C2.87527 1.09573 3.43794 1.00173 4.00027 1.00173C4.56261 1.00173 5.12527 1.0954 5.68394 1.28306C6.16861 1.4454 6.55494 1.83173 6.71761 2.31673C6.90527 2.8764 7.00061 3.44273 7.00061 4.00006C7.00061 4.8874 6.89127 5.78606 6.67561 6.67506H6.67527Z" fill="#545454"/> <path d="M5.68797 3.66675H2.31197C2.12797 3.66675 1.97864 3.81608 1.97864 4.00008C1.97864 4.18408 2.12797 4.33341 2.31197 4.33341H5.68797C5.87197 4.33341 6.0213 4.18408 6.0213 4.00008C6.0213 3.81608 5.87197 3.66675 5.68797 3.66675Z" fill="#545454"/> <path d="M5.35468 5.00708H2.64535C2.46135 5.00708 2.31201 5.15641 2.31201 5.34041C2.31201 5.52441 2.46135 5.67375 2.64535 5.67375H5.35468C5.53868 5.67375 5.68801 5.52441 5.68801 5.34041C5.68801 5.15641 5.53868 5.00708 5.35468 5.00708Z" fill="#545454"/> <path d="M2.64535 2.99308H3.61335C3.79735 2.99308 3.94668 2.84375 3.94668 2.65975C3.94668 2.47575 3.79735 2.32642 3.61335 2.32642H2.64535C2.46135 2.32642 2.31201 2.47575 2.31201 2.65975C2.31201 2.84375 2.46135 2.99308 2.64535 2.99308Z" fill="#545454"/> </g> <defs> <clipPath id="clip0_54_1461"> <rect width="8" height="8" fill="white"/></clipPath></defs></svg>{post.commentCount}</DialogTrigger>
-                <DialogContent className='w-full h-[85vh] flex flex-col bg-gray-900 text-white overflow-y-auto max-w-[35%]'>
+                <DialogContent className='w-full h-[85vh] flex flex-col bg-[#eeeded] text-black overflow-y-auto max-w-[35%]'>
                   <DialogHeader className='flex flex-row gap-2'>
-                    <Flex gap="2">
+                    <Flex gap="2" className='items-center'>
                       <Avatar src={`${post.userProfile.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
                     </Flex>
-                    <div className='flex justify-between w-full pr-8'>
+                    <div className='flex justify-between w-full pr-8 !mt-0 '>
                       <div className='flex flex-col'>
-                        <DialogDescription className='text-base text-white'>{post.userProfile.firstName} {post.userProfile.lastName}</DialogDescription>
+                        <DialogDescription className='text-base text-black'>{post.userProfile.firstName} {post.userProfile.lastName}</DialogDescription>
                         <DialogTitle className='text-sm font-[500]'>@ {post.userProfile.username}</DialogTitle>
                       </div>
                       <div>
-                        <p className='text-white text-opacity-60'>{days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}</p>
+                        <p className='text-black text-opacity-60'>{days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}</p>
                       </div>
                     </div>
                   </DialogHeader>
-                  <ScrollArea className="rounded-md py-4 w-[100%]">
-                      <div className="flex gap-2 flex-1 text-justify">
-                        <div className="w-full flex flex-1 flex-col justify-between">
-                          <p className="py-2 max-w-full break-all">{post.content}</p>
-                          <div className="flex gap-4 py-4 items-center justify-between">
-                            <div className="flex gap-3">
-                              <FontAwesomeIcon
-                                icon={faUpLong}
-                                className={`text-2xl hover:cursor-pointer hover:text-green-600 transition-all ${post.userReacted === 1 ? "text-green-600" : ""}`}
-                                onClick={() => handleLike(post.id)}
-                              />
-                              <p>{post.likes}</p>
-                              <FontAwesomeIcon
-                                icon={faDownLong}
-                                className={`text-2xl hover:cursor-pointer hover:text-red-600 transition-all ${post.userReacted === -1 ? "text-red-600" : ""}`}
-                                onClick={() => handleDislike(post.id)}
-                              />
-                              <p>{post.dislikes}</p>
-                            </div>
-                            <div className="flex gap-4 pr-4">
-                              {showUpdate && (
-                                <button className="text-sm" onClick={() => updatePost(post.id)}>
-                                  <FontAwesomeIcon icon={faPen} className="text-xl" />
-                                </button>
-                              )}
-                              {showDelete && (
-                                <button className="text-sm" onClick={() => deletePost(post.id)}>
-                                  <FontAwesomeIcon icon={faTrash} className="text-xl" />
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        </div>
+                  <ScrollArea className="rounded-md py-2 w-[100%]">
+                    <div className={`flex w-[95%] ${post.fileUrls.length === 1 && isPortrait ? 'flex-row' : 'flex-col'}`}>
+                      {/* Image content for single portrait */}
+                      {post.fileUrls.length === 1 && isPortrait && (
+                          <Image
+                            src={post.fileUrls[0]}
+                            alt="a"
+                            sizes="100vw"
+                            width={0}
+                            height={0}
+                            className="w-[30%] h-auto py-6 mr-4"
+                            onLoad={handleImageLoad}
+                          />)}
+
+                      {/* Paragraph content */}
+                      <p className={`${post.fileUrls.length > 2 || (post.fileUrls.length === 1 && isPortrait) ? 'pr-8' : 'pr-8'} max-w-full break-all text-justify`}>
+                        {post.content}
+                      </p>
+
+                      {/* Image content for multiple images or non-portrait cases */}
+                      {post.fileUrls.length !== 0 &&
+                        (post.fileUrls.length > 1 || !isPortrait) &&
+                        post.fileUrls.map((file, index) => (
+                            <Image
+                            key={index}
+                            src={file}
+                            alt="a"
+                            sizes="100vw"
+                            width={0}
+                            height={0}
+                            className="w-[70%] h-auto py-6"
+                            onLoad={handleImageLoad}
+                          />))}
+                    </div>
+                    <div className='flex gap-2 w-[95%] py-4'>
+                          <FontAwesomeIcon
+                            icon={faUpLong}
+                            className={`text-2xl hover:cursor-pointer hover:text-green-600 transition-all ${post.userReacted === 1 ? "text-green-600" : "text-gray-500"}`}
+                            onClick={() => handleLike(post.id)}
+                          />
+                          <p>{post.likes}</p>
+                          <FontAwesomeIcon
+                            icon={faDownLong}
+                            className={`text-2xl hover:cursor-pointer hover:text-red-600 transition-all ${post.userReacted === -1 ? "text-red-600" : "text-gray-500"}`}
+                            onClick={() => handleDislike(post.id)}
+                          />
+                          <p>{post.dislikes}</p>
+                    </div>
+                    <hr className='my-4 w-[95%] h-[1px] bg-black'/>
+                    <PostComment postId={post.id} refreshPosts={refreshPosts} refreshComments={handleComments}/>
+                    <h1 className='text-2xl'>Comments</h1>
+                    {comments.map((comment, index) => (
+                      <div key={index} className='py-2'>
+                        <EachComment post={post} comment={comment} refreshComments={handleComments} />
                       </div>
-                      <hr className='mx-auto py-4 w-full'/>
-                      <PostComment postId={post.id} refreshPosts={refreshPosts} refreshComments={handleComments}/>
-                      <h1 className='text-2xl'>Comments</h1>
-                      {comments.map((comment, index) => (
-                        <div key={index} className='py-2'>
-                          <EachComment post={post} comment={comment} handleLike={handleCommentLike} handleDislike={handleCommentDislike} deleteComment={deleteComment} updateComment={updateComment} />
-                        </div>
-                      ))}
+                    ))}
                   </ScrollArea>
                 </DialogContent>
               </Dialog>
