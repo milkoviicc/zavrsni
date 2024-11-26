@@ -2,7 +2,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
 
 import { AuthContextType, User, Profile } from '../types/types';
@@ -23,6 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   // nextjs router za preusmjeravanje na druge pathove.
   const router = useRouter();
+  const path = usePathname();
 
   // rendera se svaki put kad je isLoggedIn state promjenjen
   useEffect(() => {
@@ -132,6 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const addImage = async (selectedImage: File) => {
+
     try {
       if(!selectedImage) {
         console.error('No image selected');
@@ -172,6 +174,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           // spremam u 'user' state korisnika sa svim novim podatcima
           setUser(updatedUser);
+
+          if(path != '/') {
+            window.location.reload();
+          }
         }
       }
     } catch(error) {

@@ -122,10 +122,10 @@ export default function Home() {
                 </Flex>
                 <div className="flex flex-col">
                   <div className="flex flex-row">
-                    <ResizableTextarea placeholder={`What's on your mind, Eminem`} value={content} onChange={(e) => setContent(e.target.value)} className="scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-1 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
+                    <ResizableTextarea placeholder={`What's on your mind, Eminem`} value={content} onChange={(e) => setContent(e.target.value)} className="font-Roboto font-medium scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-1 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
                   </div>
                   <input type="file" id="file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
-                  <label htmlFor="file-input" className="underline hover:cursor-pointer w-fit">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
+                  <label htmlFor="file-input" className="underline hover:cursor-pointer w-fit text-[#3D3D3D] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
                   <div className="flex items-start">
                     {postFile ? postFile.map((file, index) => (<Image key={index} src={URL.createObjectURL(file)} width={100} height={64} alt="aaaaaaa" className="py-2"/>)) : null}
                     {postFile.length > 0 ? <button className="w-fit px-2" onClick={() => setPostFile([])}>X</button> : null}
@@ -135,7 +135,7 @@ export default function Home() {
               </div>
             </div>
             <div className="h-full w-full flex flex-col items-center ">
-              <hr className="w-full border-gray-900" />
+              <hr className="w-full border-[#828282]" />
               <div className="flex gap-4 py-6 items-center">
                 <button className={`text-2xl text-gray-900 ${postsState === 'Popular' ? 'underline' : null}`} onClick={() => setPostsState('Popular')}>Popular</button>
                 <span className="h-10 block border-black bg-black w-[1px]"></span>

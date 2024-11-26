@@ -12,6 +12,12 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'snetblobstorage.blob.core.windows.net',
         port: '',
+        pathname: '/snetprofiles/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'snetblobstorage.blob.core.windows.net',
+        port: '',
         pathname: '/snetposts/**',
       },
     ],
