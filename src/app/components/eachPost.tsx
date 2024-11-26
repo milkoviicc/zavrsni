@@ -190,7 +190,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
                     <div className='flex justify-between w-full pr-8 !mt-0 '>
                       <div className='flex flex-col'>
                         <DialogDescription className='text-base text-black'>{post.userProfile.firstName} {post.userProfile.lastName}</DialogDescription>
-                        <DialogTitle className='text-sm font-[500]'>@ {post.userProfile.username}</DialogTitle>
+                        <DialogTitle className='text-sm font-[500] text-[#656565]'>@ {post.userProfile.username}</DialogTitle>
                       </div>
                       <div>
                         <p className='text-black text-opacity-60'>{days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}</p>

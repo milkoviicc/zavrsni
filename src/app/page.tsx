@@ -127,7 +127,7 @@ export default function Home() {
                   <input type="file" id="file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
                   <label htmlFor="file-input" className="underline hover:cursor-pointer w-fit">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
                   <div className="flex items-start">
-                    {postFile ? postFile.map((file, index) => (<Image key={index} src={URL.createObjectURL(file)} width={100} height={64} alt="aaaaaaa"/>)) : null}
+                    {postFile ? postFile.map((file, index) => (<Image key={index} src={URL.createObjectURL(file)} width={100} height={64} alt="aaaaaaa" className="py-2"/>)) : null}
                     {postFile.length > 0 ? <button className="w-fit px-2" onClick={() => setPostFile([])}>X</button> : null}
                   </div>
                 </div>

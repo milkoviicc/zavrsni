@@ -162,7 +162,7 @@ const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Com
           <p className='text-sm font-Roboto text-[#656565]'>@{comment.userProfile.username}</p>
         </div>
        </div>
-      <p className='py-4 max-w-full break-all'>{comment.content}</p>
+      <p className='py-4 max-w-full break-all pr-4'>{comment.content}</p>
       <div className='flex gap-2'>
         <FontAwesomeIcon
           icon={faUpLong}
