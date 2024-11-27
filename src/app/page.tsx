@@ -117,8 +117,8 @@ export default function Home() {
           <div className="border-1 border-gray-900 py-16 h-full flex flex-col items-center gap-12">
             <div className="flex gap-2 items-center flex-col w-fit bg-[#EDEDED] rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)]">
               <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
-                <Flex gap="2">
-                  <Avatar src={`${user.profile.pictureUrl}`} size="5" fallback="A" style={{borderRadius: '50%'}}/>
+                <Flex gap="2" className='cursor-pointer'>
+                    <Avatar src={`${user.profile.pictureUrl}?${new Date().getTime()}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
                 </Flex>
                 <div className="flex flex-col">
                   <div className="flex flex-row">

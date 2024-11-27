@@ -136,7 +136,7 @@ const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Com
     <div className='py-2 flex-col'>
       <div className='flex flex-row'>
         <Flex gap="2" className='items-center w-fit'>
-          <Avatar src={`${comment.userProfile.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
+          <Avatar src={`${comment.userProfile.pictureUrl}?${new Date().getTime()}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
         </Flex>
         <div className="flex flex-col px-4 w-full">
           <div className='flex justify-between'>

@@ -160,6 +160,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // ukoliko sve postoji, spremam id, username, ime i prezime u varijablu updatedProfile tipa 'Profile'
           const updatedProfile: Profile = res.data;
 
+          // Append a cache-busting timestamp to the updated profile picture URL
+          updatedProfile.pictureUrl = `${updatedProfile.pictureUrl}?${new Date().getTime()}`;
+
           // u varijablu updatedUser spremam id prijavljenog korisnika, njegov email, token i nove profile podatke
           const updatedUser: User = {id: userData.id, username: userData.username, email: userData.email, token, profile: updatedProfile};
 
@@ -174,10 +177,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           // spremam u 'user' state korisnika sa svim novim podatcima
           setUser(updatedUser);
-
-          if(path != '/') {
-            window.location.reload();
-          }
         }
       }
     } catch(error) {

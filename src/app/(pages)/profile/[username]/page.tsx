@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 import React, { useEffect, useState } from 'react'
 
@@ -7,39 +8,35 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { Avatar, Flex } from '@radix-ui/themes';
 import Image from 'next/image';
+import { profile } from 'console';
 
 const Profile = () => {
-  const {addImage} = useAuth();
+  const {addImage, user} = useAuth();
   const router = useRouter();
   const [editable, setEditable] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [profilePicture, setProfilePicture] = useState<string>('');
+  const [profilePicture, setProfilePicture] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const user = localStorage.getItem('user');
     if (user) {
       try {
-        const userData: User = JSON.parse(user);
 
         // Initialize the state with user data
-        setFirstName(userData.profile.firstName || '');
-        setLastName(userData.profile.lastName || '');
-        setUsername(userData.profile.username || '');
-        setProfilePicture(userData.profile.pictureUrl);
+        setFirstName(user.profile.firstName || '');
+        setLastName(user.profile.lastName || '');
+        setUsername(user.profile.username || '');
+        setProfilePicture(user.profile.pictureUrl);
       } catch (error) {
         console.error('Failed to parse user data:', error);
       }
     }
-  }, []);
+  }, [user]);
 
-  const user = localStorage.getItem('user');
-
-  if(!user) return;
-
-  const userData: User = JSON.parse(user);
+  if(!user) return null;
 
 
   const editProfileDetails = async () => {
@@ -47,12 +44,12 @@ const Profile = () => {
       const res = await axios.put('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile', {username, firstName, lastName});
 
       if(res.status === 200) {
-        userData.profile.firstName = firstName;
-        userData.profile.lastName = lastName;
-        userData.profile.username = username;
+        user.profile.firstName = firstName;
+        user.profile.lastName = lastName;
+        user.profile.username = username;
 
         localStorage.removeItem('user');
-        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('user', JSON.stringify(user));
         window.location.reload();
       }
     } catch(err) {
@@ -61,13 +58,27 @@ const Profile = () => {
   }
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files && event.target.files[0];
-    if (file) {
+    if (event.target.files) {
+      const file = event.target.files[0];
       setSelectedImage(file);
+
+      // Generate a temporary image URL for preview
       const imageUrl = URL.createObjectURL(file);
+
+      // Set the profile picture to the temporary URL for preview
       setProfilePicture(imageUrl);
     }
   };
+
+  const handleSubmitImage = async () => {
+    if (selectedImage) {
+      setLoading(true);
+      await addImage(selectedImage);
+      // After image is uploaded and state is updated, set the new profile picture URL
+      setProfilePicture(user?.profile?.pictureUrl || ''); // Update the image in local state
+    }
+  };
+
 
 
   return (
@@ -89,14 +100,26 @@ const Profile = () => {
         <button className='bg-blue-500 px-12 rounded-full' onClick={editProfileDetails}>Change</button>
       </div>
       <div>
-      <label htmlFor="file-input">
-        <Flex gap="2" className='cursor-pointer'>
-          <Avatar src={profilePicture} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
-        </Flex>
+      <label htmlFor="file-input" className='w-2'>
+        {selectedImage != null  ? (
+        <img
+          src={profilePicture}// This ensures no caching
+          alt="Profile"
+          style={{ borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040' }}
+          className="w-[60px] h-[60px] object-cover"
+        />
+      ) : (
+        <img
+          src={`${profilePicture}?${new Date().getTime()}`} // This ensures no caching
+          alt="Profile"
+          style={{ borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040' }}
+          className="w-[60px] h-[60px] object-cover"
+        />
+      )}
       </label>
 
       <input id="file-input" type="file" accept="image/*" className='hidden' onChange={handleImageChange} />
-        <button onClick={() => selectedImage && addImage(selectedImage)}>Change image</button>
+        <button onClick={handleSubmitImage}>Change image</button>
       </div>
     </div>
     

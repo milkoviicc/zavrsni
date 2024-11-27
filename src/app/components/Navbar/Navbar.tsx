@@ -35,7 +35,7 @@ export default function Navbar() {
             <div className="flex justify-between items-center h-full w-full">
                 <div className="w-full flex justify-start ml-10">
                     <button className="hover:cursor-pointer flex gap-2" onClick={() => router.push(`/profile/${user.username}`)}>
-                        <Flex gap="2" >
+                        <Flex gap="2">
                             <Avatar src={`${user.profile.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
                         </Flex>
                         <div className="flex flex-col h-full items-start justify-center">
