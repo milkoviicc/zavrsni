@@ -134,7 +134,7 @@ const Posts = ({setGetPostsRef}: {setGetPostsRef: (fn: () => void) => void}) => 
     
 
   return (
-    <div className='w-full flex flex-col items-center gap-4'>
+    <div className='w-full flex flex-col items-center gap-4 bg-transparent'>
         {posts.length > 0 ? posts?.map((post, index) => (<EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={getPosts}/>)) : posts.length === 0 ? <h1>There are no posts to load</h1> : <h1>Loading...</h1>}
     </div>
   )

@@ -100,46 +100,56 @@ export default function Home() {
     <div className='h-full flex flex-col my-[75px]'>
       {isAuthenticated && fullyRegistered && !defaultPicture
       ?
-      <div className="h-full flex flex-grow flex-col bg-[#f5f4f4]">
+      <div className="h-full flex flex-grow flex-col bg-white">
         <div className="flex w-full justify-evenly">
           <div className="flex flex-col fixed w-[200px] top-28 left-40">
             <h1 className="font-Roboto text-2xl">Who's popular</h1>
-            <button className="hover:cursor-pointer flex gap-2 py-8">
+            <button className="hover:cursor-pointer flex gap-2 py-8 items-center">
               <Flex gap="2">
-                  <Avatar src={`${user.profile.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
+                  <Avatar src={`${user.profile.pictureUrl}`} style={{ width: '45px', height: '45px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
               </Flex>
-              <div className="flex flex-col h-full items-start justify-center">
-                  <h1 className="text-black font-[400] font-Roboto">{user.profile.firstName} {user.profile.lastName}</h1>
-                  <p className="text-[#595959]">@{user.username}</p>
-              </div>   
+              <div className="flex flex-col h-full items-start justify-center gap-3">
+                  <h1 className="text-black font-[400] font-Roboto leading-[8.23px] text-lg">{user.profile.firstName} {user.profile.lastName}</h1>
+                  <p className="text-[#7D7D7D] leading-[5.66px]">@{user.username}</p>
+              </div>    
             </button>
           </div>
           <div className="border-1 border-gray-900 py-16 h-full flex flex-col items-center gap-12">
-            <div className="flex gap-2 items-center flex-col w-fit bg-[#EDEDED] rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)]">
+            <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#ededed]">
               <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
                 <Flex gap="2" className='cursor-pointer'>
-                    <Avatar src={`${user.profile.pictureUrl}?${new Date().getTime()}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
+                    <Avatar src={`${user.profile.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
                 </Flex>
                 <div className="flex flex-col">
                   <div className="flex flex-row">
-                    <ResizableTextarea placeholder={`What's on your mind, Eminem`} value={content} onChange={(e) => setContent(e.target.value)} className="font-Roboto font-medium scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-1 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
+                    <ResizableTextarea placeholder={`What's on your mind, Eminem`} value={content} onChange={(e) => setContent(e.target.value)} className="font-Roboto font-normal leading-[9.87px] scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
                   </div>
                   <input type="file" id="file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
-                  <label htmlFor="file-input" className="underline hover:cursor-pointer w-fit text-[#3D3D3D] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
+                  <div className="flex flex-col">
+                    <label htmlFor="file-input" className="hover:cursor-pointer w-fit text-[#3D3D3D] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
+                    <span className="block bg-[#424242] w-[75px] h-[1px] -ml-[3px]"></span>
+                  </div>
                   <div className="flex items-start">
                     {postFile ? postFile.map((file, index) => (<Image key={index} src={URL.createObjectURL(file)} width={100} height={64} alt="aaaaaaa" className="py-2"/>)) : null}
                     {postFile.length > 0 ? <button className="w-fit px-2" onClick={() => setPostFile([])}>X</button> : null}
                   </div>
                 </div>
-                <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white px-2 py-[0.30rem]">Post it</button>
+                <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Post it</button>
               </div>
             </div>
             <div className="h-full w-full flex flex-col items-center ">
               <hr className="w-full border-[#828282]" />
               <div className="flex gap-4 py-6 items-center">
-                <button className={`text-2xl text-gray-900 ${postsState === 'Popular' ? 'underline' : null}`} onClick={() => setPostsState('Popular')}>Popular</button>
+                <div>
+                  <button className={`text-2xl text-gray-900 ${postsState === "Popular" ? 'font-medium' : null}`} onClick={() => setPostsState('Popular')}>Popular</button>
+                  <span className={`${postsState === 'Popular' ? 'block' : 'hidden'} bg-[#424242] w-full h-[2px]`}></span>
+                </div>
                 <span className="h-10 block border-black bg-black w-[1px]"></span>
-                <button className={`text-2xl text-gray-900 ${postsState === 'Your Friends' ? 'underline' : null}`} onClick={() => setPostsState('Your Friends')}>Your Friends</button>
+                <div>
+                  <button className={`text-2xl text-gray-900 ${postsState === "Your Friends" ? 'font-medium' : null}`} onClick={() => setPostsState('Your Friends')}>Your Friends</button>
+                  <span className={`${postsState === 'Your Friends' ? 'block' : 'hidden'} bg-[#424242] w-full h-[1px]`}></span>
+                </div>
+                
               </div>
               <div className="w-full flex justify-center">
                 <Posts setGetPostsRef={(fn) => (getPostsRef.current = fn)}/>
@@ -148,14 +158,14 @@ export default function Home() {
           </div>
           <div className="flex flex-col w-[200px] fixed top-28 right-40">
             <h1 className="font-Roboto text-2xl">Friends</h1>
-            <button className="hover:cursor-pointer flex gap-2 py-8">
+            <button className="hover:cursor-pointer flex gap-2 py-8 items-center">
               <Flex gap="2">
-                  <Avatar src={`${user.profile.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
+                  <Avatar src={`${user.profile.pictureUrl}`} style={{ width: '45px', height: '45px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
               </Flex>
-              <div className="flex flex-col h-full items-start justify-center">
-                  <h1 className="text-black font-[400] font-Roboto">{user.profile.firstName} {user.profile.lastName}</h1>
-                  <p className="text-[#595959]">@{user.username}</p>
-              </div>   
+              <div className="flex flex-col h-full items-start justify-center gap-3">
+                  <h1 className="text-black font-[400] font-Roboto leading-[8.23px] text-lg">{user.profile.firstName} {user.profile.lastName}</h1>
+                  <p className="text-[#7D7D7D] leading-[5.66px]">@{user.username}</p>
+              </div>    
             </button>
           </div>
         </div>
