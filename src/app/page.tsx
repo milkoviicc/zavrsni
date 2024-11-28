@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useAuth } from "./context/AuthProvider";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -19,7 +19,9 @@ import ResizableTextarea from "./components/ResizableTextarea";
 import { User } from "./types/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
-import { EnhancedButton } from "../components/ui/enhancedButton";
+
+import TextareaAutosize from 'react-textarea-autosize';
+import { debounce } from "lodash";
 
 
 
@@ -42,6 +44,7 @@ export default function Home() {
 
   const user: User = JSON.parse(localStorage.getItem('user') || '{}');
 
+
   if(!user) {
     return false;
   }
@@ -62,10 +65,10 @@ export default function Home() {
     }
   };
 
+
   // async funkcija koja se poziva kada se klikne na gumb 'Send'
   const sendPost = async () => {
     try {
-
       const formData = new FormData();
       formData.append('Content', content);
 
@@ -122,7 +125,7 @@ export default function Home() {
                 </Flex>
                 <div className="flex flex-col">
                   <div className="flex flex-row">
-                    <ResizableTextarea placeholder={`What's on your mind, Eminem`} value={content} onChange={(e) => setContent(e.target.value)} className="font-Roboto font-normal leading-[9.87px] scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
+                    <TextareaAutosize placeholder={`What's on your mind, Eminem`} onChange={(e) =>  setContent(e.target.value)} value={content}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all" />
                   </div>
                   <input type="file" id="file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
                   <div className="flex flex-col">
