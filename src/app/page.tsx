@@ -131,7 +131,7 @@ export default function Home() {
                     {postFile.length > 0 ? <button className="w-fit px-2" onClick={() => setPostFile([])}>X</button> : null}
                   </div>
                 </div>
-                <EnhancedButton variant="shine" onClick={() => sendPost()} className="rounded-full w-[100px]">Post</EnhancedButton>
+                <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white px-2 py-[0.30rem]">Post it</button>
               </div>
             </div>
             <div className="h-full w-full flex flex-col items-center ">

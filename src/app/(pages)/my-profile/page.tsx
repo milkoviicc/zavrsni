@@ -5,13 +5,13 @@ import React, { useEffect, useState } from 'react'
 import { useAuth } from '@/src/app/context/AuthProvider'
 import { User } from '@/src/app/types/types';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Avatar, Flex } from '@radix-ui/themes';
 import Image from 'next/image';
 import { profile } from 'console';
 
 const Profile = () => {
-  const {addImage, user} = useAuth();
+  const {addImage, user, deleteAccount} = useAuth();
   const router = useRouter();
   const [editable, setEditable] = useState(false);
   const [firstName, setFirstName] = useState('');
@@ -121,6 +121,7 @@ const Profile = () => {
       <input id="file-input" type="file" accept="image/*" className='hidden' onChange={handleImageChange} />
         <button onClick={handleSubmitImage}>Change image</button>
       </div>
+      <button onClick={() => deleteAccount()}>Delete account</button>
     </div>
     
   )

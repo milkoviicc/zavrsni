@@ -34,7 +34,7 @@ export default function Navbar() {
         <div className="border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg h-[75px] fixed top-0 w-full">
             <div className="flex justify-between items-center h-full w-full">
                 <div className="w-full flex justify-start ml-10">
-                    <button className="hover:cursor-pointer flex gap-2" onClick={() => router.push(`/profile/${user.username}`)}>
+                    <button className="hover:cursor-pointer flex gap-2" onClick={() => router.push(`/my-profile`)}>
                         <Flex gap="2">
                             <Avatar src={`${user.profile.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
                         </Flex>

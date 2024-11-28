@@ -295,7 +295,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const userData: User = JSON.parse(user);
 
         // šalje se axios delete request na API sa korisnikovim id-jem 
-        const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/delete-user/${userData.id}`);
+        const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/delete-user`);
 
         // ukoliko je res.status jednak 200 znači da je korisnik obrisan i odjavljuje ga se, inače se u konzolu ispisuje poruka greške
         if(res.status === 200) {
