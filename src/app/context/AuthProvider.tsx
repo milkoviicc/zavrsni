@@ -38,6 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if(isTokenExpired(token)) {
         localStorage.removeItem('token');
         router.push('/auth');
+        return;
       }
 
       // spremam korisnikove podatke u varijablu 'userData'
@@ -250,11 +251,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // spremam korisnika u localStorage
           localStorage.setItem('user', JSON.stringify(loggedUser));
 
+          // preusmjeravam na home page
+          router.push('/');
+
           // mjenjam isLoggedIn state u true kako bi se znalo da je korisnik prijavljen
           setIsLoggedIn(true);
 
-          // preusmjeravam na home page
-          router.push('/');
+
         } else {
           // ukoliko dođe do greške ispisuje se u konzoli
           throw new Error(`This username/email doesn't exist.`);

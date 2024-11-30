@@ -55,3 +55,17 @@ export interface Comment {
     dislikes: number,
     userReacted: number
 }
+
+export interface FriendRequest {
+    id: string,
+    user: {
+        id: string,
+        username: string,
+        firstName: string,
+        lastName: string,
+        pictureUrl: string,
+        followers: number,
+        following: number
+    },
+    createdOn: string
+}
