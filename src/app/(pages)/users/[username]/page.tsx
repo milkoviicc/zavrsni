@@ -14,6 +14,7 @@ const UserProfile = () => {
     const [user, setUser] = useState<Profile | null>(null);
     const [loggedUser, setLoggedUser] = useState<User | null>(null);
     const [friendStatus, setFriendStatus] = useState('');
+    const [loading, setLoading] = useState(false);
 
     // Fetch logged-in user data from localStorage
     useEffect(() => {
@@ -46,6 +47,7 @@ const UserProfile = () => {
             if (!loggedUser || !user) return;
 
             try {
+                setLoading(true);
                 const res = await axios.get<FriendRequest[]>(
                     `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${loggedUser.id}`
                 );
@@ -57,17 +59,24 @@ const UserProfile = () => {
                     const sentRequests = await axios.get<FriendRequest[]>(
                         'https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/sent'
                     );
-                    const isFriendRequestSent = sentRequests.data.some((req) => req.user.id === user.id);
 
-                    setFriendStatus(isFriendRequestSent ? 'sent' : 'not friends');
+                    const receivedRequests = await axios.get<FriendRequest[]>(
+                        'https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/received'
+                    );
+
+                    const isFriendRequestSent = sentRequests.data.find((req) => req.user.id === user.id);
+                    const isFriendRequestReceived = receivedRequests.data.find((req) => req.user.id === user.id);
+
+                    setFriendStatus(isFriendRequestSent ? 'sent' : isFriendRequestReceived ? 'received' : 'not friends');
                 }
+                setLoading(false);
             } catch (err) {
                 console.error('Failed to check friendship status:', err);
             }
         };
 
         checkFriendship();
-    }, [loggedUser, user]);
+    }, [loggedUser, user, friendStatus]);
 
     // Send friend request
     const sendFriendRequest = async () => {
@@ -86,6 +95,41 @@ const UserProfile = () => {
         }
     };
 
+    const acceptRequest = async () => {
+        try {
+            const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/accept/${user?.id}`);
+
+            if(res.status === 200) {
+                setFriendStatus('friends');
+            }
+        } catch(err) {
+            console.error(err);
+        }
+    }
+
+    const declineRequest = async () => {
+        try {
+            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/decline/${user?.id}`);
+
+            if(res.status === 200) {
+                setFriendStatus('not friends');
+            }
+        } catch(err) {
+            console.error(err);
+        }
+    }
+
+    const unFriend = async () => {
+        try {
+            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/delete/${user?.id}`);
+            if(res.status === 200) {
+                setFriendStatus('not friends');
+            }
+        } catch(err) {
+            console.error(err);
+        }
+    }
+
     // Render loading or not found states
     if (!user) return <h1 className="text-center my-40">User not found</h1>;
     
@@ -97,7 +141,20 @@ const UserProfile = () => {
             <Flex gap="2">
                 <Avatar src={`${user?.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
             </Flex>
-            {friendStatus === 'sent' ? <h1>Friend request sent</h1> : friendStatus === 'friends' ? <h1>Friends</h1> : <button onClick={() => sendFriendRequest()}>Add friend</button>}
+            {loading ? 'Loading...'
+            : friendStatus === 'sent' ? <h1>Friend request sent</h1>
+            : friendStatus === 'received' ? (
+                <div className='flex gap-2'>
+                    <button onClick={acceptRequest}>Accept</button>
+                    <button onClick={declineRequest}>Decline</button>
+                </div>
+            )
+            : friendStatus === 'friends' ? (
+                <div>
+                    <button onClick={unFriend}>Unfriend</button> 
+                </div>
+            )
+            : <button onClick={() => sendFriendRequest()}>Add friend</button>}
         </div>
     </div>
   )
