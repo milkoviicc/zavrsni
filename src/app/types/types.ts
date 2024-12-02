@@ -29,7 +29,9 @@ export interface Profile {
     firstName: string | null,
     lastName: string | null,
     id: string,
-    pictureUrl : string
+    pictureUrl : string,
+    followers: number,
+    following: number
 }
 
 // klasa Post
@@ -56,16 +58,8 @@ export interface Comment {
     userReacted: number
 }
 
-export interface FriendRequest {
+export interface Friendship {
     id: string,
-    user: {
-        id: string,
-        username: string,
-        firstName: string,
-        lastName: string,
-        pictureUrl: string,
-        followers: number,
-        following: number
-    },
+    user: Profile,
     createdOn: string
 }

@@ -16,7 +16,7 @@ import Posts from "./components/posts";
 
 import axios from "axios";
 import ResizableTextarea from "./components/ResizableTextarea";
-import { User } from "./types/types";
+import { Friendship, Profile, User } from "./types/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
 
@@ -24,6 +24,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { debounce } from "lodash";
 import ResizablePost from "./components/sendPost";
 import SendPost from "./components/sendPost";
+import UserComponent from "./components/userComponent";
 
 
 
@@ -39,6 +40,8 @@ export default function Home() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [postFile, setPostFile] = useState<File[]>([]);
   const [postsState, setPostsState] = useState<'Popular' | 'Your Friends'>('Popular');
+  const [popularUsers, setPopularUsers] = useState<Profile[]>([]);
+  const [friendsList, setFriendsList] = useState<Friendship[]>([]);
 
 
   const user: User = JSON.parse(localStorage.getItem('user') || '{}');
@@ -53,29 +56,57 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    const getPopularUsers = async () => {
+      try {
+        const res = await axios.get<Profile[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/popular?limit=10');
+
+        const resData = res.data.filter((profile) => profile.firstName != null);
+
+        if(res.status === 200) {
+          setPopularUsers(resData);
+        }
+
+      } catch(err) {
+        console.error(err);
+      }
+    }
+
+    getPopularUsers();
+  },[]);
+
+  useEffect(() => {
+    const getFriends = async () => {
+      try {
+        const res = await axios.get<Friendship[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${user.id}`);
+
+        const resData = res.data.filter((profile) => profile.user.firstName != null);
+
+        if(res.status === 200) {
+          setFriendsList(resData);
+        }
+      } catch(err) {
+        console.error(err);
+      }
+    };
+    getFriends();
+  }, []);
+
   if(!user) {
     return false;
   }
   
-  
-
   return (
     <div className='h-full flex flex-col my-[75px]'>
       {isAuthenticated && fullyRegistered && !defaultPicture
       ?
       <div className="h-full flex flex-grow flex-col bg-white">
         <div className="flex w-full justify-evenly">
-          <div className="flex flex-col fixed w-[200px] top-28 left-40">
+          <div className="flex flex-col gap-0 fixed w-[200px] top-28 left-40">
             <h1 className="font-Roboto text-2xl">Who's popular</h1>
-            <button className="hover:cursor-pointer flex gap-2 py-8 items-center">
-              <Flex gap="2">
-                  <Avatar src={`${user.profile.pictureUrl}`} style={{ width: '45px', height: '45px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
-              </Flex>
-              <div className="flex flex-col h-full items-start justify-center gap-3">
-                  <h1 className="text-black font-[400] font-Roboto leading-[8.23px] text-lg">{user.profile.firstName} {user.profile.lastName}</h1>
-                  <p className="text-[#7D7D7D] leading-[5.66px]">@{user.username}</p>
-              </div>    
-            </button>
+            {popularUsers.map((user, index) => (
+              <UserComponent user={user} key={index} />
+            ))}
           </div>
           <div className="border-1 border-gray-900 py-16 h-full flex flex-col items-center gap-12">
             <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#ededed]">
@@ -102,15 +133,9 @@ export default function Home() {
           </div>
           <div className="flex flex-col w-[200px] fixed top-28 right-40">
             <h1 className="font-Roboto text-2xl">Friends</h1>
-            <button className="hover:cursor-pointer flex gap-2 py-8 items-center">
-              <Flex gap="2">
-                  <Avatar src={`${user.profile.pictureUrl}`} style={{ width: '45px', height: '45px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
-              </Flex>
-              <div className="flex flex-col h-full items-start justify-center gap-3">
-                  <h1 className="text-black font-[400] font-Roboto leading-[8.23px] text-lg">{user.profile.firstName} {user.profile.lastName}</h1>
-                  <p className="text-[#7D7D7D] leading-[5.66px]">@{user.username}</p>
-              </div>    
-            </button>
+            {friendsList.map((user, index) => (
+              <UserComponent user={user.user} key={index} />
+            ))}
           </div>
         </div>
       </div>

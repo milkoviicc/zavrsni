@@ -1,5 +1,5 @@
 'use client';
-import { FriendRequest, Profile, User } from '@/src/app/types/types';
+import { Friendship, Profile, User } from '@/src/app/types/types';
 import { Avatar, Flex } from '@radix-ui/themes';
 import axios from 'axios';
 import { usePathname, useRouter } from 'next/navigation'
@@ -11,10 +11,11 @@ const UserProfile = () => {
     const path = usePathname();
     const router = useRouter();
     const userName = path.slice(7, 100);
-    const [user, setUser] = useState<Profile | null>(null);
+    const [user, setUser] = useState<Profile | null>();
     const [loggedUser, setLoggedUser] = useState<User | null>(null);
     const [friendStatus, setFriendStatus] = useState('');
     const [loading, setLoading] = useState(false);
+    const [followStatus, setFollowStatus] = useState('');
 
     // Fetch logged-in user data from localStorage
     useEffect(() => {
@@ -48,7 +49,7 @@ const UserProfile = () => {
 
             try {
                 setLoading(true);
-                const res = await axios.get<FriendRequest[]>(
+                const res = await axios.get<Friendship[]>(
                     `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${loggedUser.id}`
                 );
 
@@ -56,11 +57,11 @@ const UserProfile = () => {
                 if (isFriend) {
                     setFriendStatus('friends');
                 } else {
-                    const sentRequests = await axios.get<FriendRequest[]>(
+                    const sentRequests = await axios.get<Friendship[]>(
                         'https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/sent'
                     );
 
-                    const receivedRequests = await axios.get<FriendRequest[]>(
+                    const receivedRequests = await axios.get<Friendship[]>(
                         'https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/received'
                     );
 
@@ -130,6 +131,56 @@ const UserProfile = () => {
         }
     }
 
+    useEffect(() => {
+        const checkFollowing = async () => {
+            if(!user) return;
+            try {
+
+                const res = await axios.get(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/friendship-status/${user?.id}`);
+
+                const resData: { userId: string; isFollowed: boolean; friendshipStatus: number } = res.data;
+    
+                if (resData.isFollowed) {
+                    setFollowStatus('following');
+                } else {
+                    setFollowStatus('not following');
+                }
+            } catch (err) {
+                console.error('Failed to fetch following status:', err);
+            }
+        };
+        checkFollowing();
+    }, [user]);
+    
+
+    const follow = async () => {
+        try {
+            const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/add-follow/${user?.id}`);
+
+            if(res.status === 200) {
+                setFollowStatus('following');
+                setUser((prevUserData) => prevUserData  ? {...prevUserData, followers: prevUserData.followers + 1} : prevUserData);
+            }
+            
+        } catch(err) {
+            console.error(err);
+        }
+    }
+
+    const unfollow = async () => {
+        try {
+
+            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/unfollow/${user?.id}`);
+
+            if(res.status === 200) {
+                setFollowStatus('not following');
+                setUser((prevUserData) => prevUserData  ? {...prevUserData, followers: prevUserData.followers - 1} : prevUserData);
+            }
+        } catch(err) {
+            console.error(err);
+        }
+    }
+
     // Render loading or not found states
     if (!user) return <h1 className="text-center my-40">User not found</h1>;
     
@@ -155,6 +206,17 @@ const UserProfile = () => {
                 </div>
             )
             : <button onClick={() => sendFriendRequest()}>Add friend</button>}
+            {followStatus === 'following' ? (
+                <div>
+                    <button onClick={() => unfollow()}>Unfollow</button>
+                </div>
+            ) : (
+                <div>
+                    <button onClick={() => follow()}>Follow</button>
+                </div>
+            )}
+            <h1>Followers: {user.followers}</h1>
+            <h1>Following: {user.following}</h1>
         </div>
     </div>
   )
