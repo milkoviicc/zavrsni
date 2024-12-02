@@ -34,7 +34,7 @@ export default function Navbar() {
     useEffect(() => {
         const handleSearch = async (search: string) => {
             try {
-                if (search.trim() === '') {
+                if (search.trim() === '' || search.length < 3) {
                     setOpen(false);
                     setReceivedItems([]);
                     return;

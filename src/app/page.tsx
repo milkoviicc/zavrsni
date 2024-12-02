@@ -39,7 +39,7 @@ export default function Home() {
   const [content, setContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [postFile, setPostFile] = useState<File[]>([]);
-  const [postsState, setPostsState] = useState<'Popular' | 'Your Friends'>('Popular');
+  const [postsState, setPostsState] = useState<'Popular' | 'Your Feed'>('Popular');
   const [popularUsers, setPopularUsers] = useState<Profile[]>([]);
   const [friendsList, setFriendsList] = useState<Friendship[]>([]);
 
@@ -121,13 +121,13 @@ export default function Home() {
                 </div>
                 <span className="h-10 block border-black bg-black w-[1px]"></span>
                 <div>
-                  <button className={`text-2xl text-gray-900 ${postsState === "Your Friends" ? 'font-medium' : null}`} onClick={() => setPostsState('Your Friends')}>Your Friends</button>
-                  <span className={`${postsState === 'Your Friends' ? 'block' : 'hidden'} bg-[#424242] w-full h-[1px]`}></span>
+                  <button className={`text-2xl text-gray-900 ${postsState === "Your Feed" ? 'font-medium' : null}`} onClick={() => setPostsState('Your Feed')}>Your Feed</button>
+                  <span className={`${postsState === 'Your Feed' ? 'block' : 'hidden'} bg-[#424242] w-full h-[1px]`}></span>
                 </div>
                 
               </div>
               <div className="w-full flex justify-center">
-                <Posts setGetPostsRef={(fn) => (getPostsRef.current = fn)}/>
+                <Posts setGetPostsRef={(fn) => (getPostsRef.current = fn)} postsState={postsState}/>
               </div>
             </div>
           </div>
