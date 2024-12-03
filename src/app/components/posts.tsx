@@ -24,6 +24,7 @@ const Posts = ({setGetPostsRef, postsState}: {setGetPostsRef: (fn: () => void) =
             if(res.status === 200 && res.data.length > 0) {
                 // spremam res.data u posts state tipa Post[], a pošto je res.data array objekata, spremam sve postove (objekte) u array 'posts'
                 setPosts(res.data);
+                console.log('Fetched posts:', res.data); // Log the fetched posts
                 return true;
             }
             return false;
@@ -39,6 +40,7 @@ const Posts = ({setGetPostsRef, postsState}: {setGetPostsRef: (fn: () => void) =
             const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/your-feed?page=${page}`);
             if(res.status === 200 && res.data.length > 0) {
                 setPosts(res.data);
+                console.log('Fetched posts:', res.data); // Log the fetched posts
                 return true;
             }
             return false;
@@ -57,16 +59,13 @@ const Posts = ({setGetPostsRef, postsState}: {setGetPostsRef: (fn: () => void) =
 
     // re-rendera se na svakoj promjeni reactionTrigger statea i na svakom pozivu setGetPostsRef
     useEffect(() => {
-
-    
         setGetPostsRef(() => {
-            return postsState === 'Popular' ? getPosts : getYourFeed;
-          });
-
-        // pozivam funkciju getPosts kako bi dobio sve postove
-        if(postsState === "Popular") {
+            return postsState === 'Popular' ? () => getPosts(currentPage) : () => getYourFeed(currentPage);
+        });
+    
+        if (postsState === 'Popular') {
             getPosts(currentPage);
-        } else if (postsState === "Your Feed") {
+        } else if (postsState === 'Your Feed') {
             getYourFeed(currentPage);
         }
     }, [reactionTrigger, setGetPostsRef, postsState, currentPage]);
@@ -197,12 +196,13 @@ const Posts = ({setGetPostsRef, postsState}: {setGetPostsRef: (fn: () => void) =
 
   return (
     <div className='w-full flex flex-col items-center gap-4 bg-transparent'>
-        {posts.length > 0 ? posts?.map((post, index) => (<EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => getPosts(currentPage)}/>)): <h1>Loading...</h1>}
-        <div>
-            <button className="w-fit px-10" onClick={handlePrevPage} disabled={currentPage === 0}>Previous</button>
-            <button className="w-fit px-10" onClick={handleNextPage}>Next</button>
-        </div>
-        
+        {posts.length > 0 ? posts?.map((post, index) => (<EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => getPosts(currentPage)}/>)) : posts.length === 0 ? <h1>There are no posts yet!</h1> : <h1>Loading...</h1>}
+        {posts.length != 0 ? (
+            <div>
+                <button className="w-fit px-10" onClick={handlePrevPage} disabled={currentPage === 0}>Previous</button>
+                <button className="w-fit px-10" onClick={handleNextPage}>Next</button>
+            </div>
+        ) : null }
     </div>
   )
 }

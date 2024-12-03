@@ -1,5 +1,5 @@
 import { Avatar, Flex } from '@radix-ui/themes';
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize';
 import { User } from '../types/types';
 import Image from 'next/image';
@@ -8,15 +8,14 @@ import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import ResizableTextarea from './ResizableTextarea';
 
-const SendPost = ({user, getPostsRef}: {user: User, getPostsRef: React.MutableRefObject<(() => void) | undefined>}) => {
+const SendPost = ({user, setGetPostsRef}: {user: User, setGetPostsRef: (fn: () => void) => void}) => {
 
   const [content, setContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [postFile, setPostFile] = useState<File[]>([]);
   const [postsState, setPostsState] = useState<'Popular' | 'Your Friends'>('Popular');
 
-  
-  // getPostRef kako bi se postovi re-renderali na svakom novom dodanom postu
+
 
   const handlePostFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -46,13 +45,18 @@ const SendPost = ({user, getPostsRef}: {user: User, getPostsRef: React.MutableRe
       if(res.status === 200) {
         setContent('');
         setPostFile([]);
-        if (getPostsRef.current) getPostsRef.current();
       }
     } catch(err) {
         // ukoliko je došlo do greške, ispisuje se u konzoli
         console.error('Could not add post', err);
     }
   }
+
+  useEffect(() => {
+    setGetPostsRef(() => {
+      return postsState === 'Popular' ? () => getPosts(currentPage) : () => getYourFeed(currentPage);
+  });
+  })
 
 
   return (

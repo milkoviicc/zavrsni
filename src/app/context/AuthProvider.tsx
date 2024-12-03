@@ -38,6 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if(isTokenExpired(token)) {
         localStorage.removeItem('token');
         router.push('/auth');
+        router.refresh();
         return;
       }
 

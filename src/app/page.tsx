@@ -25,6 +25,7 @@ import { debounce } from "lodash";
 import ResizablePost from "./components/sendPost";
 import SendPost from "./components/sendPost";
 import UserComponent from "./components/userComponent";
+import FullPosts from "./components/fullPosts";
 
 
 
@@ -39,7 +40,6 @@ export default function Home() {
   const [content, setContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [postFile, setPostFile] = useState<File[]>([]);
-  const [postsState, setPostsState] = useState<'Popular' | 'Your Feed'>('Popular');
   const [popularUsers, setPopularUsers] = useState<Profile[]>([]);
   const [friendsList, setFriendsList] = useState<Friendship[]>([]);
 
@@ -108,29 +108,7 @@ export default function Home() {
               <UserComponent user={user} key={index} />
             ))}
           </div>
-          <div className="border-1 border-gray-900 py-16 h-full flex flex-col items-center gap-12">
-            <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#ededed]">
-              <SendPost user={user} getPostsRef={getPostsRef} />
-            </div>
-            <div className="h-full w-full flex flex-col items-center ">
-              <hr className="w-full border-[#828282]" />
-              <div className="flex gap-4 py-6 items-center">
-                <div>
-                  <button className={`text-2xl text-gray-900 ${postsState === "Popular" ? 'font-medium' : null}`} onClick={() => setPostsState('Popular')}>Popular</button>
-                  <span className={`${postsState === 'Popular' ? 'block' : 'hidden'} bg-[#424242] w-full h-[2px]`}></span>
-                </div>
-                <span className="h-10 block border-black bg-black w-[1px]"></span>
-                <div>
-                  <button className={`text-2xl text-gray-900 ${postsState === "Your Feed" ? 'font-medium' : null}`} onClick={() => setPostsState('Your Feed')}>Your Feed</button>
-                  <span className={`${postsState === 'Your Feed' ? 'block' : 'hidden'} bg-[#424242] w-full h-[1px]`}></span>
-                </div>
-                
-              </div>
-              <div className="w-full flex justify-center">
-                <Posts setGetPostsRef={(fn) => (getPostsRef.current = fn)} postsState={postsState}/>
-              </div>
-            </div>
-          </div>
+          <FullPosts user={user} />
           <div className="flex flex-col w-[200px] fixed top-28 right-40">
             <h1 className="font-Roboto text-2xl">Friends</h1>
             {friendsList.map((user, index) => (
