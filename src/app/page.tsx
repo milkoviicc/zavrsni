@@ -12,7 +12,7 @@ import img from '@/../public/images/test.png';
 import {Flex, Avatar} from '@radix-ui/themes';
 
 import { Input } from '@/src/components/ui/input';
-import Posts from "./components/posts";
+
 
 import axios from "axios";
 import ResizableTextarea from "./components/ResizableTextarea";
@@ -22,8 +22,7 @@ import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
 
 import TextareaAutosize from 'react-textarea-autosize';
 import { debounce } from "lodash";
-import ResizablePost from "./components/sendPost";
-import SendPost from "./components/sendPost";
+
 import UserComponent from "./components/userComponent";
 import FullPosts from "./components/fullPosts";
 
