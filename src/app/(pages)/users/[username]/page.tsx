@@ -29,11 +29,13 @@ const UserProfile = () => {
     useEffect(() => {
         const getUser = async () => {
             try {
-                const res = await axios.get<Profile[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles');
+                const res = await axios.get<User[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles');
                 const profile = res.data.find((p) => p.username === userName);
-                if (profile) {
-                    setUser(profile);
+                const response = await axios.get<Profile>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/${profile?.userId}`)
+                if (response.status === 200) {
+                    setUser(response.data);
                 }
+
             } catch (err) {
                 console.error('Failed to fetch user profile:', err);
             }
@@ -50,10 +52,10 @@ const UserProfile = () => {
             try {
                 setLoading(true);
                 const res = await axios.get<Friendship[]>(
-                    `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${loggedUser.id}`
+                    `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${loggedUser.userId}`
                 );
 
-                const isFriend = res.data.find((friend) => friend.user.id === user.id);
+                const isFriend = res.data.find((friend) => friend.user.userId === user.userId);
                 if (isFriend) {
                     setFriendStatus('friends');
                 } else {
@@ -65,8 +67,8 @@ const UserProfile = () => {
                         'https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/received'
                     );
 
-                    const isFriendRequestSent = sentRequests.data.find((req) => req.user.id === user.id);
-                    const isFriendRequestReceived = receivedRequests.data.find((req) => req.user.id === user.id);
+                    const isFriendRequestSent = sentRequests.data.find((req) => req.user.userId === user.userId);
+                    const isFriendRequestReceived = receivedRequests.data.find((req) => req.user.userId === user.userId);
 
                     setFriendStatus(isFriendRequestSent ? 'sent' : isFriendRequestReceived ? 'received' : 'not friends');
                 }
@@ -85,7 +87,7 @@ const UserProfile = () => {
 
         try {
             const res = await axios.post(
-                `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/send/${user.id}`
+                `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/send/${user.userId}`
             );
 
             if (res.status === 200) {
@@ -99,7 +101,7 @@ const UserProfile = () => {
 
     const acceptRequest = async () => {
         try {
-            const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/accept/${user?.id}`);
+            const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/accept/${user?.userId}`);
 
             if(res.status === 200) {
                 setFriendStatus('friends');
@@ -112,7 +114,7 @@ const UserProfile = () => {
 
     const declineRequest = async () => {
         try {
-            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/decline/${user?.id}`);
+            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/decline/${user?.userId}`);
 
             if(res.status === 200) {
                 setFriendStatus('not friends');
@@ -124,10 +126,11 @@ const UserProfile = () => {
 
     const unFriend = async () => {
         try {
-            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/delete/${user?.id}`);
+            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/delete/${user?.userId}`);
             if(res.status === 200) {
                 setFriendStatus('not friends');
                 unfollow();
+                window.location.reload();
             }
         } catch(err) {
             console.error(err);
@@ -139,7 +142,7 @@ const UserProfile = () => {
             if(!user) return;
             try {
 
-                const res = await axios.get(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/friendship-status/${user?.id}`);
+                const res = await axios.get(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/friendship-status/${user?.userId}`);
 
                 const resData: { userId: string; isFollowed: boolean; friendshipStatus: number } = res.data;
     
@@ -158,7 +161,7 @@ const UserProfile = () => {
 
     const follow = async () => {
         try {
-            const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/add-follow/${user?.id}`);
+            const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/add-follow/${user?.userId}`);
 
             if(res.status === 200) {
                 setFollowStatus('following');
@@ -173,8 +176,8 @@ const UserProfile = () => {
     const unfollow = async () => {
         try {
 
-            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/unfollow/${user?.id}`);
-
+            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/unfollow/${user?.userId}`);
+            
             if(res.status === 200) {
                 setFollowStatus('not following');
                 setUser((prevUserData) => prevUserData  ? {...prevUserData, followers: prevUserData.followers - 1} : prevUserData);

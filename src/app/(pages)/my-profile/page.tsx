@@ -26,10 +26,10 @@ const Profile = () => {
       try {
 
         // Initialize the state with user data
-        setFirstName(user.profile.firstName || '');
-        setLastName(user.profile.lastName || '');
-        setUsername(user.profile.username || '');
-        setProfilePicture(user.profile.pictureUrl);
+        setFirstName(user.firstName || '');
+        setLastName(user.lastName || '');
+        setUsername(user.username || '');
+        setProfilePicture(user.pictureUrl);
       } catch (error) {
         console.error('Failed to parse user data:', error);
       }
@@ -44,9 +44,9 @@ const Profile = () => {
       const res = await axios.put('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile', {username, firstName, lastName});
 
       if(res.status === 200) {
-        user.profile.firstName = firstName;
-        user.profile.lastName = lastName;
-        user.profile.username = username;
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.username = username;
 
         localStorage.removeItem('user');
         localStorage.setItem('user', JSON.stringify(user));
@@ -75,7 +75,7 @@ const Profile = () => {
       setLoading(true);
       await addImage(selectedImage);
       // After image is uploaded and state is updated, set the new profile picture URL
-      setProfilePicture(user?.profile?.pictureUrl || ''); // Update the image in local state
+      setProfilePicture(user?.pictureUrl || ''); // Update the image in local state
     }
   };
 

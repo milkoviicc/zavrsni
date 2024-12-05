@@ -14,21 +14,26 @@ export interface AuthContextType {
     loading: boolean;
 }
 
-// klasa User, koristi klasu Profile
+export interface Auth {
+    user: User,
+    token: string
+}
+
+// klasa User
 export interface User {
-    id: string;
+    userId: string;
     username: string;
-    email: string,
-    token: string,
-    profile: Profile;
+    firstName: string | null,
+    lastName: string | null,
+    pictureUrl: string;
 }
 
 // klasa Profile
 export interface Profile {
+    userId: string,
     username: string,
     firstName: string | null,
     lastName: string | null,
-    id: string,
     pictureUrl : string,
     followers: number,
     following: number
@@ -36,30 +41,30 @@ export interface Profile {
 
 // klasa Post
 export interface Post {
-    id: string,
+    postId: string,
     content: string,
     createdOn: string,
-    userProfile: Profile,
+    user: User,
     likes: number,
     dislikes: number,
     userReacted: number,
     commentCount: number,
-    comments: Comment[],
     fileUrls: string[]
 }
 
 export interface Comment {
-    id: string,
+    commentId: string,
     content: string,
     createdOn: string,
-    userProfile: Profile,
+    user: User,
     likes: number,
     dislikes: number,
-    userReacted: number
+    userReacted: number,
+    replies: string[]
 }
 
 export interface Friendship {
-    id: string,
+    friendRequestId: string,
     user: Profile,
     createdOn: string
 }

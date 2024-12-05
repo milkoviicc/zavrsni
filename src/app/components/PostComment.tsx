@@ -36,7 +36,7 @@ const PostComment = ({postId, refreshPosts, refreshComments}: {postId: string, r
       <div className="flex gap-2 items-start flex-col w-[95%] ">
           <div className="flex flex-row  gap-4 w-full">
             <Flex gap="2">
-              <Avatar src={`${user.profile.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
+              <Avatar src={`${user.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
             </Flex>
             <ResizableTextarea placeholder="Tell us what you think." value={content} onChange={(e) => setContent(e.target.value)} className="scrollbar-none text-black w-full max-h-[150px] outline-none border-b-2 px-2 py-1 rounded resize-none border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-black bg-transparent transition-all"/>
           </div>

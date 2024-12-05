@@ -77,7 +77,7 @@ export default function Home() {
   useEffect(() => {
     const getFriends = async () => {
       try {
-        const res = await axios.get<Friendship[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${user.id}`);
+        const res = await axios.get<Friendship[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${user.userId}`);
 
         const resData = res.data.filter((profile) => profile.user.firstName != null);
 
@@ -89,7 +89,7 @@ export default function Home() {
       }
     };
     getFriends();
-  }, []);
+  }, [user.userId]);
 
   if(!user) {
     return false;

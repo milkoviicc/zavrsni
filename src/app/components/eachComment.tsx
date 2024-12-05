@@ -45,7 +45,7 @@ const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Com
         const userData: User = JSON.parse(user);
     
         // ako je id korisnika koji je objavio post jednak trenutnom korisniku state se stavlja na true kako bi se gumb 'Delete' prikazao, inače na false kako se ne bi prikazao
-        if(comment.userProfile.id === userData.id) {
+        if(comment.user.userId === userData.userId) {
           setShowDelete(true);
           setShowUpdate(true);
         } else {
@@ -55,7 +55,7 @@ const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Com
       }
 
      
-    }, [user, comment.userProfile.id]);
+    }, [user, comment.user.userId]);
 
     const handleCommentLike = async (commentId: string) => {
       try {
@@ -136,12 +136,12 @@ const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Com
     <div className='py-2 flex-col'>
       <div className='flex flex-row'>
         <Flex gap="2" className='items-center w-fit'>
-          <Avatar src={`${comment.userProfile.pictureUrl}?${new Date().getTime()}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
+          <Avatar src={`${comment.user.pictureUrl}?${new Date().getTime()}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
         </Flex>
         <div className="flex flex-col px-4 w-full">
           <div className='flex justify-between'>
             <div className='flex gap-2 items-center'>
-              <h1 className="text-base font-Roboto">{comment.userProfile.firstName} {comment.userProfile.lastName}</h1>
+              <h1 className="text-base font-Roboto">{comment.user.firstName} {comment.user.lastName}</h1>
               <p className="text-sm text-gray-500">
                 {commentDays >= 1 ? justCommentDate : commentDays <= 0 && commentHours > 0 && commentMinutes <= 60 ? `${commentHours}h ago` : commentDays < 1 && commentHours <= 24 && commentMinutes <= 60 && commentMinutes >= 1 ? `${commentMinutes}m ago` : "Just now"}
               </p>
@@ -154,12 +154,12 @@ const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Com
               )}
               {showDelete && (
                 <button className="text-sm px-2">
-                  <FontAwesomeIcon icon={faTrash} className="text-xl" onClick={(() => deleteComment(comment.id))}/>
+                  <FontAwesomeIcon icon={faTrash} className="text-xl" onClick={(() => deleteComment(comment.commentId))}/>
                 </button>
               )}
             </div>
           </div>
-          <p className='text-sm font-Roboto text-[#656565]'>@{comment.userProfile.username}</p>
+          <p className='text-sm font-Roboto text-[#656565]'>@{comment.user.username}</p>
         </div>
        </div>
       <p className='py-4 max-w-full break-all pr-4'>{comment.content}</p>
@@ -167,13 +167,13 @@ const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Com
         <FontAwesomeIcon
           icon={faUpLong}
           className={`text-2xl hover:cursor-pointer hover:text-green-600 transition-all ${comment.userReacted === 1 ? "text-green-600" : "text-gray-500"}`}
-          onClick={() => handleCommentLike(comment.id)}
+          onClick={() => handleCommentLike(comment.commentId)}
         />
         <p>{comment.likes}</p>
         <FontAwesomeIcon
           icon={faDownLong}
           className={`text-2xl hover:cursor-pointer hover:text-red-600 transition-all ${comment.userReacted === -1 ? "text-red-600" : "text-gray-500"}`}
-          onClick={() => handleCommentDislike(comment.id)}
+          onClick={() => handleCommentDislike(comment.commentId)}
         />
         <p>{comment.dislikes}</p>
       </div>

@@ -5,7 +5,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
 
-import { AuthContextType, User, Profile } from '../types/types';
+import { AuthContextType, User, Profile, Auth } from '../types/types';
 import { error } from 'console';
 
 import {jwtDecode} from 'jwt-decode';
@@ -89,39 +89,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const token = localStorage.getItem('token');
   
       // ukoliko token postoji ulazi u {} i izvršava se dalje
-      if (user) {
+      if (user && token) {
         // spremam korisnikove podatke u varijablu 'userData'
         const userData: User = JSON.parse(user);
 
         // šaljem axios put request na API, primam nazad response tipa 'Profile', a prenosim username, firstName i lastName
-        const res = await axios.put<Profile>(
+        const res = await axios.put<User>(
           `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile`, 
           { username: userData.username, firstName, lastName }
         );
 
-        // spremam podatke vraćene nakon put requesta
-        const {id, username, firstName: firstname, lastName: lastname} = res.data;
-
         // provjeravam postoji li token, korisnikov id, ime i prezime
-        if(token && userData.id && firstname && lastname) {
+        if(res.status === 200) {
 
           // ukoliko sve postoji, spremam id, username, ime i prezime u varijablu updatedProfile tipa 'Profile'
-          const updatedProfile: Profile = res.data;
-
-          // u varijablu updatedUser spremam id prijavljenog korisnika, njegov email, token i nove profile podatke
-          const updatedUser = {id, username, email: userData.email, token: userData.token, profile: updatedProfile};
+          const updatedProfile: User = res.data;
 
           // brišem localStorage
           localStorage.clear();
 
           // spremam u localStorage korisnika sa svim novim podatcima
-          localStorage.setItem('user', JSON.stringify(updatedUser));
+          localStorage.setItem('user', JSON.stringify(updatedProfile));
 
           // spremam u localStorage token tog korisnika
-          localStorage.setItem('token', userData.token);
+          localStorage.setItem('token', token);
 
           // spremam u 'user' state korisnika sa svim novim podatcima
-          setUser(updatedUser);
+          setUser(updatedProfile);
         } else {
           // ukoliko dođe do greške ispisuje se u konzoli
           console.error('Invalid response structrue');
@@ -153,32 +147,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         formData.append('image', selectedImage);
 
         // šaljem axios put request na API, primam nazad response tipa 'Profile', a prenosim username, firstName i lastName
-        const res = await axios.put<Profile>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile-picture', formData, {headers: {
+        const res = await axios.put<User>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile-picture', formData, {headers: {
           'Content-Type': 'multipart/form-data'}});
 
         // provjeravam postoji li token, korisnikov id, ime i prezime
-        if(token && userData.id) {
+        if(token && userData.userId) {
 
           // ukoliko sve postoji, spremam id, username, ime i prezime u varijablu updatedProfile tipa 'Profile'
-          const updatedProfile: Profile = res.data;
+          const updatedProfile: User = res.data;
 
           // Append a cache-busting timestamp to the updated profile picture URL
           updatedProfile.pictureUrl = `${updatedProfile.pictureUrl}?${new Date().getTime()}`;
-
-          // u varijablu updatedUser spremam id prijavljenog korisnika, njegov email, token i nove profile podatke
-          const updatedUser: User = {id: userData.id, username: userData.username, email: userData.email, token, profile: updatedProfile};
 
           // brišem localStorage
           localStorage.clear();
 
           // spremam u localStorage korisnika sa svim novim podatcima
-          localStorage.setItem('user', JSON.stringify(updatedUser));
+          localStorage.setItem('user', JSON.stringify(updatedProfile));
 
           // spremam u localStorage token tog korisnika
-          localStorage.setItem('token', userData.token);
+          localStorage.setItem('token', token);
 
           // spremam u 'user' state korisnika sa svim novim podatcima
-          setUser(updatedUser);
+          setUser(updatedProfile);
         }
       }
     } catch(error) {
@@ -192,22 +183,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
 
       // šaljem axios post request na API, primam response tipa 'User', a prenosim username, email, lozinku i potvrdjenu lozinku
-      const res = await axios.post<User>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/register', {username, email, password, confirmPassword});
+      const res = await axios.post<Auth>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/register', {username, email, password, confirmPassword});
 
       // spremam primljene podatke u varijablu newUser tipa User
-      const newUser: User = res.data;
+      const newUser: Auth = res.data;
 
-      // provjeravam sadrže li primljeni podatci token, id, username i email
-      if(newUser.token && newUser.id && newUser.username && newUser.email) {
+      // provjeravam sadrže li primljeni podatci token, id i username
+      if(newUser.token && newUser.user.userId && newUser.user.username) {
 
         // ukoliko sadrže, spremam token u localStorage
         localStorage.setItem('token', newUser.token);
 
         // postavljam state 'user' da sadrži primljene podatke tj korisnika
-        setUser(newUser);
+        setUser(newUser.user);
 
         // spremam korisnika u localStorage
-        localStorage.setItem('user', JSON.stringify(newUser));
+        localStorage.setItem('user', JSON.stringify(newUser.user));
 
         // postavljam isLoggedIn state na true kako bi se znalo da je korisnik prijavljen
         setIsLoggedIn(true);
@@ -230,27 +221,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
 
       // šaljem axios post request na API, primam response tipa 'User', a prenosim name(username/email) i lozinku
-      const res = await axios.post<User>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/login', {
+      const res = await axios.post<Auth>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/account/login', {
         name,
         password
       });
 
       // spremam primljene podatke u varijablu 'loggedUser' tipa 'User'
-      const loggedUser: User = res.data;
+      const loggedUser: Auth = res.data;
 
-      // provjeravam sadrže li primljeni podatci token, id, username i email
-      if(loggedUser.token && loggedUser.id && loggedUser.username && loggedUser.email) {
-        if(name === loggedUser.username || name === loggedUser.email) {
+      // provjeravam sadrže li primljeni podatci token, id i username 
+      if(loggedUser.token && loggedUser.user.userId && loggedUser.user.userId) {
+        if(res.status === 200) {
 
           // ukoliko je uneseni username jednak usernameu vraćenog korisnika ili unešeni email jednak emailu vraćenog korisnika, spremam token u localStorage
           localStorage.setItem('token', loggedUser.token);
 
 
           // spremam korisnika u state 'user'
-          setUser(loggedUser);
+          setUser(loggedUser.user);
 
           // spremam korisnika u localStorage
-          localStorage.setItem('user', JSON.stringify(loggedUser));
+          localStorage.setItem('user', JSON.stringify(loggedUser.user));
 
           // preusmjeravam na home page
           router.push('/');
@@ -324,9 +315,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // isAuthenticated provjerava postoji li korisnik tj je li prijavljen
   const isAuthenticated = !!user;
   // fullyRegistered provjerava jel prijavljen korisnik ima unešeno puno ime i prezime ili ne
-  const fullyRegistered = user?.profile?.firstName !== null && user?.profile?.lastName !== null;
+  const fullyRegistered = user?.firstName !== null && user?.lastName !== null;
 
-  const defaultPicture = user?.profile?.pictureUrl === 'https://snetblobstorage.blob.core.windows.net/snetprofiles/default.jpg';
+  const defaultPicture = user?.pictureUrl === 'https://snetblobstorage.blob.core.windows.net/snetprofiles/default.jpg';
 
   // ukoliko je trenutno stanje loading statea true vraća null
   if(loading) return null;

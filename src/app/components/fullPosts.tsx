@@ -198,7 +198,7 @@ const FullPosts = ({user}: {user: User}) => {
       try {
 
           // pokušavam pronaći post koji je likean tako što prolazim kroz sve postove i pronalazim koji post.id je jednak primljenom postId-u
-          const post = posts.find((post) => post.id === postId);
+          const post = posts.find((post) => post.user.userId === postId);
 
           // ukoliko se ne uspije pronaći post vraća se tj izlazi iz funkcije.
           if(!post) return;
@@ -232,7 +232,7 @@ const FullPosts = ({user}: {user: User}) => {
       try {
 
           // pokušavam pronaći post koji je dislikean tako što prolazim kroz sve postove i pronalazim koji post.id je jednak primljenom postId-u
-          const post = posts.find((post) => post.id === postId);
+          const post = posts.find((post) => post.user.userId === postId);
 
           // ukoliko se ne uspije pronaći post vraća se tj izlazi iz funkcije.
           if(!post) return;
@@ -269,7 +269,7 @@ const FullPosts = ({user}: {user: User}) => {
         <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#ededed]">
             <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
                 <Flex gap="2" className='cursor-pointer'>
-                    <Avatar src={`${user.profile.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
+                    <Avatar src={`${user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
                 </Flex>
                 <div className="flex flex-col">
                     <ResizableTextarea placeholder={`What's on your mind, Eminem`} onChange={(e) =>  setContent(e.target.value)} value={content}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
