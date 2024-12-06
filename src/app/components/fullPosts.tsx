@@ -272,7 +272,7 @@ const FullPosts = ({user}: {user: User}) => {
                     <Avatar src={`${user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
                 </Flex>
                 <div className="flex flex-col">
-                    <ResizableTextarea placeholder={`What's on your mind, Eminem`} onChange={(e) =>  setContent(e.target.value)} value={content}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
+                    <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
                     <input type="file" id="file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
                     <div className="flex flex-col">
                     <label htmlFor="file-input" className="hover:cursor-pointer w-fit text-[#3D3D3D] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
