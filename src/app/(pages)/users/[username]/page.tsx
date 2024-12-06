@@ -145,6 +145,8 @@ const UserProfile = () => {
                 const res = await axios.get(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/friendship-status/${user?.userId}`);
 
                 const resData: { userId: string; isFollowed: boolean; friendshipStatus: number } = res.data;
+
+                console.log(res.data);
     
                 if (resData.isFollowed) {
                     setFollowStatus('following');

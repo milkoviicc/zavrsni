@@ -7,7 +7,7 @@ import Navbar from "./components/Navbar/Navbar";
 import { usePathname, useRouter } from "next/navigation";
 import AuthRedirect from "./AuthRedirect";
 import { useAuth } from "./context/AuthProvider";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ClientLayout({
@@ -23,14 +23,22 @@ export default function ClientLayout({
   const pathname = usePathname();
 
   const isAuthRoute = pathname === '/auth';
+  const [loading, setLoading] = useState(true);
+  const {fullyRegistered} = useAuth();
 
   useEffect(() => {
     if(!isAuthenticated) {
       router.push('/auth');
+    } else if(isAuthenticated && isAuthRoute) {
+      router.push('/');
+    } else {
+      setLoading(false);
     }
-  })
+  }, [isAuthenticated, isAuthRoute, router]);
 
-  const {fullyRegistered} = useAuth();
+  if(loading) return null;
+
+  
   return (
         <div className="min-h-screen flex flex-grow">
           {!isAuthRoute && fullyRegistered && <Navbar />}
