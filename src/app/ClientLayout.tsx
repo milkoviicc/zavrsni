@@ -29,8 +29,10 @@ export default function ClientLayout({
   useEffect(() => {
     if(!isAuthenticated) {
       router.push('/auth');
+      setLoading(false);
     } else if(isAuthenticated && isAuthRoute) {
       router.push('/');
+      setLoading(false);
     } else {
       setLoading(false);
     }
