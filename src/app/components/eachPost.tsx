@@ -175,9 +175,9 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
           <div className="flex gap-4 pt-4 pb-0 items-center justify-between">
             <div className="flex justify-between w-full">
               <div className='flex gap-1 px-4 items-center'>
-                <button onClick={() => handleLike(post.user.userId)}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_57_98)"><path d="M0.0175432 3.20833L2.87879 0.259583C3.04796 0.0904165 3.26963 -1.62297e-07 3.50296 -1.52097e-07C3.73629 -1.41898e-07 3.95796 0.0904165 4.12129 0.256667L6.98254 3.20833L4.96129 3.20833L4.96129 7L2.04463 7L2.04463 3.20833L0.0175432 3.20833Z" fill={`${post.userReacted === 1  ? '#319357' : '#585858'}`}/></g><defs><clipPath id="clip0_57_98"><rect width="7" height="7" fill="white" transform="translate(7) rotate(90)"/></clipPath></defs></svg></button>
+                <button onClick={() => handleLike(post.postId)}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_57_98)"><path d="M0.0175432 3.20833L2.87879 0.259583C3.04796 0.0904165 3.26963 -1.62297e-07 3.50296 -1.52097e-07C3.73629 -1.41898e-07 3.95796 0.0904165 4.12129 0.256667L6.98254 3.20833L4.96129 3.20833L4.96129 7L2.04463 7L2.04463 3.20833L0.0175432 3.20833Z" fill={`${post.userReacted === 1  ? '#319357' : '#585858'}`}/></g><defs><clipPath id="clip0_57_98"><rect width="7" height="7" fill="white" transform="translate(7) rotate(90)"/></clipPath></defs></svg></button>
                 <p className={`${post.userReacted === 1  ? 'text-[#319357]' : 'text-[#585858]'}`}>{post.likes}</p>
-                <button onClick={() => handleDislike(post.user.userId)}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g id="Layer_1" clipPath="url(#clip0_57_85)"><path id="Vector" d="M6.98246 3.79167L4.12121 6.74042C3.95204 6.90958 3.73037 7 3.49704 7C3.26371 7 3.04204 6.90958 2.87871 6.74333L0.0174562 3.79167L2.03871 3.79167L2.03871 -3.88486e-07L4.95537 -2.60994e-07L4.95537 3.79167L6.98246 3.79167Z" fill={`${post.userReacted === -1  ? '#D25551' : '#585858'}`}/></g><defs><clipPath id="clip0_57_85"><rect width="7" height="7" fill="white" transform="translate(0 7) rotate(-90)"/></clipPath></defs></svg></button>
+                <button onClick={() => handleDislike(post.postId)}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g id="Layer_1" clipPath="url(#clip0_57_85)"><path id="Vector" d="M6.98246 3.79167L4.12121 6.74042C3.95204 6.90958 3.73037 7 3.49704 7C3.26371 7 3.04204 6.90958 2.87871 6.74333L0.0174562 3.79167L2.03871 3.79167L2.03871 -3.88486e-07L4.95537 -2.60994e-07L4.95537 3.79167L6.98246 3.79167Z" fill={`${post.userReacted === -1  ? '#D25551' : '#585858'}`}/></g><defs><clipPath id="clip0_57_85"><rect width="7" height="7" fill="white" transform="translate(0 7) rotate(-90)"/></clipPath></defs></svg></button>
                 <p className={`${post.userReacted === -1  ? 'text-[#D25551]' : 'text-[#585858]'}`}>{post.dislikes}</p>
               </div>
               <Dialog>
@@ -237,13 +237,13 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
                           <FontAwesomeIcon
                             icon={faUpLong}
                             className={`text-2xl hover:cursor-pointer hover:text-green-600 transition-all ${post.userReacted === 1 ? "text-green-600" : "text-gray-500"}`}
-                            onClick={() => handleLike(post.user.userId)}
+                            onClick={() => handleLike(post.postId)}
                           />
                           <p>{post.likes}</p>
                           <FontAwesomeIcon
                             icon={faDownLong}
                             className={`text-2xl hover:cursor-pointer hover:text-red-600 transition-all ${post.userReacted === -1 ? "text-red-600" : "text-gray-500"}`}
-                            onClick={() => handleDislike(post.user.userId)}
+                            onClick={() => handleDislike(post.postId)}
                           />
                           <p>{post.dislikes}</p>
                     </div>

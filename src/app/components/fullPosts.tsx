@@ -198,7 +198,7 @@ const FullPosts = ({user}: {user: User}) => {
       try {
 
           // pokušavam pronaći post koji je likean tako što prolazim kroz sve postove i pronalazim koji post.id je jednak primljenom postId-u
-          const post = posts.find((post) => post.user.userId === postId);
+          const post = posts.find((post) => post.postId === postId);
 
           // ukoliko se ne uspije pronaći post vraća se tj izlazi iz funkcije.
           if(!post) return;
@@ -232,7 +232,7 @@ const FullPosts = ({user}: {user: User}) => {
       try {
 
           // pokušavam pronaći post koji je dislikean tako što prolazim kroz sve postove i pronalazim koji post.id je jednak primljenom postId-u
-          const post = posts.find((post) => post.user.userId === postId);
+          const post = posts.find((post) => post.postId === postId);
 
           // ukoliko se ne uspije pronaći post vraća se tj izlazi iz funkcije.
           if(!post) return;
