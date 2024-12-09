@@ -9,16 +9,15 @@ const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Com
 
     const commentDate = comment.createdOn;
 
-    const commentFullDate = new Date(comment.createdOn);
-    const justCommentDate = commentFullDate.toLocaleString('en-us', {year: 'numeric', month: 'short', day:'numeric'});
-    
     // pretvaram datum u Date objekt
-    const pastCommentDate = new Date(commentDate);
+    const commentFullDate = new Date(commentDate);
+    commentFullDate.setUTCHours(commentFullDate.getUTCHours()+1);
+    const justCommentDate = commentFullDate.toLocaleString('en-us', {year: 'numeric', month: 'short', day:'numeric'});
 
     const currentDate = new Date();
 
     // računam razliku između trenutnog i prenesenog vremena u ms
-    const commentDifferenceMs = currentDate.getTime() - pastCommentDate.getTime();
+    const commentDifferenceMs = currentDate.getTime() - commentFullDate.getTime();
 
     // pretvaram milisekunde u sekunde
     const totalCommentSeconds = Math.floor(commentDifferenceMs / 1000);
@@ -164,18 +163,10 @@ const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Com
        </div>
       <p className='py-4 max-w-full break-all pr-4'>{comment.content}</p>
       <div className='flex gap-2'>
-        <FontAwesomeIcon
-          icon={faUpLong}
-          className={`text-2xl hover:cursor-pointer hover:text-green-600 transition-all ${comment.userReacted === 1 ? "text-green-600" : "text-gray-500"}`}
-          onClick={() => handleCommentLike(comment.commentId)}
-        />
-        <p>{comment.likes}</p>
-        <FontAwesomeIcon
-          icon={faDownLong}
-          className={`text-2xl hover:cursor-pointer hover:text-red-600 transition-all ${comment.userReacted === -1 ? "text-red-600" : "text-gray-500"}`}
-          onClick={() => handleCommentDislike(comment.commentId)}
-        />
-        <p>{comment.dislikes}</p>
+        <button onClick={() => handleCommentLike(comment.commentId)}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_57_98)"><path d="M0.0175432 3.20833L2.87879 0.259583C3.04796 0.0904165 3.26963 -1.62297e-07 3.50296 -1.52097e-07C3.73629 -1.41898e-07 3.95796 0.0904165 4.12129 0.256667L6.98254 3.20833L4.96129 3.20833L4.96129 7L2.04463 7L2.04463 3.20833L0.0175432 3.20833Z" fill={`${comment.userReacted === 1  ? '#319357' : '#585858'}`}/></g><defs><clipPath id="clip0_57_98"><rect width="7" height="7" fill="white" transform="translate(7) rotate(90)"/></clipPath></defs></svg></button>
+        <p className={`${post.userReacted === 1  ? 'text-[#319357]' : 'text-[#585858]'}`}>{comment.likes}</p>
+        <button onClick={() => handleCommentDislike(comment.commentId)}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g id="Layer_1" clipPath="url(#clip0_57_85)"><path id="Vector" d="M6.98246 3.79167L4.12121 6.74042C3.95204 6.90958 3.73037 7 3.49704 7C3.26371 7 3.04204 6.90958 2.87871 6.74333L0.0174562 3.79167L2.03871 3.79167L2.03871 -3.88486e-07L4.95537 -2.60994e-07L4.95537 3.79167L6.98246 3.79167Z" fill={`${comment.userReacted === -1  ? '#D25551' : '#585858'}`}/></g><defs><clipPath id="clip0_57_85"><rect width="7" height="7" fill="white" transform="translate(0 7) rotate(-90)"/></clipPath></defs></svg></button>
+        <p className={`${post.userReacted === -1  ? 'text-[#D25551]' : 'text-[#585858]'}`}>{comment.dislikes}</p>
       </div>
     </div>
   )
