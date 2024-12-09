@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from './context/AuthProvider';
 
 const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, fullyRegistered } = useAuth();
+  const { isAuthenticated, fullyRegistered, user } = useAuth();
   const router = useRouter();
 
   const pathname = usePathname();
@@ -19,7 +19,12 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
       router.push('/auth'); // Preusmjerava na login page ako korisnik nije prijavljen
       window.location.reload();
     }
-  }, [isAuthenticated, router, isAuthRoute, isProfileRoute, fullyRegistered]);
+
+    if(pathname === `/users/${user?.username}`) {
+      console.log('path');
+      router.push('/my-profile');
+    }
+  }, [isAuthenticated, router, isAuthRoute, isProfileRoute, fullyRegistered, pathname, user?.username]);
 
   return (
     <>

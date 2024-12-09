@@ -17,6 +17,8 @@ const UserProfile = () => {
     const [loading, setLoading] = useState(false);
     const [followStatus, setFollowStatus] = useState('');
 
+    const pathname = usePathname();
+
     // Fetch logged-in user data from localStorage
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
@@ -145,8 +147,6 @@ const UserProfile = () => {
                 const res = await axios.get(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/friendship-status/${user?.userId}`);
 
                 const resData: { userId: string; isFollowed: boolean; friendshipStatus: number } = res.data;
-
-                console.log(res.data);
     
                 if (resData.isFollowed) {
                     setFollowStatus('following');
@@ -188,6 +188,15 @@ const UserProfile = () => {
             console.error(err);
         }
     }
+
+    useEffect(() => {
+        if(pathname === `/users/${loggedUser?.username}`) {
+            router.push('/my-profile');
+            return;
+        }
+    })
+
+
 
     // Render loading or not found states
     if (!user) return <h1 className="text-center my-40">User not found</h1>;

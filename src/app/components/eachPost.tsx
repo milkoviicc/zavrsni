@@ -19,17 +19,19 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
 
   // spremam preneseni datum u varijable
   const timestamp = post.createdOn;
-  const fullDate = new Date(post.createdOn);
+  // pretvaram datum u Date objekt
+  const fullDate = new Date(timestamp);
+
+  fullDate.setUTCHours(fullDate.getUTCHours()+1);
+
   const justDate = fullDate.toLocaleString('en-us', {year: 'numeric', month: 'short', day:'numeric'});
   
-  // pretvaram datum u Date objekt
-  const pastDate = new Date(timestamp);
 
   // dobivam trenutan datum i vrijeme
   const currentDate = new Date();
 
   // računam razliku između trenutnog i prenesenog vremena u ms
-  const differenceMs = currentDate.getTime() - pastDate.getTime();
+  const differenceMs = currentDate.getTime() - fullDate.getTime();
 
   // pretvaram milisekunde u sekunde
   const totalSeconds = Math.floor(differenceMs / 1000);
@@ -44,8 +46,6 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   const [showDelete, setShowDelete] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
 
-  const [showMore, setShowMore] = useState(false);
-  const [commentsOpen, setCommentsOpen] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
 
   const [isPortrait, setIsPortrait] = useState(false);
@@ -116,17 +116,17 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
                     <h1 className="text-black font-[400] font-Roboto leading-[8.23px] text-lg py-2">{post.user.firstName} {post.user.lastName}</h1>
                   </button>
                   <p className="text-sm text-gray-500">
-                    {days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}
+                  {days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}
                   </p>
                 </div>
                 <div>
                   {showUpdate && (
-                    <button className="text-sm" onClick={() => updatePost(post.user.userId)}>
+                    <button className="text-sm" onClick={() => updatePost(post.postId)}>
                       <FontAwesomeIcon icon={faPen} className="text-xl" />
                     </button>
                   )}
                   {showDelete && (
-                    <button className="text-sm px-2" onClick={() => deletePost(post.user.userId)}>
+                    <button className="text-sm px-2" onClick={() => deletePost(post.postId)}>
                       <FontAwesomeIcon icon={faTrash} className="text-xl" />
                     </button>
                   )}

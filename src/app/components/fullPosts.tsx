@@ -69,53 +69,59 @@ const FullPosts = ({user}: {user: User}) => {
 
 
   const getPosts = async (page: number) => {
-      try {
-          // šaljem get request i spremam response u varijablu res
-          const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts?page=${page}`);
+    try {
+      const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/popular-feed?page=${page}`);
 
-          if (res.status === 200) {
-            if (page === 0) {
-                // If it's the first page, set the posts to the fetched data
-                setPosts(res.data);
-            } else {
-                // If it's not the first page, append the new posts to the existing ones
-                setPosts((prevPosts) => [...prevPosts, ...res.data]);
-            }
-            if (res.data.length === 0) {
-            setHasMore(false); // No more posts to load
-            }
-            return true;
-          }
-          return false;
-      } catch(err) {
-          // ukoliko dođe do greške u konzoli će se ispisati ova poruka sa greškom.
-          console.error('Could not fetch posts', err);
-          return false;
+      if (res.status === 200) {
+        if (page === 0) {
+          setPosts(res.data);
+        } else {
+          // Dodajem nove postove trenutnima i pazim da se ne bi postovi ponavljali
+          setPosts((prevPosts) => {
+            const newPosts = res.data.filter((newPost) => !prevPosts.some((existingPost) => existingPost.postId === newPost.postId));
+            return [...prevPosts, ...newPosts];
+          });
+        }
+
+        if (res.data.length === 0) {
+          setHasMore(false);
+        }
+
+        return true;
       }
-  }
-
+      return false;
+    } catch (err) {
+      console.error('Could not fetch posts', err);
+      return false;
+    }
+  };
+  
   const getYourFeed = async (page: number) => {
-      try {
-          const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/your-feed?page=${page}`);
-          if (res.status === 200) {
-            if (page === 0) {
-                // If it's the first page, set the posts to the fetched data
-                setPosts(res.data);
-            } else {
-                // If it's not the first page, append the new posts to the existing ones
-                setPosts((prevPosts) => [...prevPosts, ...res.data]);
-            }
-            if (res.data.length === 0) {
-            setHasMore(false); // No more posts to load
-            }
-            return true;
-          }
-          return false;
-      } catch(err) {
-          console.error(err);
-          return false;
+    try {
+      const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/your-feed?page=${page}`);
+
+      if (res.status === 200) {
+        if (page === 0) {
+          setPosts(res.data);
+        } else {
+          setPosts((prevPosts) => {
+            const newPosts = res.data.filter((newPost) => !prevPosts.some((existingPost) => existingPost.postId === newPost.postId));
+            return [...prevPosts, ...newPosts];
+          });
+        }
+
+        if (res.data.length === 0) {
+          setHasMore(false);
+        }
+        return true;
       }
-  }
+      return false;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  };
+
 
   
   const fetchMoreData = () => {
@@ -128,21 +134,22 @@ const FullPosts = ({user}: {user: User}) => {
   };
 
   
-  // async funckija koja se poziva klikom na gumb 'delete'
-  const deletePost = async (postId: string) => {
-    try {
-        // šaljem axios delete request na API sa id-em posta i spremam response u varijablu 'res'
-        const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/delete-post/${postId}`);
-        
-        // ako je res.status jednak 200 znači da je post obrisan i onda mjenjam reactionTrigger state kako bi se postovi re-renderali na stranici.
-        if(res.status === 200) {
-            setReactionTrigger((prev) => !prev);
+    // async funckija koja se poziva klikom na gumb 'delete'
+    const deletePost = async (postId: string) => {
+        try {
+            // šaljem axios delete request na API sa id-em posta i spremam response u varijablu 'res'
+            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/delete-post/${postId}`);
+            
+            // ako je res.status jednak 200 znači da je post obrisan i onda mjenjam reactionTrigger state kako bi se postovi re-renderali na stranici.
+            if (res.status === 200) {
+                // Izbacujem obrisani post
+                setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
+            }
+        } catch(err) {
+            // ukoliko dođe do greške ispisat će se u konzoli
+            console.error('Could not delete post: ', err);
         }
-    } catch(err) {
-        // ukoliko dođe do greške ispisat će se u konzoli
-        console.error('Could not delete post: ', err);
     }
-}
 
   useEffect(() => {
       if (posts.length === 0 && currentPage >= 1) {
@@ -162,36 +169,6 @@ const FullPosts = ({user}: {user: User}) => {
   useEffect(() => {
       setCurrentPage(0);
   }, [postsState]);
-
-  const handleNextPage = async () => {
-      const nextPage = currentPage + 1;
-      let hasPosts = false;
-  
-      if (postsState === 'Popular') {
-        hasPosts = await getPosts(nextPage);
-      } else if (postsState === 'Your Feed') {
-        hasPosts = await getYourFeed(nextPage);
-      }
-  
-      if (hasPosts) {
-        setCurrentPage(nextPage);
-        setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 200);
-      } else {
-        alert('There are no more posts on the next page');
-      }
-    };
-  
-    const handlePrevPage = () => {
-      if (currentPage > 0) {
-        setCurrentPage((prev) => prev - 1);
-        setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 200);
-      }
-    };
-
 
   // async funckija koja se poziva klikom na gumb 'Like' i prima postId
   const handleLike = async (postId: string) => {
