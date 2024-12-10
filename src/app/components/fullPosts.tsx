@@ -237,11 +237,38 @@ const FullPosts = ({user}: {user: User}) => {
       }
   }
 
-  const updatePost = async (postId: string, updatedContent: string) => {
+  const convertUrlsToFiles = async (urls: string[]): Promise<File[]> => {
+    const filePromises = urls.map(async (url) => {
+      // Fetch the file from the URL (which is a Blob URL)
+      const response = await fetch(url);
+      const blob = await response.blob();
+  
+      // Optionally, you can define a name or use the original file name if available
+      const fileName = "file" + Math.random();  // Replace with actual file name if you have it
+  
+      // Create a File object from the Blob
+      const file = new File([blob], fileName, { type: blob.type });
+      return file;
+    });
+  
+    // Wait for all promises to resolve and return the array of File objects
+    return await Promise.all(filePromises);
+  };
+
+
+
+  const updatePost = async (postId: string, updatedContent: string, updatedFiles: string[]) => {
       try {
 
           const formData = new FormData();
           formData.append('Content', updatedContent);
+
+          const files = await convertUrlsToFiles(updatedFiles);
+
+          // If there are files, append them to FormData
+          files.forEach((file) => {
+            formData.append(`Files`, file);
+          });
 
           const res = await axios.put<Post>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/update-post/${postId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 

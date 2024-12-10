@@ -14,7 +14,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import ResizableTextarea from './ResizableTextarea';
 
-const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refreshPosts}: {post: Post, handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string, updatedContent: string) => void, refreshPosts: () => void})=> {
+const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refreshPosts}: {post: Post, handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string, updatedContent: string, updatedFiles: string[]) => void, refreshPosts: () => void})=> {
   
   // DATUM POSTA
 
@@ -51,6 +51,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   const [updatedContent, setUpdatedContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [updatedFiles, setUpdatedFiles] = useState<File[]>([]);
+  const [previousFiles, setPreviousFiles] = useState<string[]>([]);
 
   // dobivam usera iz localStorage-a
   const user = localStorage.getItem('user');
@@ -74,8 +75,13 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
     if (event.target.files && event.target.files.length > 0) {
       const filesArray = Array.from(event.target.files);
       
-      // Use the spread operator to append new files without removing previous ones.
-      setUpdatedFiles((prevFiles) => [...prevFiles, ...filesArray]);
+      // Use URL.createObjectURL to generate a URL for each file and add it to the state
+      filesArray.forEach((file) => {
+        const fileUrl = URL.createObjectURL(file);
+  
+        // Add the file URL to the previous files state
+        setPreviousFiles((prevFiles) => [...prevFiles, fileUrl]);
+      });
     }
   };
 
@@ -116,26 +122,13 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
     }
   };
 
-  const convertUrlsToFiles = async (fileUrls: string[]): Promise<File[]> => {
-    const files = await Promise.all(
-      fileUrls.map(async (url, index) => {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const fileName = url.split("/").pop() || `file-${index}`; // Derive a name from the URL
-        return new File([blob], fileName, { type: blob.type });
-      })
-    );
-    return files;
-  };
-
   const handleUpdate = async () => {
     setUpdatedContent(post.content);
 
     if (post.fileUrls && Array.isArray(post.fileUrls)) {
-      const files = await convertUrlsToFiles(post.fileUrls);
-      setUpdatedFiles(files);
+      setPreviousFiles(post.fileUrls);
     } else {
-      setUpdatedFiles([]);
+      setPreviousFiles([]);
     }
   }
 
@@ -188,17 +181,17 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
                                 </Flex>
                                 <div className="flex flex-col">
                                     <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
-                                    <input type="file" id="file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
+                                    <input type="file" id="new-file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
                                     <div className="flex flex-col">
-                                    <label htmlFor="file-input" className="hover:cursor-pointer w-fit text-[#3D3D3D] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
+                                    <label htmlFor="new-file-input" className="hover:cursor-pointer w-fit text-[#3D3D3D] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
                                     <span className="block bg-[#424242] w-[75px] h-[1px] -ml-[3px]"></span>
                                     </div>
                                     <div className="flex items-start">
-                                        {updatedFiles ? updatedFiles.map((file, index) => (<Image key={index} src={URL.createObjectURL(file)} width={100} height={64} alt="aaaaaaa" className="py-2"/>)) : null}
-                                        {updatedFiles.length > 0 ? <button className="w-fit px-2" onClick={() => setUpdatedFiles([])}>X</button> : null}
+                                        {previousFiles ? previousFiles.map((file, index) => (<Image key={index} src={file} width={100} height={64} alt="aaaaaaa" className="py-2"/>)) : null}
+                                        {previousFiles.length > 0 ? <button className="w-fit px-2" onClick={() => setPreviousFiles([])}>X</button> : null}
                                     </div>
                                 </div>
-                                <button onClick={() => updatePost(post.postId, updatedContent)} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Update post</button>
+                                <button onClick={() => updatePost(post.postId, updatedContent, previousFiles)} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Update post</button>
                             </div>
                         </div>
                       </DialogContent>
@@ -337,4 +330,4 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   )
 }
 
-export default EachPost
+export default EachPost;
