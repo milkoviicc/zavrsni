@@ -12,7 +12,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 
 const FullPosts = ({user}: {user: User}) => {
 
-      // stateovi
+  // stateovi
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -49,7 +49,7 @@ const FullPosts = ({user}: {user: User}) => {
       // If there are files, append them to FormData
       postFile.forEach((file) => {
         formData.append(`Files`, file);
-      })  
+      });
 
       // šalje se axios post request na API i prenosi se vrijednost content statea, tj. uneseni tekst posta
       const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/add-post`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
@@ -237,8 +237,26 @@ const FullPosts = ({user}: {user: User}) => {
       }
   }
 
-  const updatePost = async (postId: string) => {
-      return;
+  const updatePost = async (postId: string, updatedContent: string) => {
+      try {
+
+          const formData = new FormData();
+          formData.append('Content', updatedContent);
+
+          const res = await axios.put<Post>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/update-post/${postId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+
+          const updatedPost = posts.find((post) => post.postId === postId);
+
+          if(!updatedPost) return null;
+
+          updatedPost.content = res.data.content;
+          updatedPost.fileUrls= res.data.fileUrls;
+
+          setReactionTrigger((prev) => !prev);
+          
+      } catch(err) {
+        console.error(err);
+      }
   }
 
   return (
