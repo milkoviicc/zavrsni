@@ -133,13 +133,13 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   }
 
   return (
-    <div className="my-2 min-w-full max-w-xl h-fit flex flex-col gap-2 text-black px-1 py-2 rounded-3xl overflow-hidden [box-shadow:0px_0px_5px_1px_rgba(0,_0,_0,_0.25)]">
+    <div className="my-2 w-[800px] h-fit flex flex-col gap-2 text-black px-1 py-2 rounded-3xl overflow-hidden [box-shadow:0px_0px_5px_1px_rgba(0,_0,_0,_0.25)]">
       <div className="flex gap-2 flex-1">
         <div className='flex flex-col w-full'>
           <div className='py-2 px-4 flex'>
             <button onClick={() => router.push(`/users/${post.user.username}`)}>
               <Flex gap="2" className='items-center'>
-                <Avatar src={`${post.user.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
+                <Avatar src={`${post.user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%'}} fallback="A" />
               </Flex>
             </button>
             
