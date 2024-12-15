@@ -20,7 +20,7 @@ const FullPosts = ({user}: {user: User}) => {
   const [content, setContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [postFile, setPostFile] = useState<File[]>([]);
-  const [postsState, setPostsState] = useState<'Popular' | 'Your Feed'>('Popular');
+  const [postsState, setPostsState] = useState('');
   const [hasMore, setHasMore] = useState(true);
     
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,6 +150,18 @@ const FullPosts = ({user}: {user: User}) => {
             console.error('Could not delete post: ', err);
         }
     }
+
+    useEffect(() => {
+      const feedState = localStorage.getItem('feed');
+      console.log(feedState);
+      if(feedState) {
+        setPostsState(feedState); 
+      }
+    }, [])
+
+    useEffect(() => {
+      handleFeedState(postsState);
+    }, [postsState])
 
   useEffect(() => {
       if (posts.length === 0 && currentPage >= 1) {
@@ -284,6 +296,22 @@ const FullPosts = ({user}: {user: User}) => {
       } catch(err) {
         console.error(err);
       }
+  }
+
+  const handleFeedState = (feedState: string) => {
+    const currentFeed = localStorage.getItem('feed');
+
+    if(currentFeed === 'Popular' && feedState === 'Popular') {
+      return;
+    } else if (currentFeed === 'Popular' && feedState === 'Your Feed') {
+      localStorage.setItem('feed', 'Your Feed');
+      setReactionTrigger((prev) => !prev);
+    } else if (currentFeed === 'Your Feed' && feedState === 'Popular') {
+      localStorage.setItem('feed', 'Popular');
+      setReactionTrigger((prev) => !prev);
+    } else if (currentFeed === 'Your Feed' && feedState === 'Your Feed') {
+      return;
+    }
   }
 
   return (
