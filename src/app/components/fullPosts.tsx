@@ -58,7 +58,8 @@ const FullPosts = ({user}: {user: User}) => {
       if(res.status === 200) {
         setContent('');
         setPostFile([]);
-        setReactionTrigger((prev) => !prev);
+        setPosts([]);
+        window.location.reload();
       }
     } catch(err) {
         // ukoliko je došlo do greške, ispisuje se u konzoli
@@ -79,6 +80,7 @@ const FullPosts = ({user}: {user: User}) => {
           // Dodajem nove postove trenutnima i pazim da se ne bi postovi ponavljali
           setPosts((prevPosts) => {
             const newPosts = res.data.filter((newPost) => !prevPosts.some((existingPost) => existingPost.postId === newPost.postId));
+            console.log(newPosts);
             return [...prevPosts, ...newPosts];
           });
         }
@@ -150,18 +152,18 @@ const FullPosts = ({user}: {user: User}) => {
             console.error('Could not delete post: ', err);
         }
     }
+  
 
-    useEffect(() => {
-      const feedState = localStorage.getItem('feed');
-      console.log(feedState);
-      if(feedState) {
-        setPostsState(feedState); 
-      }
-    }, [])
+  useEffect(() => {
+    const feedState = localStorage.getItem('feed');
+    if(feedState) {
+      setPostsState(feedState); 
+    }
+  }, [])
 
-    useEffect(() => {
-      handleFeedState(postsState);
-    }, [postsState])
+  useEffect(() => {
+    handleFeedState(postsState);
+  }, [postsState])
 
   useEffect(() => {
       if (posts.length === 0 && currentPage >= 1) {

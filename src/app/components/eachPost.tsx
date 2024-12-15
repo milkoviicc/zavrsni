@@ -281,7 +281,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
                             sizes="100vw"
                             width={0}
                             height={0}
-                            className="w-[30%] h-auto pb-6 mr-4"
+                            className="w-[100%] h-auto pb-6 mr-4"
                             onLoad={handleImageLoad}
                           />)}
 
@@ -301,7 +301,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
                             sizes="100vw"
                             width={0}
                             height={0}
-                            className="w-[70%] h-auto py-6"
+                            className="w-[100%] h-auto py-6"
                             onLoad={handleImageLoad}
                           />))}
                     </div>
