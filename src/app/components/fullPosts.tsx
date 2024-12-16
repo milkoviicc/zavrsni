@@ -22,6 +22,7 @@ const FullPosts = ({user}: {user: User}) => {
   const [postFile, setPostFile] = useState<File[]>([]);
   const [postsState, setPostsState] = useState('');
   const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
     
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -71,6 +72,7 @@ const FullPosts = ({user}: {user: User}) => {
 
   const getPosts = async (page: number) => {
     try {
+      setLoading(true);
       const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/popular-feed?page=${page}`);
 
       if (res.status === 200) {
@@ -80,7 +82,6 @@ const FullPosts = ({user}: {user: User}) => {
           // Dodajem nove postove trenutnima i pazim da se ne bi postovi ponavljali
           setPosts((prevPosts) => {
             const newPosts = res.data.filter((newPost) => !prevPosts.some((existingPost) => existingPost.postId === newPost.postId));
-            console.log(newPosts);
             return [...prevPosts, ...newPosts];
           });
         }
@@ -88,9 +89,10 @@ const FullPosts = ({user}: {user: User}) => {
         if (res.data.length === 0) {
           setHasMore(false);
         }
-
+        setLoading(false);
         return true;
       }
+      setLoading(false);
       return false;
     } catch (err) {
       console.error('Could not fetch posts', err);
@@ -100,6 +102,7 @@ const FullPosts = ({user}: {user: User}) => {
   
   const getYourFeed = async (page: number) => {
     try {
+      setLoading(true);
       const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/your-feed?page=${page}`);
 
       if (res.status === 200) {
@@ -115,8 +118,10 @@ const FullPosts = ({user}: {user: User}) => {
         if (res.data.length === 0) {
           setHasMore(false);
         }
+        setLoading(false);
         return true;
       }
+      setLoading(false);
       return false;
     } catch (err) {
       console.error(err);
@@ -353,8 +358,8 @@ const FullPosts = ({user}: {user: User}) => {
             
             </div>
             <div className='w-full flex justify-center'>
-                {posts.length === 0 ? <h1>There are no posts yet!</h1> : (
-                    <InfiniteScroll className='w-full flex flex-col gap-4 bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1>No more posts!</h1>} scrollThreshold={0.95}>
+                {posts.length === 0 && loading === false ? <h1>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1>Loading posts...</h1> : (
+                    <InfiniteScroll className='w-full flex flex-col gap-4 bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1>No more posts!</h1>} scrollThreshold={1}>
                         { posts.map((post, index) => (<EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => getPosts(currentPage)}/> ))}
                     </InfiniteScroll>
                 )}

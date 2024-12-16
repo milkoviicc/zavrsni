@@ -30,11 +30,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // spremam token i korisnika iz localstoragea u varijable 'token' i 'storedUser' 
     const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
-
+    const feed = localStorage.getItem('feed');
 
     // ukoliko token i korisnik postoje ulazi u {} i izvršava se dalje
-    if (token && storedUser) {
-      localStorage.setItem('feed', 'Popular');
+    if (token && storedUser && feed) {
       if(isTokenExpired(token)) {
         localStorage.clear();
         router.push('/auth');
@@ -138,6 +137,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const user = localStorage.getItem('user');
       const token = localStorage.getItem('token');
+      const feed = localStorage.getItem('feed');
 
       if (user) {
         // spremam korisnikove podatke u varijablu 'userData'
@@ -151,13 +151,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           'Content-Type': 'multipart/form-data'}});
 
         // provjeravam postoji li token, korisnikov id, ime i prezime
-        if(token && userData.userId) {
+        if(token && userData.userId && feed) {
 
           // ukoliko sve postoji, spremam id, username, ime i prezime u varijablu updatedProfile tipa 'Profile'
           const updatedProfile: User = res.data;
-
-          // Append a cache-busting timestamp to the updated profile picture URL
-          updatedProfile.pictureUrl = `${updatedProfile.pictureUrl}?${new Date().getTime()}`;
 
           // brišem localStorage
           localStorage.clear();
@@ -167,6 +164,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           // spremam u localStorage token tog korisnika
           localStorage.setItem('token', token);
+
+          localStorage.setItem('feed', feed);
 
           // spremam u 'user' state korisnika sa svim novim podatcima
           setUser(updatedProfile);
@@ -243,6 +242,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // spremam korisnika u localStorage
           localStorage.setItem('user', JSON.stringify(loggedUser.user));
 
+          localStorage.setItem('feed', 'Popular');
+
           // preusmjeravam na home page
           router.push('/');
 
@@ -270,10 +271,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // funckija za odjavu korisnika
   const logout = () => {
     // kada se pozove briše se localStorage, user i profile state se postavlja na null, a isLoggedIn state na false kako bi se znalo da nema prijavljenog korisnika
-    localStorage.clear();
     setUser(null);
     setProfile(null);
     setIsLoggedIn(false);
+    localStorage.clear();
 
     // preusmjerava se na login page
     router.push('/auth');

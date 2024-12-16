@@ -81,7 +81,7 @@ export default function Navbar() {
         <div className="border-1 border-black bg-white rounded-md [box-shadow:0px_0.5px_20.16px_0px_rgba(0,_0,_0,_0.26)] h-[75px] fixed top-0 w-full">
             <div className="flex justify-between items-center h-full w-full">
                 <div className="w-[33%] flex justify-start ml-10">
-                    <h1>Logo</h1>
+                    <h1 className="text-2xl">SNet</h1>
                 </div>
                 <div className="flex w-full justify-center gap-2 items-center">
                     <button className={`px-0 group`} onClick={() => router.push('/')}><svg width="40" height="40" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_109_85)"><path d="M13.6117 0.753662H0.841309V13.5241H13.6117V0.753662Z" fill="white" fillOpacity="0.01"/><path fillRule="evenodd" clipRule="evenodd" d="M3.23577 11.9278V5.54258L1.90552 6.60678L7.22652 2.34998L12.5475 6.60678L11.2173 5.54258V11.9278H3.23577Z" stroke="#535353" strokeWidth="0.605214" strokeLinecap="round" strokeLinejoin="round"/><path fillRule="evenodd" clipRule="evenodd" d="M5.89636 8.46899V11.9276H8.55686V8.46899H5.89636Z" stroke="#535353" strokeWidth="0.605214" strokeLinejoin="round"/><path d="M3.23572 11.9276H11.2172" stroke="#535353" strokeWidth="0.605214" strokeLinecap="round"/></g><defs><clipPath id="clip0_109_85"><rect width="12.7704" height="12.7704" fill="white" transform="translate(0.841309 0.753662)"/></clipPath></defs></svg>{path === '/' ? <span className="block bg-[#535252] border-[#535252] h-[2px]"></span> : <span className="block opacity-0 group-hover:opacity-100 transition-all bg-[#535252] border-[#535252] h-[2px]"></span>}</button>           

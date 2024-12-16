@@ -24,7 +24,6 @@ const Profile = () => {
   useEffect(() => {
     if (user) {
       try {
-
         // Initialize the state with user data
         setFirstName(user.firstName || '');
         setLastName(user.lastName || '');
@@ -44,12 +43,10 @@ const Profile = () => {
       const res = await axios.put('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile', {username, firstName, lastName});
 
       if(res.status === 200) {
-        user.firstName = firstName;
-        user.lastName = lastName;
-        user.username = username;
+        const updatedUser: User = res.data;
 
         localStorage.removeItem('user');
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('user', JSON.stringify(updatedUser));
         window.location.reload();
       }
     } catch(err) {
