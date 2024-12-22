@@ -311,9 +311,9 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
                       <button onClick={() => handleDislike(post.postId)}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g id="Layer_1" clipPath="url(#clip0_57_85)"><path id="Vector" d="M6.98246 3.79167L4.12121 6.74042C3.95204 6.90958 3.73037 7 3.49704 7C3.26371 7 3.04204 6.90958 2.87871 6.74333L0.0174562 3.79167L2.03871 3.79167L2.03871 -3.88486e-07L4.95537 -2.60994e-07L4.95537 3.79167L6.98246 3.79167Z" fill={`${post.userReacted === -1  ? '#D25551' : '#585858'}`}/></g><defs><clipPath id="clip0_57_85"><rect width="7" height="7" fill="white" transform="translate(0 7) rotate(-90)"/></clipPath></defs></svg></button>
                       <p className={`${post.userReacted === -1  ? 'text-[#D25551]' : 'text-[#585858]'}`}>{post.dislikes}</p>
                     </div>
-                    <hr className='my-4 w-[95%] h-[1px] bg-black'/>
+                    <hr className='my-4 w-[97%] h-[1px] bg-black'/>
                     <PostComment postId={post.postId} refreshPosts={refreshPosts} refreshComments={handleComments}/>
-                    <h1 className='text-2xl'>Comments</h1>
+                    <h1 className='text-2xl font-Roboto mt-4'>Comments</h1>
                     {comments.map((comment, index) => (
                       <div key={index} className='py-2'>
                         <EachComment post={post} comment={comment} refreshComments={handleComments} />
