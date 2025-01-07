@@ -39,6 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         router.push('/auth');
         setUser(null);
         setProfile(null);
+        setIsLoggedIn(false);
         return;
       }
 
