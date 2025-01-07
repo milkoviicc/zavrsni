@@ -25,6 +25,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const router = useRouter();
   const path = usePathname();
 
+  // funckija za odjavu korisnika
+  const logout = () => {
+    // kada se pozove briše se localStorage, user i profile state se postavlja na null, a isLoggedIn state na false kako bi se znalo da nema prijavljenog korisnika
+    setUser(null);
+    setProfile(null);
+    setIsLoggedIn(false);
+    localStorage.clear();
+
+    // preusmjerava se na login page
+    router.push('/auth');
+  };
+
   // rendera se svaki put kad je isLoggedIn state promjenjen
   useEffect(() => {
     // spremam token i korisnika iz localstoragea u varijable 'token' i 'storedUser' 
@@ -54,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // postavljam loading state na false nakon provjere
     setLoading(false); 
-  }, [isLoggedIn, router]);
+  }, [isLoggedIn, router, logout]);
 
 
   const isTokenExpired = (token: string) => {
@@ -266,17 +278,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
 
-  // funckija za odjavu korisnika
-  const logout = () => {
-    // kada se pozove briše se localStorage, user i profile state se postavlja na null, a isLoggedIn state na false kako bi se znalo da nema prijavljenog korisnika
-    setUser(null);
-    setProfile(null);
-    setIsLoggedIn(false);
-    localStorage.clear();
-
-    // preusmjerava se na login page
-    router.push('/auth');
-  };
+  
 
   // async funkcija za brisanje računa
   const deleteAccount = async () => {
