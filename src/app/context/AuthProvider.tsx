@@ -35,9 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // ukoliko token i korisnik postoje ulazi u {} i izvršava se dalje
     if (token && storedUser && feed) {
       if(isTokenExpired(token)) {
-        localStorage.clear();
-        router.push('/auth');
-        window.location.reload();
+        logout();
         return;
       }
 
