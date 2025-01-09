@@ -300,6 +300,8 @@ const FullPosts = ({user}: {user: User}) => {
 
           setReactionTrigger((prev) => !prev);
           
+          window.location.reload();
+          
       } catch(err) {
         console.error(err);
       }

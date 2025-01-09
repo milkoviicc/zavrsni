@@ -54,6 +54,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // postavljam isLoggedIn state na true kako bi se znalo da je korisnik prijavljen
       setIsLoggedIn(true);
+
+      localStorage.setItem('feed', feed);
     }
 
     // postavljam loading state na false nakon provjere
@@ -84,7 +86,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // async funkcija koja prima ime i prezime varijable, oba tipa string, nakon unošenja punog imena i prezimena na stranici.
   const addDetails = async (firstName: string, lastName: string) => {
     try {
-
       // // spremam token i korisnika iz localstoragea u varijable 'token' i 'storedUser' 
       const user = localStorage.getItem('user');
       const token = localStorage.getItem('token');
@@ -96,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // šaljem axios put request na API, primam nazad response tipa 'Profile', a prenosim username, firstName i lastName
         const res = await axios.put<User>(
-          `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile`, 
+          `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile`,
           { username: userData.username, firstName, lastName }
         );
 
@@ -139,9 +140,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const user = localStorage.getItem('user');
       const token = localStorage.getItem('token');
-      const feed = localStorage.getItem('feed');
 
-      if (user) {
+      if (user && token) {
+        const feed = localStorage.getItem('feed');
         // spremam korisnikove podatke u varijablu 'userData'
         const userData: User = JSON.parse(user);
 
@@ -152,25 +153,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const res = await axios.put<User>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile-picture', formData, {headers: {
           'Content-Type': 'multipart/form-data'}});
 
-        // provjeravam postoji li token, korisnikov id, ime i prezime
-        if(token && userData.userId && feed) {
 
-          // ukoliko sve postoji, spremam id, username, ime i prezime u varijablu updatedProfile tipa 'Profile'
-          const updatedProfile: User = res.data;
+        if(res.status === 200) {
+            const feed = localStorage.getItem('feed');
+            // ukoliko sve postoji, spremam id, username, ime i prezime u varijablu updatedProfile tipa 'Profile'
+            const updatedProfile: User = res.data;
 
-          // brišem localStorage
-          localStorage.clear();
+            // brišem localStorage
+            localStorage.clear();
 
-          // spremam u localStorage korisnika sa svim novim podatcima
-          localStorage.setItem('user', JSON.stringify(updatedProfile));
+            // spremam u localStorage korisnika sa svim novim podatcima
+            localStorage.setItem('user', JSON.stringify(updatedProfile));
 
-          // spremam u localStorage token tog korisnika
-          localStorage.setItem('token', token);
+            // spremam u localStorage token tog korisnika
+            localStorage.setItem('token', token);
+            if(feed) {
+              localStorage.setItem('feed', feed);
+            }
+            
 
-          localStorage.setItem('feed', feed);
-
-          // spremam u 'user' state korisnika sa svim novim podatcima
-          setUser(updatedProfile);
+            // spremam u 'user' state korisnika sa svim novim podatcima
+            setUser(updatedProfile);
         }
       }
     } catch(error) {
@@ -194,6 +197,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // ukoliko sadrže, spremam token u localStorage
         localStorage.setItem('token', newUser.token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${newUser.token}`;
 
         // postavljam state 'user' da sadrži primljene podatke tj korisnika
         setUser(newUser.user);
@@ -236,7 +240,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           // ukoliko je uneseni username jednak usernameu vraćenog korisnika ili unešeni email jednak emailu vraćenog korisnika, spremam token u localStorage
           localStorage.setItem('token', loggedUser.token);
-
+          axios.defaults.headers.common['Authorization'] = `Bearer ${loggedUser.token}`;
 
           // spremam korisnika u state 'user'
           setUser(loggedUser.user);
