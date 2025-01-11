@@ -306,6 +306,8 @@ const FullPosts = ({user}: {user: User}) => {
         console.error(err);
       }
   }
+  
+
 
   const handleFeedState = (feedState: string) => {
     const currentFeed = localStorage.getItem('feed');

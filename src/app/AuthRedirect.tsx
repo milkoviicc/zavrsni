@@ -21,7 +21,6 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
     }
 
     if(pathname === `/users/${user?.username}`) {
-      console.log('path');
       router.push('/my-profile');
     }
   }, [isAuthenticated, router, isAuthRoute, isProfileRoute, fullyRegistered, pathname, user?.username]);

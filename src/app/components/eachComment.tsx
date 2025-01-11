@@ -4,8 +4,11 @@ import React, {useEffect, useState} from 'react'
 import { Post, Comment, User } from '../types/types'
 import { faDownLong, faPen, faThumbsDown, faThumbsUp, faTrash, faUpLong } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger} from '@/src/components/ui/dialog';
+import { useRouter } from 'next/navigation'
+import ResizableTextarea from './ResizableTextarea'
 
-const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Comment, refreshComments: () => void })=> {
+const EachComment = ({post, comment, refreshComments, updateComment}: {post: Post, comment: Comment, refreshComments: () => void, updateComment: (commentId: string, newContent: string) => void})=> {
 
     const commentDate = comment.createdOn;
 
@@ -32,6 +35,10 @@ const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Com
 
     const [showDelete, setShowDelete] = useState(false);
     const [showUpdate, setShowUpdate] = useState(false);
+    const [updatedFiles, setUpdatedFiles] = useState<File[]>([]);
+    const [previousFiles, setPreviousFiles] = useState<string[]>([]);
+    const [updatedContent, setUpdatedContent] = useState('');
+    const [finishedUpdating, setFinishedUpdating] = useState(false);
 
     useEffect(() => {
 
@@ -127,9 +134,18 @@ const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Com
       }
     } 
   
-    const updateComment = async (commentId: string) => {
-        return;
+    const handleUpdate = () => {
+      setUpdatedContent(comment.content);
     }
+
+    const update = async () => {
+      updateComment(comment.commentId, updatedContent);
+      setFinishedUpdating(true);
+      setTimeout(() => {
+        setFinishedUpdating(false);
+      }, 1000);
+    }
+    const router = useRouter();
 
   return (
     <div className='py-2 flex-col'>
@@ -146,11 +162,40 @@ const EachComment = ({post, comment, refreshComments}: {post: Post, comment: Com
               </p>
             </div>
             <div>
-              {showUpdate && (
-                <button className="text-sm">
-                  <FontAwesomeIcon icon={faPen} className="text-xl" />
-                </button>
-              )}
+            {showUpdate && (
+                    <Dialog>
+                      <DialogTrigger onClick={() => handleUpdate()}><FontAwesomeIcon icon={faPen} /></DialogTrigger>
+                      <DialogContent className='w-full h-[350px] flex flex-col  text-black overflow-y-auto min-w-fit'>
+                        <DialogHeader className='flex flex-row gap-2'>
+                          <button onClick={() => router.push(`/users/${post.user.username}`)}>
+                            <Flex gap="2" className='items-center'>
+                              <Avatar src={`${post.user.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
+                            </Flex>
+                          </button>
+                          <div className='flex justify-between w-full pr-8 !mt-0 '>
+                            <div className='flex flex-col'>
+                              <DialogDescription className='text-base text-black'><button onClick={() => router.push(`/users/${post.user.username}`)}>{post.user.firstName} {post.user.lastName}</button></DialogDescription>
+                              <DialogTitle className='text-sm font-[500] text-[#656565]'><button onClick={() => router.push(`/users/${post.user.username}`)}>@ {post.user.username}</button></DialogTitle>
+                            </div>
+                            <div>
+                              <p className='text-black text-opacity-60'>{commentDays >= 1 ? justCommentDate : commentDays <= 0 && commentHours > 0 && commentMinutes <= 60 ? `${commentHours}h ago` : commentDays < 1 && commentHours <= 24 && commentMinutes <= 60 && commentMinutes >= 1 ? `${commentMinutes}m ago` : "Just now"}</p>
+                            </div>
+                          </div>
+                        </DialogHeader>
+                        <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#ededed]">
+                            <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
+                                <Flex gap="2" className='cursor-pointer'>
+                                    <Avatar src={`${post.user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
+                                </Flex>
+                                <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
+                                <button onClick={() => update()} className="rounded-full w-[150px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Update comment</button>
+                            </div>
+                            {finishedUpdating ? <h1>Comment successfully updated!</h1> : null}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                )}
+              
               {showDelete && (
                 <button className="text-sm px-2">
                   <FontAwesomeIcon icon={faTrash} className="text-xl" onClick={(() => deleteComment(comment.commentId))}/>

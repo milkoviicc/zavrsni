@@ -85,6 +85,24 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
     }
   };
 
+  const updateComment = async (commentId: string, newContent: string) => {
+    try {
+      const res = await axios.put(
+      `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/comments/update/${commentId}`,
+      { content: newContent }, 
+    );
+
+      const updatedComment = comments.find((comment) => comment.commentId === commentId);
+      if(!updatedComment) return null;
+
+      updatedComment.content = newContent;
+      
+    } catch(err) {
+      console.error(err);
+    }
+  }
+  
+
 
   useEffect(() => {
 
@@ -183,8 +201,8 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
                                     <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
                                     <input type="file" id="new-file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
                                     <div className="flex flex-col">
-                                    <label htmlFor="new-file-input" className="hover:cursor-pointer w-fit text-[#3D3D3D] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
-                                    <span className="block bg-[#424242] w-[75px] h-[1px] -ml-[3px]"></span>
+                                      <label htmlFor="new-file-input" className="hover:cursor-pointer w-fit text-[#3D3D3D] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
+                                      <span className="block bg-[#424242] w-[75px] h-[1px] -ml-[3px]"></span>
                                     </div>
                                     <div className="flex items-start">
                                         {previousFiles ? previousFiles.map((file, index) => (<Image key={index} src={file} width={100} height={64} alt="aaaaaaa" className="py-2"/>)) : null}
@@ -316,7 +334,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
                     <h1 className='text-2xl font-Roboto mt-4'>Comments</h1>
                     {comments.map((comment, index) => (
                       <div key={index} className='py-2'>
-                        <EachComment post={post} comment={comment} refreshComments={handleComments} />
+                        <EachComment post={post} comment={comment} refreshComments={handleComments} updateComment={updateComment} />
                       </div>
                     ))}
                   </ScrollArea>

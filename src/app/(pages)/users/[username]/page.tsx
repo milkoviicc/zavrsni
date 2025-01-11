@@ -16,6 +16,7 @@ const UserProfile = () => {
     const [friendStatus, setFriendStatus] = useState('');
     const [loading, setLoading] = useState(false);
     const [followStatus, setFollowStatus] = useState('');
+    const [notFound, setNotFound] = useState(false);
 
     const pathname = usePathname();
 
@@ -31,11 +32,18 @@ const UserProfile = () => {
     useEffect(() => {
         const getUser = async () => {
             try {
+                setLoading(true);
                 const res = await axios.get<User[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles');
                 const profile = res.data.find((p) => p.username === userName);
+
+                if(profile?.userId === undefined) {
+                    setNotFound(true);
+                    setLoading(false);
+                }
                 const response = await axios.get<Profile>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/${profile?.userId}`)
                 if (response.status === 200) {
                     setUser(response.data);
+                    setLoading(false);
                 }
 
             } catch (err) {
@@ -195,46 +203,42 @@ const UserProfile = () => {
             return;
         }
     })
-
-
-
-    // Render loading or not found states
-    if (!user) return <h1 className="text-center my-40">User not found</h1>;
     
-
   return (
     <div className='h-full flex flex-col gap-8 justify-center items-center'>
-        <div>
-            <h1>{user?.username}</h1>
-            <Flex gap="2">
-                <Avatar src={`${user?.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
-            </Flex>
-            {loading ? 'Loading...'
-            : friendStatus === 'sent' ? <h1>Friend request sent</h1>
-            : friendStatus === 'received' ? (
-                <div className='flex gap-2'>
-                    <button onClick={acceptRequest}>Accept</button>
-                    <button onClick={declineRequest}>Decline</button>
-                </div>
-            )
-            : friendStatus === 'friends' ? (
-                <div>
-                    <button onClick={unFriend}>Unfriend</button> 
-                </div>
-            )
-            : <button onClick={() => sendFriendRequest()}>Add friend</button>}
-            {followStatus === 'following' ? (
-                <div>
-                    <button onClick={() => unfollow()}>Unfollow</button>
-                </div>
-            ) : (
-                <div>
-                    <button onClick={() => follow()}>Follow</button>
-                </div>
-            )}
-            <h1>Followers: {user.followers}</h1>
-            <h1>Following: {user.following}</h1>
-        </div>
+        {loading? <h1>Loading...</h1> : notFound ? <h1>User not found!</h1> : (
+            <div>
+                <h1>{user?.username}</h1>
+                <Flex gap="2">
+                    <Avatar src={`${user?.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
+                </Flex>
+                {loading ? 'Loading...'
+                : friendStatus === 'sent' ? <h1>Friend request sent</h1>
+                : friendStatus === 'received' ? (
+                    <div className='flex gap-2'>
+                        <button onClick={acceptRequest}>Accept</button>
+                        <button onClick={declineRequest}>Decline</button>
+                    </div>
+                )
+                : friendStatus === 'friends' ? (
+                    <div>
+                        <button onClick={unFriend}>Unfriend</button> 
+                    </div>
+                )
+                : <button onClick={() => sendFriendRequest()}>Add friend</button>}
+                {followStatus === 'following' ? (
+                    <div>
+                        <button onClick={() => unfollow()}>Unfollow</button>
+                    </div>
+                ) : (
+                    <div>
+                        <button onClick={() => follow()}>Follow</button>
+                    </div>
+                )}
+                <h1>Followers: {user?.followers}</h1>
+                <h1>Following: {user?.following}</h1>
+            </div>
+        )}
     </div>
   )
 }
