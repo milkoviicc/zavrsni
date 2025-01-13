@@ -60,7 +60,17 @@ export interface Comment {
     likes: number,
     dislikes: number,
     userReacted: number,
-    replies: string[]
+    replies: Reply[]
+}
+
+export interface Reply {
+    commentReplyId: string,
+    content: string,
+    createdOn: string,
+    userProfile: User,
+    likes: number,
+    dislikes: number,
+    userReacted: number
 }
 
 export interface Friendship {
