@@ -331,7 +331,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
             <svg width="80" height="55" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg" className='px-2 my-3'><path d="M11.0746 7.87313L9.84327 7.16222V8.58405L11.0746 7.87313ZM3.12687 7.99627H9.9664V7.75H3.12687V7.99627ZM0.876866 0V5.74627H1.12313V0H0.876866ZM3.12687 7.75C2.02024 7.75 1.12313 6.8529 1.12313 5.74627H0.876866C0.876866 6.98891 1.88423 7.99627 3.12687 7.99627V7.75Z" fill="#CACACA"/></svg>
               <div className='flex flex-col w-full'>
                 {comment.replies.map((reply, index) => (
-                    <EachReply key={index} reply={reply} like={handleReplyLike} dislike={handleReplyDislike} deleteReply={deleteComment} />
+                    <EachReply key={index} reply={reply} like={handleReplyLike} dislike={handleReplyDislike} deleteReply={deleteComment} updateReply={updateComment} />
                 ))}
               </div>
           </div>
