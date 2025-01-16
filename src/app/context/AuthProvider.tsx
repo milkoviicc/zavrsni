@@ -89,9 +89,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // // spremam token i korisnika iz localstoragea u varijable 'token' i 'storedUser' 
       const user = localStorage.getItem('user');
       const token = localStorage.getItem('token');
+      const feed = localStorage.getItem('feed');
   
       // ukoliko token postoji ulazi u {} i izvršava se dalje
-      if (user && token) {
+      if (user && token && feed) {
         // spremam korisnikove podatke u varijablu 'userData'
         const userData: User = JSON.parse(user);
 
@@ -115,6 +116,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           // spremam u localStorage token tog korisnika
           localStorage.setItem('token', token);
+
+          localStorage.setItem('feed', feed);
 
           // spremam u 'user' state korisnika sa svim novim podatcima
           setUser(updatedProfile);
@@ -140,9 +143,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const user = localStorage.getItem('user');
       const token = localStorage.getItem('token');
+      const feed = localStorage.getItem('feed');
 
-      if (user && token) {
-        const feed = localStorage.getItem('feed');
+      if (user && token && feed) {
         // spremam korisnikove podatke u varijablu 'userData'
         const userData: User = JSON.parse(user);
 
@@ -155,7 +158,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 
         if(res.status === 200) {
-            const feed = localStorage.getItem('feed');
             // ukoliko sve postoji, spremam id, username, ime i prezime u varijablu updatedProfile tipa 'Profile'
             const updatedProfile: User = res.data;
 
@@ -167,10 +169,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             // spremam u localStorage token tog korisnika
             localStorage.setItem('token', token);
-            if(feed) {
-              localStorage.setItem('feed', feed);
-            }
-            
+
+            localStorage.setItem('feed', feed);
 
             // spremam u 'user' state korisnika sa svim novim podatcima
             setUser(updatedProfile);
@@ -204,6 +204,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // spremam korisnika u localStorage
         localStorage.setItem('user', JSON.stringify(newUser.user));
+
+        localStorage.setItem('feed', 'Popular');
 
         // postavljam isLoggedIn state na true kako bi se znalo da je korisnik prijavljen
         setIsLoggedIn(true);
@@ -255,8 +257,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           // mjenjam isLoggedIn state u true kako bi se znalo da je korisnik prijavljen
           setIsLoggedIn(true);
-
-
         } else {
           // ukoliko dođe do greške ispisuje se u konzoli
           throw new Error(`This username/email doesn't exist.`);
@@ -326,12 +326,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const defaultPicture = user?.pictureUrl === 'https://snetblobstorage.blob.core.windows.net/snetprofiles/default.jpg';
 
+  const [ignoreDefaultPic, setIgnoreDefaultPic] = useState(false);
+
   // ukoliko je trenutno stanje loading statea true vraća null
   if(loading) return null;
 
   // AuthContext.Provider prenosi unešene vrijednosti kako bi ih mogao koristiti u drugim fileovima
   return (
-    <AuthContext.Provider value={{ user, login, register, addDetails, addImage, logout, deleteAccount, isAuthenticated, fullyRegistered, defaultPicture, loading }}>
+    <AuthContext.Provider value={{ user, login, register, addDetails, addImage, logout, deleteAccount, isAuthenticated, fullyRegistered, defaultPicture, ignoreDefaultPic, setIgnoreDefaultPic, loading }}>
       {children}
     </AuthContext.Provider>
   );

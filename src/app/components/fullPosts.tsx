@@ -59,8 +59,8 @@ const FullPosts = ({user}: {user: User}) => {
       if(res.status === 200) {
         setContent('');
         setPostFile([]);
-        setPosts([]);
-        window.location.reload();
+        const newPost: Post = res.data;
+        setPosts((prev) => [...prev, newPost]);
       }
     } catch(err) {
         // ukoliko je došlo do greške, ispisuje se u konzoli
@@ -141,22 +141,22 @@ const FullPosts = ({user}: {user: User}) => {
   };
 
   
-    // async funckija koja se poziva klikom na gumb 'delete'
-    const deletePost = async (postId: string) => {
-        try {
-            // šaljem axios delete request na API sa id-em posta i spremam response u varijablu 'res'
-            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/delete-post/${postId}`);
-            
-            // ako je res.status jednak 200 znači da je post obrisan i onda mjenjam reactionTrigger state kako bi se postovi re-renderali na stranici.
-            if (res.status === 200) {
-                // Izbacujem obrisani post
-                setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
-            }
-        } catch(err) {
-            // ukoliko dođe do greške ispisat će se u konzoli
-            console.error('Could not delete post: ', err);
-        }
-    }
+  // async funckija koja se poziva klikom na gumb 'delete'
+  const deletePost = async (postId: string) => {
+      try {
+          // šaljem axios delete request na API sa id-em posta i spremam response u varijablu 'res'
+          const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/delete-post/${postId}`);
+          
+          // ako je res.status jednak 200 znači da je post obrisan i onda mjenjam reactionTrigger state kako bi se postovi re-renderali na stranici.
+          if (res.status === 200) {
+              // Izbacujem obrisani post
+              setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
+          }
+      } catch(err) {
+          // ukoliko dođe do greške ispisat će se u konzoli
+          console.error('Could not delete post: ', err);
+      }
+  }
   
 
   useEffect(() => {
@@ -213,9 +213,6 @@ const FullPosts = ({user}: {user: User}) => {
           if (post.userReacted === 0) {
               await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=1`);   
           }
-
-          // kada se izvrši jedan od requestova, mjenja se state kako bi se pozvala funkcija getPosts i svi postovi na stranici bi se refreshali
-          setReactionTrigger((prev) => !prev);
           
       } catch(err) {
           // ukoliko dođe do greške ispisat će se u konzoli
@@ -248,8 +245,6 @@ const FullPosts = ({user}: {user: User}) => {
               await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=-1`);   
           }
 
-          // kada se izvrši jedan od requestova, mjenja se state kako bi se pozvala funkcija getPosts i svi postovi na stranici bi se refreshali
-          setReactionTrigger((prev) => !prev);
       } catch(err) {
           // ukoliko dođe do greške ispisat će se u konzoli
           console.error(err);

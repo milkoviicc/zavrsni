@@ -50,14 +50,16 @@ const Auth = () => {
 
   // async funkcija koja se poziva kada se klikne gumb 'Sign in'.
   const handleSignIn = async () => {
+    
+    setError(null);
+    
     // stavljamo loading state na true
     setLoading(true);
 
-
     // provjerava se je li unešeno ime i prezime prazno, ukoliko je izbacuje Error i vraća vrijednost 'false'
     if(name === '' || loginPassword === '') {
-      setError('You must fill in all the fields.');
-      setLoading(false);
+        setLoading(false);
+        setError(null);
       return false;
     }
 
@@ -133,6 +135,8 @@ const Auth = () => {
 
   const handleRegister = async () => {
 
+    setError(null);
+
     // radim varijablu isValid kojoj je vrijednost vraćena iz funkcije validateForm()
 
     const isValid = validateForm();
@@ -160,7 +164,9 @@ const Auth = () => {
     } catch(err) {
       setLoading(false);
       // ukoliko je došlo do greške, postavljamo Error sa određenom porukom
-      console.log('Registration failed: ', err);
+      setTimeout(() =>{
+        setError(null);
+      }, 1500);
       setError('This username or email are already registered, try a different one!')
     }
   }
@@ -188,7 +194,7 @@ const Auth = () => {
             
               <div className='my-4 flex flex-col'>
                 <input type="text" className={`lg:w-80 md:w-64 sm:w-56 w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Email address or username' id="name" onChange={(e) => setName(e.target.value)}/>
-                <input type="password" className={`lg:w-80 md:w-64 sm:w-56 w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="password" onChange={(e) => setLoginPassword(e.target.value)} autoComplete="off" />
+                <input type="password" className={`lg:w-80 md:w-64 sm:w-56 w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="loginPassword" onChange={(e) => setLoginPassword(e.target.value)} autoComplete="off" />
                 {error !== null ? <p className='text-red-500 text-sm my-2'>{error}</p> : null}
                 {loading ? <h1>Signing you in...</h1> : null}
                 {showMessage ? <p className='text-green-600 text-sm my-2'>You have been succesfully registered. Redirecting you to our login page.</p> : null}
@@ -197,7 +203,7 @@ const Auth = () => {
               <div className='my-2'>
                 <button className='bg-[#2F2F2F] hover:bg-[#232F5C] text-white font-bold lg:w-80 md:w-64 w-full sm:w-56 py-2 border border-[#232F5C] rounded transition-all' onClick={() => handleSignIn()} >Sign in <FontAwesomeIcon icon={faArrowRight} className='px-2'/></button>
               
-                <p className='my-4 text-sm text-black text-opacity-[42%]'>Not a member? <a onClick={() => setLoginRoute((prev) => !prev)} className='text-black hover:text-[#232F5C] underline hover:cursor-pointer transition-all'>Create an account</a></p>
+                <p className='my-4 text-sm text-black text-opacity-[42%]'>Not a member? <a onClick={() => {setLoginRoute((prev) => !prev); setError(null)}} className='text-black hover:text-[#232F5C] underline hover:cursor-pointer transition-all'>Create an account</a></p>
               </div>
             </div>
           </div>
@@ -213,7 +219,7 @@ const Auth = () => {
                   <input type="email" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Email address' id="email" onChange={(e) => setEmail(e.target.value)}/>
                 </div>
                 <div className='md:block sm:flex sm:flex-col flex flex-row gap-2'>
-                  <input type="password" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="password" onChange={(e) => setRegisterPassword(e.target.value)} autoComplete="off"/>
+                  <input type="password" className={`w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="registerPassword" onChange={(e) => setRegisterPassword(e.target.value)} autoComplete="off"/>
                   <input type="password" className={`w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Confirm password' id="confirmPassword" onChange={(e) => setConfirmRegisterPassword(e.target.value)} autoComplete="off" />
                 </div>
                 {error !== null ? <p className='text-red-500 text-sm my-2'>{error}</p> : null}
@@ -224,7 +230,7 @@ const Auth = () => {
               <div className='my-2'>
                 <button className='bg-[#2F2F2F] hover:bg-[#232F5C] text-white font-bold w-full py-2 border border-[#232F5C] rounded transition-all' onClick={() => handleRegister()} >Sign up <FontAwesomeIcon icon={faArrowRight} className='px-2'/></button>
               
-                <p className='my-4 text-sm text-black text-opacity-[42%] text-center'>Already have an account? <a onClick={() => setLoginRoute((prev) => !prev)} className='text-black hover:text-[#232F5C] underline hover:cursor-pointer transition-all'>Sign in.</a></p>
+                <p className='my-4 text-sm text-black text-opacity-[42%] text-center'>Already have an account? <a onClick={() => {setLoginRoute((prev) => !prev); setError(null)}} className='text-black hover:text-[#232F5C] underline hover:cursor-pointer transition-all'>Sign in.</a></p>
               </div>
             </div>
           </div>

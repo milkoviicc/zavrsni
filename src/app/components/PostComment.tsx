@@ -5,8 +5,9 @@ import ResizableTextarea from './ResizableTextarea';
 import axios from 'axios';
 import { Post, User } from '../types/types';
 import { EnhancedButton } from '@/src/components/ui/enhancedButton';
+import { Comment } from '../types/types';
 
-const PostComment = ({postId, refreshPosts, refreshComments}: {postId: string, refreshPosts: () => void, refreshComments: () => void}) => {
+const PostComment = ({post, refreshPosts, refreshComments, setComments}: {post: Post, refreshPosts: () => void, refreshComments: () => void, setComments: React.Dispatch<React.SetStateAction<Comment[]>>}) => {
 
   const [content, setContent] = useState('');
   const [commentTrigger, setCommentTrigger] = useState(false);
@@ -19,12 +20,12 @@ const PostComment = ({postId, refreshPosts, refreshComments}: {postId: string, r
 
   const PostComment = async () => {
     try {
-      const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/comments/add/${postId}`, {content});
+      const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/comments/add/${post.postId}`, {content});
 
       if(res.status === 200) {
         setContent('');
-        refreshPosts();
-        refreshComments();
+        const newComment: Comment = res.data;
+        setComments((prev) => [...prev, newComment]);
       }
     } catch(err) {
       console.error(err);

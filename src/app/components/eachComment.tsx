@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Avatar, Flex } from '@radix-ui/themes'
 import React, {useEffect, useState} from 'react'
-import { Post, Comment, User } from '../types/types'
+import { Post, Comment, User, Reply } from '../types/types'
 import { faDownLong, faPen, faThumbsDown, faThumbsUp, faTrash, faUpLong } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger} from '@/src/components/ui/dialog';
@@ -40,6 +40,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
     const [updatedContent, setUpdatedContent] = useState('');
     const [finishedUpdating, setFinishedUpdating] = useState(false);
     const [replyContent, setReplyContent] = useState('');
+    const [commentReplies, setCommentReplies] = useState<Reply[]>([]);
 
     const user = localStorage.getItem('user');
     const router = useRouter();
@@ -65,6 +66,10 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
 
      
     }, [user, comment.user.userId]);
+
+    useEffect(() => {
+      setCommentReplies(comment.replies);
+    }, [comment.replies]);
 
     const handleCommentLike = async (commentId: string) => {
       try {
@@ -153,7 +158,8 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
       try {
           const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/comments/add-reply/${comment.commentId}`, {content: replyContent});
           if(res.status === 200) {
-            refreshComments();
+            const newReply: Reply = res.data;
+            setCommentReplies((prev) => [...prev, newReply]);
           }
       } catch(err) {
         console.error(err);
@@ -289,39 +295,37 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
               <p className={`${comment.userReacted === 1  ? 'text-[#319357]' : 'text-[#8A8A8A]'}`}>{comment.likes}</p>
               <button onClick={() => handleCommentDislike(comment.commentId)}><svg width="27" height="27" viewBox="0 0 6 5" fill={`${comment.userReacted === -1  ? '#D25551' : '#8A8A8A'}`} xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_54_1050)"><path d="M1.8447 1.57156C1.8447 1.61885 1.82742 1.65978 1.79286 1.69434C1.7583 1.7289 1.71738 1.74618 1.67008 1.74618C1.62097 1.74618 1.57959 1.7289 1.54594 1.69434C1.51229 1.65978 1.49547 1.61885 1.49547 1.57156C1.49547 1.52245 1.51229 1.48107 1.54594 1.44742C1.57959 1.41377 1.62097 1.39695 1.67008 1.39695C1.71738 1.39695 1.7583 1.41377 1.79286 1.44742C1.82742 1.48107 1.8447 1.52245 1.8447 1.57156ZM2.28124 2.96848V1.22233C2.28124 1.17504 2.26396 1.13411 2.2294 1.09955C2.19484 1.065 2.15391 1.04772 2.10662 1.04772H1.32086C1.27356 1.04772 1.23264 1.065 1.19808 1.09955C1.16352 1.13411 1.14624 1.17504 1.14624 1.22233V2.96848C1.14624 3.01577 1.16352 3.0567 1.19808 3.09126C1.23264 3.12581 1.27356 3.14309 1.32086 3.14309H2.10662C2.15391 3.14309 2.19484 3.12581 2.2294 3.09126C2.26396 3.0567 2.28124 3.01577 2.28124 2.96848ZM5.36155 2.56195C5.46159 2.67291 5.51161 2.80842 5.51161 2.96848C5.50979 3.11035 5.4575 3.23313 5.35473 3.33681C5.25196 3.44048 5.12964 3.49232 4.98777 3.49232H4.23201C4.23929 3.51779 4.24656 3.53962 4.25384 3.5578C4.26111 3.57599 4.27112 3.596 4.28385 3.61783C4.29658 3.63965 4.30568 3.65602 4.31113 3.66694C4.34387 3.73424 4.36843 3.78608 4.3848 3.82245C4.40117 3.85883 4.41845 3.91204 4.43664 3.98206C4.45483 4.05209 4.46392 4.12166 4.46392 4.19078C4.46392 4.23444 4.46347 4.26991 4.46256 4.29719C4.46165 4.32447 4.4571 4.3654 4.44892 4.41997C4.44073 4.47453 4.42982 4.52 4.41618 4.55638C4.40253 4.59276 4.38071 4.63369 4.3507 4.67916C4.32068 4.72463 4.28431 4.76146 4.24156 4.78966C4.19882 4.81785 4.14425 4.8415 4.07786 4.86059C4.01147 4.87969 3.93644 4.88924 3.85277 4.88924C3.80548 4.88924 3.76455 4.87196 3.72999 4.8374C3.69362 4.80103 3.66269 4.75555 3.63723 4.70099C3.61177 4.64642 3.59403 4.59913 3.58403 4.55911C3.57402 4.5191 3.56265 4.46362 3.54992 4.39268C3.53355 4.31629 3.52127 4.26127 3.51309 4.22762C3.5049 4.19397 3.48899 4.14986 3.46534 4.09529C3.4417 4.04072 3.4135 3.99707 3.38076 3.96433C3.32074 3.90431 3.22889 3.79517 3.1052 3.63693C3.01607 3.52052 2.92422 3.41047 2.82964 3.3068C2.73505 3.20312 2.66593 3.14946 2.62228 3.14582C2.57681 3.14218 2.5377 3.12354 2.50496 3.08989C2.47222 3.05624 2.45585 3.01668 2.45585 2.97121V1.22233C2.45585 1.17504 2.47313 1.13457 2.50769 1.10092C2.54225 1.06727 2.58317 1.04953 2.63047 1.04772C2.69413 1.0459 2.83782 1.00588 3.06155 0.927668C3.2016 0.880377 3.31119 0.844453 3.39031 0.819898C3.46944 0.795343 3.57993 0.768969 3.72181 0.740776C3.86368 0.712583 3.99464 0.698486 4.11469 0.698486H4.46665C4.70856 0.702124 4.88773 0.773061 5.00414 0.911298C5.10963 1.0368 5.1542 1.20141 5.13783 1.40513C5.20876 1.47243 5.25787 1.55792 5.28516 1.6616C5.31608 1.77255 5.31608 1.87896 5.28516 1.98081C5.36883 2.09177 5.40793 2.21636 5.40248 2.3546C5.40248 2.4128 5.38883 2.48192 5.36155 2.56195Z"/></g><defs><clipPath id="clip0_54_1050"><rect width="4.88921" height="4.88921" transform="translate(0.971436)"/></clipPath></defs></svg></button>
               <p className={`${comment.userReacted === -1  ? 'text-[#D25551]' : 'text-[#8A8A8A]'}`}>{comment.dislikes}</p>
-              {showReply && (
-                      <Dialog>
-                        <DialogTrigger  className='flex ml-4 font-Roboto text-[#414141] gap-1'><svg width="25" height="25" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.33251 0.347656H0.440609C0.37643 0.347656 0.314879 0.375241 0.269495 0.424342C0.224112 0.473443 0.198613 0.54004 0.198608 0.609482V2.67901C0.198611 2.74846 0.224108 2.81506 0.269491 2.86416C0.314875 2.91327 0.376427 2.94086 0.440609 2.94086H1.33616C1.37046 2.94086 1.40336 2.95561 1.42762 2.98185C1.45187 3.0081 1.4655 3.0437 1.4655 3.08081V3.56928C1.4655 3.59907 1.47348 3.62823 1.48846 3.65322C1.50344 3.67822 1.52479 3.69798 1.54993 3.71013C1.57507 3.72228 1.60293 3.72629 1.63013 3.72169C1.65733 3.71708 1.68272 3.70404 1.70322 3.68416L2.41402 2.99487C2.4499 2.96009 2.49637 2.94085 2.54454 2.94084H3.3325C3.39668 2.94083 3.45823 2.91325 3.50362 2.86414C3.549 2.81504 3.57449 2.74844 3.57449 2.67899V0.609482C3.57449 0.540043 3.54899 0.47345 3.50361 0.424349C3.45823 0.375248 3.39669 0.347661 3.33251 0.347656ZM1.88655 2.08077H0.935229C0.919236 2.08119 0.903327 2.07815 0.888438 2.07182C0.873549 2.06549 0.859981 2.056 0.848532 2.04391C0.837083 2.03182 0.827985 2.01737 0.821774 2.00142C0.815562 1.98547 0.812362 1.96834 0.812362 1.95103C0.812362 1.93372 0.815562 1.91658 0.821774 1.90063C0.827985 1.88468 0.837083 1.87024 0.848532 1.85815C0.859981 1.84606 0.873549 1.83657 0.888438 1.83024C0.903327 1.8239 0.919236 1.82086 0.935229 1.82128H1.88655C1.90254 1.82086 1.91845 1.8239 1.93334 1.83024C1.94823 1.83657 1.9618 1.84606 1.97324 1.85815C1.98469 1.87024 1.99379 1.88468 2 1.90063C2.00621 1.91658 2.00941 1.93372 2.00941 1.95103C2.00941 1.96834 2.00621 1.98547 2 2.00142C1.99379 2.01737 1.98469 2.03182 1.97324 2.04391C1.9618 2.056 1.94823 2.06549 1.93334 2.07182C1.91845 2.07815 1.90254 2.08119 1.88655 2.08077ZM2.83795 2.08077H2.46693C2.45094 2.08119 2.43503 2.07815 2.42014 2.07182C2.40525 2.06549 2.39169 2.056 2.38024 2.04391C2.36879 2.03182 2.35969 2.01737 2.35348 2.00142C2.34727 1.98547 2.34407 1.96834 2.34407 1.95103C2.34407 1.93372 2.34727 1.91658 2.35348 1.90063C2.35969 1.88468 2.36879 1.87024 2.38024 1.85815C2.39169 1.84606 2.40525 1.83657 2.42014 1.83024C2.43503 1.8239 2.45094 1.82086 2.46693 1.82128H2.83795C2.86925 1.82211 2.89901 1.83614 2.92088 1.86038C2.94274 1.88462 2.95498 1.91715 2.95498 1.95103C2.95498 1.9849 2.94274 2.01743 2.92088 2.04167C2.89901 2.06592 2.86925 2.07995 2.83795 2.08077ZM2.83795 1.42341H0.935229C0.919236 1.42383 0.903327 1.42078 0.888438 1.41445C0.873549 1.40812 0.859981 1.39863 0.848532 1.38654C0.837083 1.37445 0.827985 1.36001 0.821774 1.34405C0.815562 1.3281 0.812362 1.31097 0.812362 1.29366C0.812362 1.27635 0.815562 1.25922 0.821774 1.24327C0.827985 1.22731 0.837083 1.21287 0.848532 1.20078C0.859981 1.18869 0.873549 1.1792 0.888438 1.17287C0.903327 1.16654 0.919236 1.16349 0.935229 1.16392H2.83795C2.86925 1.16474 2.89901 1.17877 2.92088 1.20301C2.94274 1.22726 2.95498 1.25979 2.95498 1.29366C2.95498 1.32753 2.94274 1.36007 2.92088 1.38431C2.89901 1.40855 2.86925 1.42258 2.83795 1.42341Z" fill="#4D4D4D"/></svg> Reply</DialogTrigger>
-                        <DialogContent className='w-full h-[350px] flex flex-col  text-black overflow-y-auto min-w-fit'>
-                          <DialogHeader className='flex flex-row gap-2'>
-                            <button onClick={() => router.push(`/users/${post.user.username}`)}>
-                              <Flex gap="2" className='items-center'>
-                                <Avatar src={`${post.user.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
-                              </Flex>
-                            </button>
-                            <div className='flex justify-between w-full pr-8 !mt-0 '>
-                              <div className='flex flex-col'>
-                                <DialogDescription className='text-base text-black'><button onClick={() => router.push(`/users/${post.user.username}`)}>{post.user.firstName} {post.user.lastName}</button></DialogDescription>
-                                <DialogTitle className='text-sm font-[500] text-[#656565]'><button onClick={() => router.push(`/users/${post.user.username}`)}>@ {post.user.username}</button></DialogTitle>
-                              </div>
-                              <div>
-                                <p className='text-black text-opacity-60'>{commentDays >= 1 ? justCommentDate : commentDays <= 0 && commentHours > 0 && commentMinutes <= 60 ? `${commentHours}h ago` : commentDays < 1 && commentHours <= 24 && commentMinutes <= 60 && commentMinutes >= 1 ? `${commentMinutes}m ago` : "Just now"}</p>
-                              </div>
-                            </div>
-                          </DialogHeader>
-                          <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#ededed]">
-                              <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
-                                  <Flex gap="2" className='cursor-pointer'>
-                                      <Avatar src={`${userData.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
-                                  </Flex>
-                                  <ResizableTextarea onChange={(e) =>  setReplyContent(e.target.value)} value={replyContent} placeholder='Write a reply!' className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
-                                  <button onClick={() => handleReply(replyContent)} className="rounded-full w-[150px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Post reply</button>
-                              </div>
-                              {finishedUpdating ? <h1>Comment successfully updated!</h1> : null}
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-              )}
+              <Dialog>
+                <DialogTrigger  className='flex ml-4 font-Roboto text-[#414141] gap-1'><svg width="25" height="25" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.33251 0.347656H0.440609C0.37643 0.347656 0.314879 0.375241 0.269495 0.424342C0.224112 0.473443 0.198613 0.54004 0.198608 0.609482V2.67901C0.198611 2.74846 0.224108 2.81506 0.269491 2.86416C0.314875 2.91327 0.376427 2.94086 0.440609 2.94086H1.33616C1.37046 2.94086 1.40336 2.95561 1.42762 2.98185C1.45187 3.0081 1.4655 3.0437 1.4655 3.08081V3.56928C1.4655 3.59907 1.47348 3.62823 1.48846 3.65322C1.50344 3.67822 1.52479 3.69798 1.54993 3.71013C1.57507 3.72228 1.60293 3.72629 1.63013 3.72169C1.65733 3.71708 1.68272 3.70404 1.70322 3.68416L2.41402 2.99487C2.4499 2.96009 2.49637 2.94085 2.54454 2.94084H3.3325C3.39668 2.94083 3.45823 2.91325 3.50362 2.86414C3.549 2.81504 3.57449 2.74844 3.57449 2.67899V0.609482C3.57449 0.540043 3.54899 0.47345 3.50361 0.424349C3.45823 0.375248 3.39669 0.347661 3.33251 0.347656ZM1.88655 2.08077H0.935229C0.919236 2.08119 0.903327 2.07815 0.888438 2.07182C0.873549 2.06549 0.859981 2.056 0.848532 2.04391C0.837083 2.03182 0.827985 2.01737 0.821774 2.00142C0.815562 1.98547 0.812362 1.96834 0.812362 1.95103C0.812362 1.93372 0.815562 1.91658 0.821774 1.90063C0.827985 1.88468 0.837083 1.87024 0.848532 1.85815C0.859981 1.84606 0.873549 1.83657 0.888438 1.83024C0.903327 1.8239 0.919236 1.82086 0.935229 1.82128H1.88655C1.90254 1.82086 1.91845 1.8239 1.93334 1.83024C1.94823 1.83657 1.9618 1.84606 1.97324 1.85815C1.98469 1.87024 1.99379 1.88468 2 1.90063C2.00621 1.91658 2.00941 1.93372 2.00941 1.95103C2.00941 1.96834 2.00621 1.98547 2 2.00142C1.99379 2.01737 1.98469 2.03182 1.97324 2.04391C1.9618 2.056 1.94823 2.06549 1.93334 2.07182C1.91845 2.07815 1.90254 2.08119 1.88655 2.08077ZM2.83795 2.08077H2.46693C2.45094 2.08119 2.43503 2.07815 2.42014 2.07182C2.40525 2.06549 2.39169 2.056 2.38024 2.04391C2.36879 2.03182 2.35969 2.01737 2.35348 2.00142C2.34727 1.98547 2.34407 1.96834 2.34407 1.95103C2.34407 1.93372 2.34727 1.91658 2.35348 1.90063C2.35969 1.88468 2.36879 1.87024 2.38024 1.85815C2.39169 1.84606 2.40525 1.83657 2.42014 1.83024C2.43503 1.8239 2.45094 1.82086 2.46693 1.82128H2.83795C2.86925 1.82211 2.89901 1.83614 2.92088 1.86038C2.94274 1.88462 2.95498 1.91715 2.95498 1.95103C2.95498 1.9849 2.94274 2.01743 2.92088 2.04167C2.89901 2.06592 2.86925 2.07995 2.83795 2.08077ZM2.83795 1.42341H0.935229C0.919236 1.42383 0.903327 1.42078 0.888438 1.41445C0.873549 1.40812 0.859981 1.39863 0.848532 1.38654C0.837083 1.37445 0.827985 1.36001 0.821774 1.34405C0.815562 1.3281 0.812362 1.31097 0.812362 1.29366C0.812362 1.27635 0.815562 1.25922 0.821774 1.24327C0.827985 1.22731 0.837083 1.21287 0.848532 1.20078C0.859981 1.18869 0.873549 1.1792 0.888438 1.17287C0.903327 1.16654 0.919236 1.16349 0.935229 1.16392H2.83795C2.86925 1.16474 2.89901 1.17877 2.92088 1.20301C2.94274 1.22726 2.95498 1.25979 2.95498 1.29366C2.95498 1.32753 2.94274 1.36007 2.92088 1.38431C2.89901 1.40855 2.86925 1.42258 2.83795 1.42341Z" fill="#4D4D4D"/></svg> Reply</DialogTrigger>
+                <DialogContent className='w-full h-[350px] flex flex-col  text-black overflow-y-auto min-w-fit'>
+                  <DialogHeader className='flex flex-row gap-2'>
+                    <button onClick={() => router.push(`/users/${post.user.username}`)}>
+                      <Flex gap="2" className='items-center'>
+                        <Avatar src={`${post.user.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
+                      </Flex>
+                    </button>
+                    <div className='flex justify-between w-full pr-8 !mt-0 '>
+                      <div className='flex flex-col'>
+                        <DialogDescription className='text-base text-black'><button onClick={() => router.push(`/users/${post.user.username}`)}>{post.user.firstName} {post.user.lastName}</button></DialogDescription>
+                        <DialogTitle className='text-sm font-[500] text-[#656565]'><button onClick={() => router.push(`/users/${post.user.username}`)}>@ {post.user.username}</button></DialogTitle>
+                      </div>
+                      <div>
+                        <p className='text-black text-opacity-60'>{commentDays >= 1 ? justCommentDate : commentDays <= 0 && commentHours > 0 && commentMinutes <= 60 ? `${commentHours}h ago` : commentDays < 1 && commentHours <= 24 && commentMinutes <= 60 && commentMinutes >= 1 ? `${commentMinutes}m ago` : "Just now"}</p>
+                      </div>
+                    </div>
+                  </DialogHeader>
+                  <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#ededed]">
+                      <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
+                          <Flex gap="2" className='cursor-pointer'>
+                              <Avatar src={`${userData.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
+                          </Flex>
+                          <ResizableTextarea onChange={(e) =>  setReplyContent(e.target.value)} value={replyContent} placeholder='Write a reply!' className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
+                          <button onClick={() => handleReply(replyContent)} className="rounded-full w-[150px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Post reply</button>
+                      </div>
+                      {finishedUpdating ? <h1>Comment successfully updated!</h1> : null}
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </div>
@@ -330,7 +334,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
           <div className='py-4 w-full flex'>
             <svg width="80" height="55" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg" className='px-2 my-3'><path d="M11.0746 7.87313L9.84327 7.16222V8.58405L11.0746 7.87313ZM3.12687 7.99627H9.9664V7.75H3.12687V7.99627ZM0.876866 0V5.74627H1.12313V0H0.876866ZM3.12687 7.75C2.02024 7.75 1.12313 6.8529 1.12313 5.74627H0.876866C0.876866 6.98891 1.88423 7.99627 3.12687 7.99627V7.75Z" fill="#CACACA"/></svg>
               <div className='flex flex-col w-full'>
-                {comment.replies.map((reply, index) => (
+                {commentReplies.map((reply, index) => (
                     <EachReply key={index} reply={reply} like={handleReplyLike} dislike={handleReplyDislike} deleteReply={deleteComment} updateReply={updateComment} />
                 ))}
               </div>

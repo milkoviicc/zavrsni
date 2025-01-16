@@ -11,6 +11,8 @@ export interface AuthContextType {
     isAuthenticated: boolean;
     fullyRegistered: boolean;
     defaultPicture: boolean;
+    ignoreDefaultPic: boolean;
+    setIgnoreDefaultPic: React.Dispatch<React.SetStateAction<boolean>>
     loading: boolean;
 }
 

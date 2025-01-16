@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
 
 import TextareaAutosize from 'react-textarea-autosize';
-import { debounce } from "lodash";
+import { debounce, set } from "lodash";
 
 import UserComponent from "./components/userComponent";
 import FullPosts from "./components/fullPosts";
@@ -31,7 +31,7 @@ import FullPosts from "./components/fullPosts";
 export default function Home() {
 
   // funckije iz AuthProvider.tsx-a
-  const {isAuthenticated, fullyRegistered, defaultPicture, addDetails, addImage } = useAuth();
+  const {isAuthenticated, fullyRegistered, defaultPicture, ignoreDefaultPic, setIgnoreDefaultPic, addDetails, addImage } = useAuth();
 
   // stateovi
   const [firstName, setFirstName] = useState('');
@@ -41,12 +41,12 @@ export default function Home() {
   const [postFile, setPostFile] = useState<File[]>([]);
   const [popularUsers, setPopularUsers] = useState<Profile[]>([]);
   const [friendsList, setFriendsList] = useState<Friendship[]>([]);
+  const [ignoreDefaultPicture, setIgnoreDefaultPicture] = useState(false);
 
 
   const user: User = JSON.parse(localStorage.getItem('user') || '{}');
 
   const getPostsRef = useRef<(() => void) | undefined>();
-
   
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -91,13 +91,31 @@ export default function Home() {
     getFriends();
   }, [user.userId]);
 
+  useEffect(() => {
+    if(defaultPicture) {
+      const ignorePic = localStorage.getItem('ignorePic');
+      if(ignorePic) {
+        setIgnoreDefaultPicture(true);
+      }
+    } else {
+      return;
+    }
+    
+  }, [defaultPicture]);
+
+  const handleSkip = () => {
+    localStorage.setItem('ignorePic', 'true');
+    setIgnoreDefaultPic(true);
+    setIgnoreDefaultPicture(true);
+  }
+
   if(!user) {
     return false;
   }
   
   return (
     <div className='h-full flex flex-col my-[75px]'>
-      {isAuthenticated && fullyRegistered && !defaultPicture
+      {isAuthenticated && fullyRegistered && !defaultPicture || ignoreDefaultPicture 
       ?
       <div className="h-full flex flex-grow flex-col bg-white">
         <div className="flex w-full justify-evenly">
@@ -130,14 +148,18 @@ export default function Home() {
           </div>
         </div>
       </div>
-      : isAuthenticated && fullyRegistered && defaultPicture
+      : isAuthenticated && fullyRegistered && defaultPicture && !ignoreDefaultPicture
       ? 
         <div className="flex justify-center items-center h-full">
           <div className="border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg">
             <div className="px-8 py-14">
-            <h1>Add a profile picture</h1>
+              <h1>Add a profile picture</h1>
               <input type="file" accept="image/*" onChange={handleImageChange} />
               <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold w-full py-2 border border-blue-700 rounded transition-all' onClick={() => selectedImage && addImage(selectedImage)}>Add picture</button>
+            </div>
+            <div>
+              <h1>Don't want to add now?</h1>
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold w-full py-2 border border-blue-700 rounded transition-all" onClick={() => handleSkip()}>Skip</button>
             </div>
           </div>
         </div>
