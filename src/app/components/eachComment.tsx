@@ -41,6 +41,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
     const [finishedUpdating, setFinishedUpdating] = useState(false);
     const [replyContent, setReplyContent] = useState('');
     const [commentReplies, setCommentReplies] = useState<Reply[]>([]);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const user = localStorage.getItem('user');
     const router = useRouter();
