@@ -1,8 +1,9 @@
+/* eslint-disable no-var */
 import React, {useState, useEffect, useRef} from 'react'
 import {Flex, Avatar} from '@radix-ui/themes'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpLong, faDownLong, faPen, faTrash, faArrowUp, faPaperclip } from '@fortawesome/free-solid-svg-icons';
+import { faUpLong, faDownLong, faPen, faTrash, faArrowUp, faPaperclip, faN } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { Comment, Post, User } from '../types/types';
 import PostComment from './PostComment';
@@ -163,16 +164,87 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
     }
   }
 
+  let isLocked = false;
 
-  const handleLikeClick = async () => {
+function lockQueue(action: () => Promise<void>): void {
+  if (isLocked) return;
+  isLocked = true;
 
+  action()
+    .catch((err) => console.error("Error in locked action:", err))
+    .finally(() => {
+      isLocked = false;
+    });
+}
+
+
+const [tajmout, setTajmout] = useState<number | NodeJS.Timeout>();
+
+const handleReaction = async (reaction: number) => {
+  clearTimeout(tajmout);
+  setTajmout(undefined);
+  try {
+    // Handle reactions based on current state
+    if (isLiked === 1 && isDisliked === 0 && reaction === 1) {
+      // Undo a like
+      setIsLiked(0);
+      setPostLikes((prev) => prev - 1);
+      setTajmout(setTimeout(async () => {
+        await handleLike(post.postId);
+      }, 500));
+    } else if (isLiked === 0 && isDisliked === 0 && reaction === 1) {
+      // Add a like
+      setIsLiked(1);
+      setPostLikes((prev) => prev + 1);
+      setTajmout(setTimeout(async () => {
+        await handleLike(post.postId); // Backend call
+      }, 500));
+    } else if (isLiked === 1 && reaction === -1) {
+      // Switch from like to dislike
+      setIsLiked(0);
+      setIsDisliked(-1);
+      setPostLikes((prev) => prev - 1);
+      setPostDislikes((prev) => prev + 1);
+      setTajmout(setTimeout(async () => {
+        await handleDislike(post.postId); // Backend call
+      }, 500));
+    } else if (isDisliked === 0 && reaction === -1) {
+      // Add a dislike
+      setIsDisliked(-1);
+      setPostDislikes((prev) => prev + 1);
+      setTajmout(setTimeout(async () => {
+        await handleDislike(post.postId); // Backend call
+      }, 500));
+    } else if (isDisliked === -1 && reaction === -1) {
+      // Undo a dislike
+      setIsDisliked(0);
+      setPostDislikes((prev) => prev - 1);
+      setTajmout(setTimeout(async () => {
+        await handleDislike(post.postId); // Backend call
+      }, 500));
+    } else if (isDisliked === -1 && reaction === 1) {
+      // Switch from dislike to like
+      setIsDisliked(0);
+      setIsLiked(1);
+      setPostLikes((prev) => prev + 1);
+      setPostDislikes((prev) => prev - 1);
+      setTajmout(setTimeout(async () => {
+        await handleLike(post.postId); // Backend call
+      }, 500));
+    }
+  } catch (err) {
+    console.error("Error handling reaction:", err);
+  }
+};
+
+
+const handleLikeClick = () => {
+  lockQueue(async () => {
     try {
       if (isLiked === 1) {
         setIsLiked(0);
         setPostLikes((prev) => prev - 1);
-        setTimeout(async () => {
-          await handleLike(post.postId);  // Make the backend call
-        }, 1500);
+        await handleLike(post.postId); // Backend call
       } else {
         if (isDisliked === -1) {
           setIsDisliked(0);
@@ -180,25 +252,21 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
         }
         setIsLiked(1);
         setPostLikes((prev) => prev + 1);
-        setTimeout(async () => {
-          await handleLike(post.postId);  // Make the backend call
-        }, 1500);
+        await handleLike(post.postId); // Backend call
       }
     } catch (error) {
       console.error("Error handling like:", error);
     }
-  };
-  
-  const handleDislikeClick = async () => {
+  });
+};
 
+const handleDislikeClick = () => {
+  lockQueue(async () => {
     try {
       if (isDisliked === -1) {
         setIsDisliked(0);
         setPostDislikes((prev) => prev - 1);
-        setTimeout(async() => {
-          await handleDislike(post.postId);  // Make the backend call
-        }, 1500);
-
+        await handleDislike(post.postId); // Backend call
       } else {
         if (isLiked === 1) {
           setIsLiked(0);
@@ -206,14 +274,13 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
         }
         setIsDisliked(-1);
         setPostDislikes((prev) => prev + 1);
-        window.setTimeout(async() => {
-          await handleDislike(post.postId);  // Make the backend call
-        }, 1500);
+        await handleDislike(post.postId); // Backend call
       }
     } catch (error) {
       console.error("Error handling dislike:", error);
     }
-  };
+  });
+};
 
 
   return (
@@ -331,9 +398,9 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
           <div className="flex gap-4 pt-4 pb-0 items-center justify-between">
             <div className="flex justify-between w-full">
               <div className='flex gap-1 px-4 items-center'>
-                <button onClick={handleLikeClick}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_57_98)"><path d="M0.0175432 3.20833L2.87879 0.259583C3.04796 0.0904165 3.26963 -1.62297e-07 3.50296 -1.52097e-07C3.73629 -1.41898e-07 3.95796 0.0904165 4.12129 0.256667L6.98254 3.20833L4.96129 3.20833L4.96129 7L2.04463 7L2.04463 3.20833L0.0175432 3.20833Z" fill={`${isLiked === 1  ? '#319357' : '#585858'}`}/></g><defs><clipPath id="clip0_57_98"><rect width="7" height="7" fill="white" transform="translate(7) rotate(90)"/></clipPath></defs></svg></button>
+                <button onClick={() => handleReaction(1)}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_57_98)"><path d="M0.0175432 3.20833L2.87879 0.259583C3.04796 0.0904165 3.26963 -1.62297e-07 3.50296 -1.52097e-07C3.73629 -1.41898e-07 3.95796 0.0904165 4.12129 0.256667L6.98254 3.20833L4.96129 3.20833L4.96129 7L2.04463 7L2.04463 3.20833L0.0175432 3.20833Z" fill={`${isLiked === 1  ? '#319357' : '#585858'}`}/></g><defs><clipPath id="clip0_57_98"><rect width="7" height="7" fill="white" transform="translate(7) rotate(90)"/></clipPath></defs></svg></button>
                 <p className={`${isLiked === 1  ? 'text-[#319357]' : 'text-[#585858]'}`}>{postLikes}</p>
-                <button onClick={handleDislikeClick}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g id="Layer_1" clipPath="url(#clip0_57_85)"><path id="Vector" d="M6.98246 3.79167L4.12121 6.74042C3.95204 6.90958 3.73037 7 3.49704 7C3.26371 7 3.04204 6.90958 2.87871 6.74333L0.0174562 3.79167L2.03871 3.79167L2.03871 -3.88486e-07L4.95537 -2.60994e-07L4.95537 3.79167L6.98246 3.79167Z" fill={`${isDisliked === -1  ? '#D25551' : '#585858'}`}/></g><defs><clipPath id="clip0_57_85"><rect width="7" height="7" fill="white" transform="translate(0 7) rotate(-90)"/></clipPath></defs></svg></button>
+                <button onClick={() => handleReaction(-1)}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g id="Layer_1" clipPath="url(#clip0_57_85)"><path id="Vector" d="M6.98246 3.79167L4.12121 6.74042C3.95204 6.90958 3.73037 7 3.49704 7C3.26371 7 3.04204 6.90958 2.87871 6.74333L0.0174562 3.79167L2.03871 3.79167L2.03871 -3.88486e-07L4.95537 -2.60994e-07L4.95537 3.79167L6.98246 3.79167Z" fill={`${isDisliked === -1  ? '#D25551' : '#585858'}`}/></g><defs><clipPath id="clip0_57_85"><rect width="7" height="7" fill="white" transform="translate(0 7) rotate(-90)"/></clipPath></defs></svg></button>
                 <p className={`${isDisliked === -1  ? 'text-[#D25551]' : 'text-[#585858]'}`}>{postDislikes}</p>
               </div>
               <Dialog>
@@ -390,9 +457,9 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
                           />))}
                     </div>
                     <div className='flex gap-2 w-[95%] pt-4 pb-0'>
-                      <button onClick={isProcessing ? undefined :handleLikeClick} disabled={isProcessing}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_57_98)"><path d="M0.0175432 3.20833L2.87879 0.259583C3.04796 0.0904165 3.26963 -1.62297e-07 3.50296 -1.52097e-07C3.73629 -1.41898e-07 3.95796 0.0904165 4.12129 0.256667L6.98254 3.20833L4.96129 3.20833L4.96129 7L2.04463 7L2.04463 3.20833L0.0175432 3.20833Z" fill={`${isLiked === 1 ? '#319357' : '#585858'}`}/></g><defs><clipPath id="clip0_57_98"><rect width="7" height="7" fill="white" transform="translate(7) rotate(90)"/></clipPath></defs></svg></button>
+                      <button onClick={() => handleReaction(1)} disabled={isProcessing}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_57_98)"><path d="M0.0175432 3.20833L2.87879 0.259583C3.04796 0.0904165 3.26963 -1.62297e-07 3.50296 -1.52097e-07C3.73629 -1.41898e-07 3.95796 0.0904165 4.12129 0.256667L6.98254 3.20833L4.96129 3.20833L4.96129 7L2.04463 7L2.04463 3.20833L0.0175432 3.20833Z" fill={`${isLiked === 1 ? '#319357' : '#585858'}`}/></g><defs><clipPath id="clip0_57_98"><rect width="7" height="7" fill="white" transform="translate(7) rotate(90)"/></clipPath></defs></svg></button>
                       <p className={`${isLiked === 1  ? 'text-[#319357]' : 'text-[#585858]'}`}>{postLikes}</p>
-                      <button onClick={isProcessing ? undefined : handleDislikeClick} disabled={isProcessing}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g id="Layer_1" clipPath="url(#clip0_57_85)"><path id="Vector" d="M6.98246 3.79167L4.12121 6.74042C3.95204 6.90958 3.73037 7 3.49704 7C3.26371 7 3.04204 6.90958 2.87871 6.74333L0.0174562 3.79167L2.03871 3.79167L2.03871 -3.88486e-07L4.95537 -2.60994e-07L4.95537 3.79167L6.98246 3.79167Z" fill={`${isDisliked === -1  ? '#D25551' : '#585858'}`}/></g><defs><clipPath id="clip0_57_85"><rect width="7" height="7" fill="white" transform="translate(0 7) rotate(-90)"/></clipPath></defs></svg></button>
+                      <button onClick={() => handleReaction(-1)} disabled={isProcessing}><svg width="20" height="20" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><g id="Layer_1" clipPath="url(#clip0_57_85)"><path id="Vector" d="M6.98246 3.79167L4.12121 6.74042C3.95204 6.90958 3.73037 7 3.49704 7C3.26371 7 3.04204 6.90958 2.87871 6.74333L0.0174562 3.79167L2.03871 3.79167L2.03871 -3.88486e-07L4.95537 -2.60994e-07L4.95537 3.79167L6.98246 3.79167Z" fill={`${isDisliked === -1  ? '#D25551' : '#585858'}`}/></g><defs><clipPath id="clip0_57_85"><rect width="7" height="7" fill="white" transform="translate(0 7) rotate(-90)"/></clipPath></defs></svg></button>
                       <p className={`${isDisliked === -1  ? 'text-[#D25551]' : 'text-[#585858]'}`}>{postDislikes}</p>
                     </div>
                     <hr className='my-4 w-[97%] h-[1px] bg-black'/>
