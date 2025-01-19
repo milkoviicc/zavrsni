@@ -203,18 +203,21 @@ const FullPosts = ({user}: {user: User}) => {
           if(post.userReacted === 1) {
               post.userReacted = 0;
               await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/delete/${postId}`);
+              return;
           }
 
           // ukoliko je trenutan post dislikean (-1) mjenja se iz dislike u like axios put requestom na API
           if(post.userReacted === -1) {
               post.userReacted = 1;
               await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
+              return;
           }
 
           // ukoliko trenutan post nije ni likean ni dislikean, šalje se axios post request na API sa query vrijednošću 1 kako bi se post likeao
           if (post.userReacted === 0) {
               post.userReacted = 1;
               await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=1`);   
+              return;
           }
           
       } catch(err) {
@@ -237,18 +240,21 @@ const FullPosts = ({user}: {user: User}) => {
           if(post.userReacted === 1) {
               post.userReacted = -1;
               await axios.put(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/update/${postId}`);
+              return;
           }
 
           // ukoliko je trenutan post dislikean (-1) briše se dislike axios delete requestom na API
           if(post.userReacted === -1) {
               post.userReacted = 0;
               await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/delete/${postId}`);
+              return;
           }
 
            // ukoliko trenutan post nije ni likean ni dislikean, šalje se axios post request na API sa query vrijednošću -1 kako bi se post dislikeao
           if (post.userReacted === 0) {
-              post.userReacted = -1
-              await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=-1`);   
+              post.userReacted = -1;
+              await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/posts/add/${postId}?reaction=-1`);
+              return;
           }
 
       } catch(err) {

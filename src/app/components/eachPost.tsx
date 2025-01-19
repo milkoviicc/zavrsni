@@ -54,8 +54,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [updatedFiles, setUpdatedFiles] = useState<File[]>([]);
   const [previousFiles, setPreviousFiles] = useState<string[]>([]);
-  const [isLiked, setIsLiked] = useState<0 | 1>(0);
-  const [isDisliked, setIsDisliked] = useState<0 | -1>(0);
+  const [postReaction, setPostReaction] = useState<number>(post.userReacted);
   const [postLikes, setPostLikes] = useState(post.likes);
   const [postDislikes, setPostDislikes] = useState(post.dislikes);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -109,7 +108,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
     }
   }
   
-
+  const feed = localStorage.getItem('feed');
 
   useEffect(() => {
 
@@ -130,15 +129,9 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
         setShowUpdate(false);
       }
 
-      if(post.userReacted === 1) {
-        setIsLiked(1)
-      } else if (post.userReacted === -1) {
-        setIsDisliked(-1);
-      }
-
     }
 
-  }, [user, post.user.userId, post.fileUrls, post]);  
+  }, [user, post.user.userId, post]);  
 
 
   const handleComments = async () => {
@@ -164,19 +157,6 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
     }
   }
 
-  let isLocked = false;
-
-function lockQueue(action: () => Promise<void>): void {
-  if (isLocked) return;
-  isLocked = true;
-
-  action()
-    .catch((err) => console.error("Error in locked action:", err))
-    .finally(() => {
-      isLocked = false;
-    });
-}
-
 
 const [tajmout, setTajmout] = useState<number | NodeJS.Timeout>();
 
@@ -199,7 +179,7 @@ const handleReaction = async (reaction: number) => {
       setTajmout(setTimeout(async () => {
         await handleLike(post.postId); // Backend call
       }, 500));
-    } else if (isLiked === 1 && reaction === -1) {
+    } else if (isLiked === 1 && isDisliked === 0 && reaction === -1) {
       // Switch from like to dislike
       setIsLiked(0);
       setIsDisliked(-1);
@@ -208,21 +188,21 @@ const handleReaction = async (reaction: number) => {
       setTajmout(setTimeout(async () => {
         await handleDislike(post.postId); // Backend call
       }, 500));
-    } else if (isDisliked === 0 && reaction === -1) {
+    } else if (isDisliked === 0 && isDisliked === 0 && reaction === -1) {
       // Add a dislike
       setIsDisliked(-1);
       setPostDislikes((prev) => prev + 1);
       setTajmout(setTimeout(async () => {
         await handleDislike(post.postId); // Backend call
       }, 500));
-    } else if (isDisliked === -1 && reaction === -1) {
+    } else if (isDisliked === -1 && isLiked === 0 && reaction === -1) {
       // Undo a dislike
       setIsDisliked(0);
       setPostDislikes((prev) => prev - 1);
       setTajmout(setTimeout(async () => {
         await handleDislike(post.postId); // Backend call
       }, 500));
-    } else if (isDisliked === -1 && reaction === 1) {
+    } else if (isDisliked === -1 && isLiked === 0 && reaction === 1) {
       // Switch from dislike to like
       setIsDisliked(0);
       setIsLiked(1);
@@ -236,52 +216,6 @@ const handleReaction = async (reaction: number) => {
     console.error("Error handling reaction:", err);
   }
 };
-
-
-const handleLikeClick = () => {
-  lockQueue(async () => {
-    try {
-      if (isLiked === 1) {
-        setIsLiked(0);
-        setPostLikes((prev) => prev - 1);
-        await handleLike(post.postId); // Backend call
-      } else {
-        if (isDisliked === -1) {
-          setIsDisliked(0);
-          setPostDislikes((prev) => prev - 1);
-        }
-        setIsLiked(1);
-        setPostLikes((prev) => prev + 1);
-        await handleLike(post.postId); // Backend call
-      }
-    } catch (error) {
-      console.error("Error handling like:", error);
-    }
-  });
-};
-
-const handleDislikeClick = () => {
-  lockQueue(async () => {
-    try {
-      if (isDisliked === -1) {
-        setIsDisliked(0);
-        setPostDislikes((prev) => prev - 1);
-        await handleDislike(post.postId); // Backend call
-      } else {
-        if (isLiked === 1) {
-          setIsLiked(0);
-          setPostLikes((prev) => prev - 1);
-        }
-        setIsDisliked(-1);
-        setPostDislikes((prev) => prev + 1);
-        await handleDislike(post.postId); // Backend call
-      }
-    } catch (error) {
-      console.error("Error handling dislike:", error);
-    }
-  });
-};
-
 
   return (
     <div className="my-2 w-[800px] h-fit flex flex-col gap-2 text-black px-1 py-2 rounded-3xl overflow-hidden [box-shadow:0px_0px_5px_1px_rgba(0,_0,_0,_0.25)]">
