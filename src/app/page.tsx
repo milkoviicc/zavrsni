@@ -25,6 +25,7 @@ import { debounce, set } from "lodash";
 
 import UserComponent from "./components/userComponent";
 import FullPosts from "./components/fullPosts";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 
 
@@ -117,20 +118,24 @@ export default function Home() {
     <div className='h-full flex flex-col my-[75px]'>
       {isAuthenticated && fullyRegistered && !defaultPicture || ignoreDefaultPicture 
       ?
-      <div className="h-full flex flex-grow flex-col bg-white">
+      <div className="h-full flex flex-grow flex-col bg-[#222222]">
         <div className="flex w-full justify-evenly">
-          <div className="flex flex-col gap-0 fixed w-[200px] top-28 left-40">
-            <h1 className="font-Roboto text-2xl">Who's popular</h1>
-            {popularUsers.map((user, index) => (
-              <UserComponent user={user} key={index} />
-            ))}
+          <div className="flex flex-col gap-0 fixed w-fit top-28 left-40 text-center rounded-lg py-4 shadow-[0px_1px_1px_1px_rgba(0,_0,_0,_0.3)]">
+            <h1 className="font-Roboto text-3xl py-2 text-[#EFEFEF] font-normal">Who's popular</h1>
+            <span className="border-[1px] border-[#1C1C1C]"></span>
+            <div className='group w-[250px] flex flex-col gap-2 bg-transparent px-1 max-h-[450px] overflow-y-hidden hover:overflow-y-scroll scrollbar'>
+              { popularUsers.map((user, index) => <UserComponent user={user} key={index} />)}
+            </div>
+            <span className="border-[1px] border-[#1C1C1C]"></span>
           </div>
           <FullPosts user={user} />
-          <div className="flex flex-col w-[200px] fixed top-28 right-40">
-            <h1 className="font-Roboto text-2xl">Friends</h1>
-            {friendsList.map((user, index) => (
-              <UserComponent user={user.user} key={index} />
-            ))}
+          <div className="flex flex-col gap-0 fixed w-fit top-28 right-40 text-center rounded-lg py-4 shadow-[0px_1px_1px_1px_rgba(0,_0,_0,_0.3)]">
+            <h1 className="font-Roboto text-3xl py-2 text-[#EFEFEF] font-normal">Friends</h1>
+            <span className="border-[1px] border-[#1C1C1C]"></span>
+            <div className='group w-[250px] flex flex-col gap-2 bg-transparent px-1 max-h-[450px] overflow-y-hidden hover:overflow-y-scroll scrollbar'>
+              { friendsList.map((user, index) => <UserComponent user={user.user} key={index} />)}
+            </div>
+            <span className="border-[1px] border-[#1C1C1C]"></span>
           </div>
         </div>
       </div>

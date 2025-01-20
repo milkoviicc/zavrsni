@@ -11,8 +11,8 @@ const UserComponent = ({user}: {user: Profile}) => {
             <Avatar src={`${user.pictureUrl}?${new Date().getTime()}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
         </Flex>
         <div className="flex flex-col h-full items-start justify-center gap-3">
-            <h1 className="text-black font-[400] font-Roboto leading-[8.23px] text-lg">{user.firstName} {user.lastName}</h1>
-            <p className="text-[#7D7D7D] leading-[5.66px]">@{user.username}</p>
+            <h1 className="text-[#EFEFEF] font-[400] font-Roboto leading-[8.23px] text-lg">{user.firstName} {user.lastName}</h1>
+            <p className="text-[#888888] leading-[5.66px]">@{user.username}</p>
         </div>    
     </button>
   )

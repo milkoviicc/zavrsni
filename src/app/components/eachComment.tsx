@@ -89,7 +89,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
   
           // ukoliko je trenutan post likean (1) briše se like axios delete requestom na API
           if(comment.userReacted === 1) {
-             comment.userReacted = 0;
+              comment.userReacted = 0;
               await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/reactions/comments/delete/${commentId}`);
               return;
           }
@@ -257,14 +257,14 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
           setCommentLikes((prev) => prev - 1);
           setTajmout(setTimeout(async () => {
             await handleCommentLike(comment.commentId);
-          }, 500));
+          }, 1500));
         } else if (commentReaction === 0 && reaction === 1) {
           // Add a like
           setCommentReaction(1);
           setCommentLikes((prev) => prev + 1);
           setTajmout(setTimeout(async () => {
             await handleCommentLike(comment.commentId); // Backend call
-          }, 500));
+          }, 1500));
         } else if (commentReaction === 1 && reaction === -1) {
           // Switch from like to dislike
           setCommentReaction(-1)
@@ -272,21 +272,21 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
           setCommentDislikes((prev) => prev + 1);
           setTajmout(setTimeout(async () => {
             await handleCommentDislike(comment.commentId); // Backend call
-          }, 500));
+          }, 1500));
         } else if (commentReaction === 0 && reaction === -1) {
           // Add a dislike
           setCommentReaction(-1);
           setCommentDislikes((prev) => prev + 1);
           setTajmout(setTimeout(async () => {
             await handleCommentDislike(comment.commentId); // Backend call
-          }, 500));
+          }, 1500));
         } else if (commentReaction === -1 && reaction === -1) {
           // Undo a dislike
           setCommentReaction(0);
           setCommentDislikes((prev) => prev - 1);
           setTajmout(setTimeout(async () => {
             await handleCommentDislike(comment.commentId); // Backend call
-          }, 500));
+          }, 1500));
         } else if (commentReaction === -1 && reaction === 1) {
           // Switch from dislike to like
           setCommentReaction(1);
@@ -294,7 +294,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
           setCommentDislikes((prev) => prev - 1);
           setTajmout(setTimeout(async () => {
             await handleCommentLike(comment.commentId); // Backend call
-          }, 500));
+          }, 1500));
         }
       } catch (err) {
         console.error("Error handling reaction:", err);

@@ -10,6 +10,12 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+		scrollbar: {
+			thin: {
+				thumb: "#8B8B8B",
+				track: "transparent",
+			},
+		},
   		keyframes: {
   			'shine': {
   				from: {

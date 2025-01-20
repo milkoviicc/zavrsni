@@ -334,17 +334,17 @@ const FullPosts = ({user}: {user: User}) => {
 
   return (
     <div className="border-1 border-gray-900 py-16 h-full flex flex-col items-center gap-12">
-        <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#ededed]">
+        <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
             <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
                 <Flex gap="2" className='cursor-pointer'>
                     <Avatar src={`${user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
                 </Flex>
                 <div className="flex flex-col">
-                    <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
+                    <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#fff] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                     <input type="file" id="file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
                     <div className="flex flex-col">
-                    <label htmlFor="file-input" className="hover:cursor-pointer w-fit text-[#3D3D3D] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
-                    <span className="block bg-[#424242] w-[75px] h-[1px] -ml-[3px]"></span>
+                    <label htmlFor="file-input" className="hover:cursor-pointer w-fit text-[#CCCCCC] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
+                    <span className="block bg-[#CCCCCC] w-[75px] h-[1px] -ml-[3px]"></span>
                     </div>
                     <div className="flex items-start">
                         {postFile ? postFile.map((file, index) => (<Image key={index} src={URL.createObjectURL(file)} width={100} height={64} alt="aaaaaaa" className="py-2"/>)) : null}
@@ -355,22 +355,21 @@ const FullPosts = ({user}: {user: User}) => {
             </div>
         </div>
         <div className="h-full w-full flex flex-col items-center">
-            <hr className="w-full border-[#828282]" />
             <div className="flex gap-4 py-6 items-center">
             <div>
-                <button className={`text-2xl text-gray-900 ${postsState === "Popular" ? 'font-medium' : null}`} onClick={() => setPostsState('Popular')}>Popular</button>
-                <span className={`${postsState === 'Popular' ? 'block' : 'hidden'} bg-[#424242] w-full h-[2px]`}></span>
+                <button className={`text-2xl text-[#8A8A8A] ${postsState === "Popular" ? 'font-medium text-[#EFEFEF]' : null}`} onClick={() => setPostsState('Popular')}>Popular</button>
+                <span className={`${postsState === 'Popular' ? 'block bg-[#EFEFEF]' : 'hidden'} w-full h-[2px]`}></span>
             </div>
-            <span className="h-10 block border-black bg-black w-[1px]"></span>
+            <span className="h-10 block border-black bg-[#8A8A8A] w-[1px]"></span>
             <div>
-                <button className={`text-2xl text-gray-900 ${postsState === "Your Feed" ? 'font-medium' : null}`} onClick={() => setPostsState('Your Feed')}>Your Feed</button>
-                <span className={`${postsState === 'Your Feed' ? 'block' : 'hidden'} bg-[#424242] w-full h-[1px]`}></span>
+                <button className={`text-2xl text-[#8A8A8A] ${postsState === "Your Feed" ? 'font-medium text-[#EFEFEF]' : null}`} onClick={() => setPostsState('Your Feed')}>Your Feed</button>
+                <span className={`${postsState === 'Your Feed' ? 'block bg-[#EFEFEF]' : 'hidden'} w-full h-[1px]`}></span>
             </div>
             
             </div>
             <div className='w-full flex justify-center'>
                 {posts.length === 0 && loading === false ? <h1>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1>Loading posts...</h1> : (
-                    <InfiniteScroll className='w-full flex flex-col gap-4 bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1>No more posts!</h1>} scrollThreshold={1}>
+                    <InfiniteScroll className='w-full flex flex-col bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1>No more posts!</h1>} scrollThreshold={1}>
                         { posts.map((post, index) => (<EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => getPosts(currentPage)}/> ))}
                     </InfiniteScroll>
                 )}
