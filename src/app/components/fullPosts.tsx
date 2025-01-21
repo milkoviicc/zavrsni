@@ -347,8 +347,12 @@ const FullPosts = ({user}: {user: User}) => {
                     <span className="block bg-[#CCCCCC] w-[75px] h-[1px] -ml-[3px]"></span>
                     </div>
                     <div className="flex items-start">
-                        {postFile ? postFile.map((file, index) => (<Image key={index} src={URL.createObjectURL(file)} width={100} height={64} alt="aaaaaaa" className="py-2"/>)) : null}
-                        {postFile.length > 0 ? <button className="w-fit px-2" onClick={() => setPostFile([])}>X</button> : null}
+                        {postFile ? postFile.map((file, index) => (
+                          <div key={index} className='w-fit relative'>
+                            <Image key={index} src={URL.createObjectURL(file)} width={100} height={64} alt="aaaaaaa" className="py-2 opacity-80"/>
+                            <button className="absolute text-white top-2 right-2" onClick={() => setPostFile(postFile.filter((_, postIndex) => postIndex != index))}>X</button>
+                          </div>
+                          )) : null}
                     </div>
                 </div>
                 <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Post it</button>

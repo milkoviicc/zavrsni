@@ -40,6 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
         setProfile(null);
         setIsLoggedIn(false);
+        window.location.reload();
         return;
       }
 
