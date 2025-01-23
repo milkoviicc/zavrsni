@@ -120,7 +120,7 @@ export default function Home() {
       ?
       <div className="h-full flex flex-grow flex-col bg-[#222222]">
         <div className="flex w-full justify-evenly">
-          <div className="flex flex-col gap-0 fixed w-fit top-28 left-40 text-center rounded-lg py-4 shadow-[0px_1px_1px_1px_rgba(0,_0,_0,_0.3)]">
+          <div className="flex flex-col gap-0 fixed w-fit top-28 left-40 text-center rounded-lg py-4 shadow-[0px_1px_1px_1px_rgba(0,_0,_0,_0.3)] bg-[#252525] px-2">
             <h1 className="font-Roboto text-3xl py-2 text-[#EFEFEF] font-normal">Who's popular</h1>
             <span className="border-[1px] border-[#1C1C1C]"></span>
             <div className='group w-[250px] flex flex-col gap-2 bg-transparent px-1 max-h-[450px] overflow-y-hidden hover:overflow-y-scroll scrollbar'>
@@ -129,7 +129,7 @@ export default function Home() {
             <span className="border-[1px] border-[#1C1C1C]"></span>
           </div>
           <FullPosts user={user} />
-          <div className="flex flex-col gap-0 fixed w-fit top-28 right-40 text-center rounded-lg py-4 shadow-[0px_1px_1px_1px_rgba(0,_0,_0,_0.3)]">
+          <div className="flex flex-col gap-0 fixed w-fit top-28 right-40 text-center rounded-lg py-4 shadow-[0px_1px_1px_1px_rgba(0,_0,_0,_0.3)] bg-[#252525]">
             <h1 className="font-Roboto text-3xl py-2 text-[#EFEFEF] font-normal">Friends</h1>
             <span className="border-[1px] border-[#1C1C1C]"></span>
             <div className='group w-[250px] flex flex-col gap-2 bg-transparent px-1 max-h-[450px] overflow-y-hidden hover:overflow-y-scroll scrollbar'>

@@ -314,11 +314,26 @@ const FullPosts = ({user}: {user: User}) => {
       }
   }
   
+  const [randomNmbs, setRandomNmbs] = useState<number[]>();
+  
+  useEffect(() => {
+    const max: number = 10;
+    const newRandomNms: number[] = [];
+    for(let i = 1; i <= 5; i++) {
+      let nmb = Math.floor(Math.random() * max);
+      while(nmb === 0 || newRandomNms.includes(nmb)) {
+        nmb = Math.floor(Math.random() * max);
+      }
+
+      newRandomNms.push(nmb);    
+    }
+    newRandomNms.sort((a, b) => a - b);
+    setRandomNmbs(newRandomNms);
+  }, []);
 
 
   const handleFeedState = (feedState: string) => {
     const currentFeed = localStorage.getItem('feed');
-
     if(currentFeed === 'Popular' && feedState === 'Popular') {
       return;
     } else if (currentFeed === 'Popular' && feedState === 'Your Feed') {
@@ -374,7 +389,14 @@ const FullPosts = ({user}: {user: User}) => {
             <div className='w-full flex justify-center'>
                 {posts.length === 0 && loading === false ? <h1>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1>Loading posts...</h1> : (
                     <InfiniteScroll className='w-full flex flex-col bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1>No more posts!</h1>} scrollThreshold={1}>
-                        { posts.map((post, index) => (<EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => getPosts(currentPage)}/> ))}
+                        { posts.map((post, index) => (
+                          <div key={index}>
+                            {randomNmbs?.includes(index) ? <h1>bok</h1> : null}
+                            <EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
+                          </div>
+                          
+                          )
+                        )}
                     </InfiniteScroll>
                 )}
             </div>

@@ -42,9 +42,9 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
     const [replyContent, setReplyContent] = useState('');
     const [commentReplies, setCommentReplies] = useState<Reply[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [commentReaction, setCommentReaction] = useState<number>(0);
-    const [commentLikes, setCommentLikes] = useState(0);
-    const [commentDislikes, setCommentDislikes] = useState(0);
+    const [commentReaction, setCommentReaction] = useState<number>(comment.userReacted);
+    const [commentLikes, setCommentLikes] = useState(comment.likes);
+    const [commentDislikes, setCommentDislikes] = useState(comment.dislikes);
 
     const user = localStorage.getItem('user');
     const router = useRouter();
@@ -75,12 +75,9 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
       setCommentReplies(comment.replies);
     }, [comment.replies]);
 
-      useEffect(() => {
-        setCommentLikes(comment.likes);
-        setCommentDislikes(comment.dislikes);
-        setCommentReaction(comment.userReacted);
-      }, [comment.userReacted, comment.likes, comment.dislikes])
-
+    useEffect(() => {
+      refreshComments();
+    }, [comment.userReacted])
 
     const handleCommentLike = async (commentId: string) => {
       try {
@@ -208,8 +205,6 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
 
         refreshComments();
 
-
-
       } catch(err) {
         console.error(err);
       }
@@ -257,14 +252,14 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
           setCommentLikes((prev) => prev - 1);
           setTajmout(setTimeout(async () => {
             await handleCommentLike(comment.commentId);
-          }, 1500));
+          }, 500));
         } else if (commentReaction === 0 && reaction === 1) {
           // Add a like
           setCommentReaction(1);
           setCommentLikes((prev) => prev + 1);
           setTajmout(setTimeout(async () => {
             await handleCommentLike(comment.commentId); // Backend call
-          }, 1500));
+          }, 500));
         } else if (commentReaction === 1 && reaction === -1) {
           // Switch from like to dislike
           setCommentReaction(-1)
@@ -272,21 +267,21 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
           setCommentDislikes((prev) => prev + 1);
           setTajmout(setTimeout(async () => {
             await handleCommentDislike(comment.commentId); // Backend call
-          }, 1500));
+          }, 500));
         } else if (commentReaction === 0 && reaction === -1) {
           // Add a dislike
           setCommentReaction(-1);
           setCommentDislikes((prev) => prev + 1);
           setTajmout(setTimeout(async () => {
             await handleCommentDislike(comment.commentId); // Backend call
-          }, 1500));
+          }, 500));
         } else if (commentReaction === -1 && reaction === -1) {
           // Undo a dislike
           setCommentReaction(0);
           setCommentDislikes((prev) => prev - 1);
           setTajmout(setTimeout(async () => {
             await handleCommentDislike(comment.commentId); // Backend call
-          }, 1500));
+          }, 500));
         } else if (commentReaction === -1 && reaction === 1) {
           // Switch from dislike to like
           setCommentReaction(1);
@@ -294,7 +289,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
           setCommentDislikes((prev) => prev - 1);
           setTajmout(setTimeout(async () => {
             await handleCommentLike(comment.commentId); // Backend call
-          }, 1500));
+          }, 500));
         }
       } catch (err) {
         console.error("Error handling reaction:", err);

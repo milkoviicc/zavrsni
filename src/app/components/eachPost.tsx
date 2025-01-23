@@ -54,10 +54,11 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [updatedFiles, setUpdatedFiles] = useState<File[]>([]);
   const [previousFiles, setPreviousFiles] = useState<string[]>([]);
-  const [postReaction, setPostReaction] = useState<number>(0);
-  const [postLikes, setPostLikes] = useState(0);
-  const [postDislikes, setPostDislikes] = useState(0);
+  const [postReaction, setPostReaction] = useState<number>(post.userReacted);
+  const [postLikes, setPostLikes] = useState(post.likes);
+  const [postDislikes, setPostDislikes] = useState(post.dislikes);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [reactionTrigger, setReactionTrigger] = useState(false);
 
   // dobivam usera iz localStorage-a
   const user = localStorage.getItem('user');
@@ -126,17 +127,12 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
         setShowDelete(false);
         setShowUpdate(false);
       }
-
     }
-
   }, [user, post.user.userId, post]);  
 
   useEffect(() => {
-    setPostLikes(post.likes);
-    setPostDislikes(post.dislikes);
-    setPostReaction(post.userReacted);
-  }, [post.userReacted, post.likes, post.dislikes]);
-
+    refreshPosts();
+  }, [post.userReacted]);
 
   const handleComments = async () => {
     try {
@@ -175,14 +171,14 @@ const handleReaction = async (reaction: number) => {
       setPostLikes((prev) => prev - 1);
       setTajmout(setTimeout(async () => {
         await handleLike(post.postId);
-      }, 1500));
+      }, 500));
     } else if (postReaction === 0 && reaction === 1) {
       // Add a like
       setPostReaction(1);
       setPostLikes((prev) => prev + 1);
       setTajmout(setTimeout(async () => {
         await handleLike(post.postId); // Backend call
-      }, 1500));
+      }, 500));
     } else if (postReaction === 1 && reaction === -1) {
       // Switch from like to dislike
       setPostReaction(-1)
@@ -190,21 +186,21 @@ const handleReaction = async (reaction: number) => {
       setPostDislikes((prev) => prev + 1);
       setTajmout(setTimeout(async () => {
         await handleDislike(post.postId); // Backend call
-      }, 1500));
+      }, 500));
     } else if (postReaction === 0 && reaction === -1) {
       // Add a dislike
       setPostReaction(-1);
       setPostDislikes((prev) => prev + 1);
       setTajmout(setTimeout(async () => {
         await handleDislike(post.postId); // Backend call
-      }, 1500));
+      }, 500));
     } else if (postReaction === -1 && reaction === -1) {
       // Undo a dislike
       setPostReaction(0);
       setPostDislikes((prev) => prev - 1);
       setTajmout(setTimeout(async () => {
         await handleDislike(post.postId); // Backend call
-      }, 1500));
+      }, 500));
     } else if (postReaction === -1 && reaction === 1) {
       // Switch from dislike to like
       setPostReaction(1);
@@ -212,12 +208,13 @@ const handleReaction = async (reaction: number) => {
       setPostDislikes((prev) => prev - 1);
       setTajmout(setTimeout(async () => {
         await handleLike(post.postId); // Backend call
-      }, 1500));
+      }, 500));
     }
   } catch (err) {
     console.error("Error handling reaction:", err);
   }
 };
+
 
   return (
     <div className="my-2 w-[800px] h-fit flex flex-col gap-2 text-white px-1 py-2 overflow-hidden border-t-[1px] border-[#515151]">

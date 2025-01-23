@@ -134,6 +134,7 @@ body {
     background-color: transparent; /* Ensures no track color shows through */
   }
 
+
   .scrollbar::-webkit-scrollbar-button {
     display: none; /* Hides unnecessary buttons */
   }
