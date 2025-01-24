@@ -354,38 +354,16 @@ const FullPosts = ({user}: {user: User}) => {
     }
   }
 
-  const [profileSuggestions, setProfileSuggestions] = useState<FollowSuggestion[]>([]);
+  const [profileSuggestions, setProfileSuggestions] = useState<FollowSuggestionStatus[]>([]);
   const [profileFollowed, setProfileFollowed] = useState(false);
-
-  const getFollowStatus = async (profile: FollowSuggestionStatus) => {
-    try {
-
-      const res = await axios.get<FriendshipStatus>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/friendship-status/${profile.user.userId}`);
-
-      if(res.data.isFollowed) {
-        setProfileFollowed(true);
-      } else {
-        setProfileFollowed(false);
-      }
-
-      const followSuggestion: FollowSuggestion = {user: profile.user, isFollowed: profileFollowed};
-
-      setProfileSuggestions((prev) => {const isDuplicate = prev.some((suggestion) => suggestion.user.userId === followSuggestion.user.userId); if(isDuplicate) return prev; return [...prev, followSuggestion]});
-      
-    } catch(err) {
-      console.error(err);
-    }
-  }
 
   useEffect(() => {
     const getFollowSuggestions = async () => {
       try {
         const res = await axios.get('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/follow-suggestions?limit=4');
 
-        const returnedProfiles: FollowSuggestionStatus[] = res.data;
-
         if(res.status === 200) {
-          returnedProfiles.map((profile) => getFollowStatus(profile));
+          setProfileSuggestions(res.data);
         }
   
       } catch(err) {
@@ -395,20 +373,10 @@ const FullPosts = ({user}: {user: User}) => {
     getFollowSuggestions();
   }, []);
 
-  const handleFollow = async (profile: FollowSuggestion) => {
+  const handleFollow = async (id: string) => {
     try {
-      if(profile.isFollowed) {
-        const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/unfollow/${profile.user.userId}`);
-        if(res.status === 200) {
-          profile.isFollowed = false;
-        }
-      } else {
-        const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/add-follow/${profile.user.userId}`);
 
-        if(res.status === 200) {
-          profile.isFollowed = true;
-        }
-      }
+      const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/add-follow/${id}`);
 
     } catch(err) {
       console.error(err);
@@ -468,7 +436,7 @@ const FullPosts = ({user}: {user: User}) => {
                                   <div key={index} className='grid grid-cols-2 grid-rows-2'>
                                     <div className='flex items-center gap-4'>
                                       <UserComponent key={index} user={profileSuggestion.user} />
-                                      <button className={`${profileSuggestion.isFollowed ? 'bg-[#3E3E3E]': 'bg-[#1565CE]'} px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3]`} onClick={() => handleFollow(profileSuggestion)}>{profileSuggestion.isFollowed ? 'Followed' : 'Follow'}</button>
+                                      <button className='bg-[#1565CE] px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3]' onClick={() => handleFollow(profileSuggestion.user.userId)}>Follow</button>
                                     </div>
                                     
                                   </div>
