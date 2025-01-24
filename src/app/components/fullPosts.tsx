@@ -2,13 +2,14 @@
 import React, {useState, useEffect} from 'react'
 import ResizableTextarea from './ResizableTextarea'
 import { Avatar, Flex } from '@radix-ui/themes'
-import { Post, User } from '../types/types'
+import { FollowSuggestion, FollowSuggestionStatus, Friendship, FriendshipStatus, Post, Profile, User } from '../types/types'
 import Image from 'next/image'
 import EachPost from './eachPost'
 import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import UserComponent from './userComponent';
 
 const FullPosts = ({user}: {user: User}) => {
 
@@ -317,19 +318,25 @@ const FullPosts = ({user}: {user: User}) => {
   const [randomNmbs, setRandomNmbs] = useState<number[]>();
   
   useEffect(() => {
-    const max: number = 10;
-    const newRandomNms: number[] = [];
-    for(let i = 1; i <= 5; i++) {
-      let nmb = Math.floor(Math.random() * max);
-      while(nmb === 0 || newRandomNms.includes(nmb)) {
+
+    const newRandomNmbs: number[] = [];
+    for(let i = 10; i<= 100; i+=10) {
+      const max: number = i;
+      const min: number = i-9;
+      let nmb = Math.floor(Math.random() * (max-min+1) + min);
+      while(nmb === 0 || newRandomNmbs.includes(nmb)) {
         nmb = Math.floor(Math.random() * max);
       }
 
-      newRandomNms.push(nmb);    
+     newRandomNmbs.push(nmb);
     }
-    newRandomNms.sort((a, b) => a - b);
-    setRandomNmbs(newRandomNms);
+    
+    setRandomNmbs(newRandomNmbs);
   }, []);
+
+  useEffect(() => {
+    randomNmbs?.map((numb) => console.log(numb));
+  }, [randomNmbs])
 
 
   const handleFeedState = (feedState: string) => {
@@ -346,6 +353,69 @@ const FullPosts = ({user}: {user: User}) => {
       return;
     }
   }
+
+  const [profileSuggestions, setProfileSuggestions] = useState<FollowSuggestion[]>([]);
+  const [profileFollowed, setProfileFollowed] = useState(false);
+
+  const getFollowStatus = async (profile: FollowSuggestionStatus) => {
+    try {
+
+      const res = await axios.get<FriendshipStatus>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/friendship-status/${profile.user.userId}`);
+
+      if(res.data.isFollowed) {
+        setProfileFollowed(true);
+      } else {
+        setProfileFollowed(false);
+      }
+
+      const followSuggestion: FollowSuggestion = {user: profile.user, isFollowed: profileFollowed};
+
+      setProfileSuggestions((prev) => {const isDuplicate = prev.some((suggestion) => suggestion.user.userId === followSuggestion.user.userId); if(isDuplicate) return prev; return [...prev, followSuggestion]});
+      
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  useEffect(() => {
+    const getFollowSuggestions = async () => {
+      try {
+        const res = await axios.get('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/follow-suggestions?limit=4');
+
+        const returnedProfiles: FollowSuggestionStatus[] = res.data;
+
+        if(res.status === 200) {
+          returnedProfiles.map((profile) => getFollowStatus(profile));
+        }
+  
+      } catch(err) {
+        console.log(err);
+      }
+    }
+    getFollowSuggestions();
+  }, []);
+
+  const handleFollow = async (profile: FollowSuggestion) => {
+    try {
+      if(profile.isFollowed) {
+        const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/unfollow/${profile.user.userId}`);
+        if(res.status === 200) {
+          profile.isFollowed = false;
+        }
+      } else {
+        const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/add-follow/${profile.user.userId}`);
+
+        if(res.status === 200) {
+          profile.isFollowed = true;
+        }
+      }
+
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+
 
   return (
     <div className="border-1 border-gray-900 py-16 h-full flex flex-col items-center gap-12">
@@ -387,11 +457,24 @@ const FullPosts = ({user}: {user: User}) => {
             
             </div>
             <div className='w-full flex justify-center'>
-                {posts.length === 0 && loading === false ? <h1>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1>Loading posts...</h1> : (
-                    <InfiniteScroll className='w-full flex flex-col bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1>No more posts!</h1>} scrollThreshold={1}>
+                {posts.length === 0 && loading === false ? <h1 className='text-center'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center'>Loading posts...</h1> : (
+                    <InfiniteScroll className='w-full flex flex-col bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center'>No more posts!</h1>} scrollThreshold={1}>
                         { posts.map((post, index) => (
                           <div key={index}>
-                            {randomNmbs?.includes(index) ? <h1>bok</h1> : null}
+                            {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
+                              <div className=' flex items-center flex-col'>
+                                <p className='text-[#8A8A8A]'>You might like these</p>
+                                {profileSuggestions.map((profileSuggestion, index) => (
+                                  <div key={index} className='grid grid-cols-2 grid-rows-2'>
+                                    <div className='flex items-center gap-4'>
+                                      <UserComponent key={index} user={profileSuggestion.user} />
+                                      <button className={`${profileSuggestion.isFollowed ? 'bg-[#3E3E3E]': 'bg-[#1565CE]'} px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3]`} onClick={() => handleFollow(profileSuggestion)}>{profileSuggestion.isFollowed ? 'Followed' : 'Follow'}</button>
+                                    </div>
+                                    
+                                  </div>
+                                ))}
+                              </div>
+                            ) : randomNmbs?.includes(index) ? <h1 className='text-white'>No profile suggestions</h1> : null}
                             <EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
                           </div>
                           

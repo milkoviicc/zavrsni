@@ -1,9 +1,9 @@
 import { Avatar, Flex } from '@radix-ui/themes'
 import React from 'react'
-import { Profile } from '../types/types'
+import { Profile, User } from '../types/types'
 import { useRouter } from 'next/navigation';
 
-const UserComponent = ({user}: {user: Profile}) => {
+const UserComponent = ({user}: {user: User}) => {
   const router = useRouter();
   return (
     <button className="hover:cursor-pointer flex gap-2 py-2 items-center" onClick={() => router.push(`/users/${user.username}`)}>
