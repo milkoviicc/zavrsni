@@ -430,7 +430,7 @@ const FullPosts = ({user}: {user: User}) => {
                         { posts.map((post, index) => (
                           <div key={index}>
                             {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
-                              <div className=' flex items-center flex-col'>
+                              <div className=' flex items-center flex-col py-8 border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A]'>You might like these</p>
                                 {profileSuggestions.map((profileSuggestion, index) => (
                                   <div key={index} className='grid grid-cols-2 grid-rows-2'>
