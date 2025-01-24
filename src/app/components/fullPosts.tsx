@@ -433,12 +433,23 @@ const FullPosts = ({user}: {user: User}) => {
                               <div className=' flex items-center flex-col py-8 border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A]'>You might like these</p>
                                 {profileSuggestions.map((profileSuggestion, index) => (
-                                  <div key={index} className='grid grid-cols-2 grid-rows-2'>
+                                  <div key={index} className='grid grid-cols-2 grid-rows-2 gap-8'>
                                     <div className='flex items-center gap-4'>
                                       <UserComponent key={index} user={profileSuggestion.user} />
-                                      <button className='bg-[#1565CE] px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3]' onClick={() => handleFollow(profileSuggestion.user.userId)}>Follow</button>
+                                      <button className='bg-[#1565CE] px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] shadow-[1px_2px_4px_1px_rgba(12,75,156,1)] transition-all hover:shadow-[0px_0px_3px_3px_rgba(12,75,156,1)]' onClick={() => handleFollow(profileSuggestion.user.userId)}>Follow</button>
                                     </div>
-                                    
+                                    <div className='flex items-center gap-4'>
+                                      <UserComponent key={index} user={profileSuggestion.user} />
+                                      <button className='bg-[#1565CE] px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] shadow-[1px_2px_4px_1px_rgba(12,75,156,1)] transition-all hover:shadow-[0px_0px_3px_3px_rgba(12,75,156,1)]' onClick={() => handleFollow(profileSuggestion.user.userId)}>Follow</button>
+                                    </div>
+                                    <div className='flex items-center gap-4'>
+                                      <UserComponent key={index} user={profileSuggestion.user} />
+                                      <button className='bg-[#1565CE] px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] shadow-[1px_2px_4px_1px_rgba(12,75,156,1)] transition-all hover:shadow-[0px_0px_3px_3px_rgba(12,75,156,1)]' onClick={() => handleFollow(profileSuggestion.user.userId)}>Follow</button>
+                                    </div>
+                                    <div className='flex items-center gap-4'>
+                                      <UserComponent key={index} user={profileSuggestion.user} />
+                                      <button className='bg-[#1565CE] px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] shadow-[1px_2px_4px_1px_rgba(12,75,156,1)] transition-all hover:shadow-[0px_0px_3px_3px_rgba(12,75,156,1)]' onClick={() => handleFollow(profileSuggestion.user.userId)}>Follow</button>
+                                    </div>
                                   </div>
                                 ))}
                               </div>
