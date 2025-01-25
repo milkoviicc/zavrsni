@@ -343,9 +343,9 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
                                       <Avatar src={`${post.user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
                                   </Flex>
                                   <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-white outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
-                                  <button onClick={() => update()} className="rounded-full w-[150px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Update comment</button>
+                                  <button onClick={() => update()} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF] mr-4 py-[0.30rem]">Update comment</button>
                               </div>
-                              {finishedUpdating ? <h1>Comment successfully updated!</h1> : null}
+                              {finishedUpdating ? <h1 className='font-Roboto text-[#EFEFEF] pb-4'>Comment successfully updated!</h1> : null}
                           </div>
                         </DialogContent>
                       </Dialog>
@@ -389,9 +389,9 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
                               <Avatar src={`${userData.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
                           </Flex>
                           <ResizableTextarea onChange={(e) =>  setReplyContent(e.target.value)} value={replyContent} placeholder='Write a reply!' className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
-                          <button onClick={() => handleReply(replyContent)} className="rounded-full w-[150px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Post reply</button>
+                          <button onClick={() => handleReply(replyContent)} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF] mr-4 py-[0.30rem]">Post reply</button>
                       </div>
-                      {finishedUpdating ? <h1>Comment successfully updated!</h1> : null}
+                      {finishedUpdating ? <h1 className='font-Roboto text-[#EFEFEF]'>Comment successfully updated!</h1> : null}
                   </div>
                 </DialogContent>
               </Dialog>

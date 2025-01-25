@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import UserComponent from './userComponent';
+import Suggestion from './suggestion';
 
 const FullPosts = ({user}: {user: User}) => {
 
@@ -24,6 +25,7 @@ const FullPosts = ({user}: {user: User}) => {
   const [postsState, setPostsState] = useState('');
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [randomNmbs, setRandomNmbs] = useState<number[]>();
     
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -68,8 +70,6 @@ const FullPosts = ({user}: {user: User}) => {
         console.error('Could not add post', err);
     }
   }
-
-
 
   const getPosts = async (page: number) => {
     try {
@@ -129,8 +129,6 @@ const FullPosts = ({user}: {user: User}) => {
       return false;
     }
   };
-
-
   
   const fetchMoreData = () => {
     if (postsState === 'Popular') {
@@ -307,15 +305,12 @@ const FullPosts = ({user}: {user: User}) => {
           updatedPost.fileUrls= res.data.fileUrls;
 
           setReactionTrigger((prev) => !prev);
-          
-          window.location.reload();
+
           
       } catch(err) {
         console.error(err);
       }
   }
-  
-  const [randomNmbs, setRandomNmbs] = useState<number[]>();
   
   useEffect(() => {
 
@@ -373,18 +368,6 @@ const FullPosts = ({user}: {user: User}) => {
     getFollowSuggestions();
   }, []);
 
-  const handleFollow = async (id: string) => {
-    try {
-
-      const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/add-follow/${id}`);
-
-    } catch(err) {
-      console.error(err);
-    }
-  }
-
-
-
   return (
     <div className="border-1 border-gray-900 py-16 h-full flex flex-col items-center gap-12">
         <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
@@ -393,13 +376,16 @@ const FullPosts = ({user}: {user: User}) => {
                     <Avatar src={`${user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
                 </Flex>
                 <div className="flex flex-col">
-                    <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#fff] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                    <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content} className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#fff] outline-none py-3 pr-8 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                     <input type="file" id="file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
-                    <div className="flex flex-col">
-                    <label htmlFor="file-input" className="hover:cursor-pointer w-fit text-[#CCCCCC] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
-                    <span className="block bg-[#CCCCCC] w-[75px] h-[1px] -ml-[3px]"></span>
+                    <div className="flex justify-between">
+                      <div>
+                        <label htmlFor="file-input" className="hover:cursor-pointer w-fit text-[#CCCCCC] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
+                        <span className="block bg-[#CCCCCC] w-[75px] h-[1px] -ml-[3px]"></span>
+                      </div>
+                      <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-8 py-[0.30rem]">Post it</button>
                     </div>
-                    <div className="flex items-start">
+                    <div className="flex items-center">
                         {postFile ? postFile.map((file, index) => (
                           <div key={index} className='w-fit relative'>
                             <Image key={index} src={URL.createObjectURL(file)} width={100} height={64} alt="aaaaaaa" className="py-2 opacity-80"/>
@@ -408,7 +394,6 @@ const FullPosts = ({user}: {user: User}) => {
                           )) : null}
                     </div>
                 </div>
-                <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Post it</button>
             </div>
         </div>
         <div className="h-full w-full flex flex-col items-center">
@@ -434,11 +419,7 @@ const FullPosts = ({user}: {user: User}) => {
                                 <p className='text-[#8A8A8A]'>You might like these</p>
                                 {profileSuggestions.map((profileSuggestion, index) => (
                                   <div key={index} className='grid grid-cols-2 grid-rows-2 gap-8'>
-                                    <div className='flex items-center gap-4'>
-                                      <UserComponent key={index} user={profileSuggestion.user} />
-                                      <button className='bg-[#1565CE] px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] shadow-[1px_2px_4px_1px_rgba(12,75,156,1)] transition-all hover:shadow-[0px_0px_3px_3px_rgba(12,75,156,1)]' onClick={() => handleFollow(profileSuggestion.user.userId)}>Follow</button>
-                                    </div>
-                                    
+                                    <Suggestion profileSuggestion={profileSuggestion} />
                                   </div>
                                 ))}
                               </div>

@@ -26,6 +26,7 @@ const PostComment = ({post, refreshPosts, refreshComments, setComments}: {post: 
         setContent('');
         const newComment: Comment = res.data;
         setComments((prev) => [...prev, newComment]);
+        post.commentCount++;
       }
     } catch(err) {
       console.error(err);

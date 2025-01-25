@@ -59,6 +59,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   const [postDislikes, setPostDislikes] = useState(post.dislikes);
   const [isProcessing, setIsProcessing] = useState(false);
   const [reactionTrigger, setReactionTrigger] = useState(false);
+  const [finishedUpdating, setFinishedUpdating] = useState(false);
 
   // dobivam usera iz localStorage-a
   const user = localStorage.getItem('user');
@@ -118,6 +119,8 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
     
       // spremam podatke korisnika iz localstoragea u varijablu userData za daljnje provjere. 
       const userData: User = JSON.parse(user);
+
+      console.log(post.content + post.commentCount);
   
       // ako je id korisnika koji je objavio post jednak trenutnom korisniku state se stavlja na true kako bi se gumb 'Delete' prikazao, inače na false kako se ne bi prikazao
       if(post.user.userId === userData.userId) {
@@ -155,6 +158,14 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
     } else {
       setPreviousFiles([]);
     }
+  }
+
+  const update = async () => {
+    updatePost(post.postId, updatedContent, previousFiles);
+    setFinishedUpdating(true);
+    setTimeout(() => {
+      setFinishedUpdating(false);
+    }, 1000);
   }
 
 
@@ -258,7 +269,7 @@ const handleReaction = async (reaction: number) => {
                             </div>
                           </div>
                         </DialogHeader>
-                        <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
+                        <div className="flex gap-1 items-center flex-col w-fit rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
                             <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
                                 <Flex gap="2" className='cursor-pointer'>
                                     <Avatar src={`${post.user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
@@ -275,8 +286,9 @@ const handleReaction = async (reaction: number) => {
                                         {previousFiles.length > 0 ? <button className="w-fit px-2" onClick={() => setPreviousFiles([])}>X</button> : null}
                                     </div>
                                 </div>
-                                <button onClick={() => updatePost(post.postId, updatedContent, previousFiles)} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Update post</button>
+                                <button onClick={() => update()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Update post</button>
                             </div>
+                            {finishedUpdating ? <h1 className='font-Roboto text-[#EFEFEF] pb-4'>Post successfully updated!</h1> : null}
                         </div>
                       </DialogContent>
                     </Dialog>
