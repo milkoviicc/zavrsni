@@ -438,18 +438,7 @@ const FullPosts = ({user}: {user: User}) => {
                                       <UserComponent key={index} user={profileSuggestion.user} />
                                       <button className='bg-[#1565CE] px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] shadow-[1px_2px_4px_1px_rgba(12,75,156,1)] transition-all hover:shadow-[0px_0px_3px_3px_rgba(12,75,156,1)]' onClick={() => handleFollow(profileSuggestion.user.userId)}>Follow</button>
                                     </div>
-                                    <div className='flex items-center gap-4'>
-                                      <UserComponent key={index} user={profileSuggestion.user} />
-                                      <button className='bg-[#1565CE] px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] shadow-[1px_2px_4px_1px_rgba(12,75,156,1)] transition-all hover:shadow-[0px_0px_3px_3px_rgba(12,75,156,1)]' onClick={() => handleFollow(profileSuggestion.user.userId)}>Follow</button>
-                                    </div>
-                                    <div className='flex items-center gap-4'>
-                                      <UserComponent key={index} user={profileSuggestion.user} />
-                                      <button className='bg-[#1565CE] px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] shadow-[1px_2px_4px_1px_rgba(12,75,156,1)] transition-all hover:shadow-[0px_0px_3px_3px_rgba(12,75,156,1)]' onClick={() => handleFollow(profileSuggestion.user.userId)}>Follow</button>
-                                    </div>
-                                    <div className='flex items-center gap-4'>
-                                      <UserComponent key={index} user={profileSuggestion.user} />
-                                      <button className='bg-[#1565CE] px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] shadow-[1px_2px_4px_1px_rgba(12,75,156,1)] transition-all hover:shadow-[0px_0px_3px_3px_rgba(12,75,156,1)]' onClick={() => handleFollow(profileSuggestion.user.userId)}>Follow</button>
-                                    </div>
+                                    
                                   </div>
                                 ))}
                               </div>
