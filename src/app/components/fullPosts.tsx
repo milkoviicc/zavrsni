@@ -406,19 +406,19 @@ const FullPosts = ({user}: {user: User}) => {
             </div>
             <div className='w-full flex justify-center'>
                 {posts.length === 0 && loading === false ? <h1 className='text-center'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center'>Loading posts...</h1> : (
-                    <InfiniteScroll className='w-full flex flex-col bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center'>No more posts!</h1>} scrollThreshold={1}>
+                    <InfiniteScroll className='w-full flex flex-col bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                         { posts.map((post, index) => (
                           <div key={index}>
                             {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
                               <div className=' flex items-center flex-col py-8 border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A]'>You might like these</p>
-                                {profileSuggestions.map((profileSuggestion, index) => (
-                                  <div key={index} className='grid grid-cols-2 grid-rows-2 gap-8'>
-                                    <Suggestion profileSuggestion={profileSuggestion} />
-                                  </div>
-                                ))}
+                                <div className='grid grid-cols-2 grid-rows-2 gap-8'>
+                                  {profileSuggestions.map((profileSuggestion, index) => (
+                                    <Suggestion key={index} profileSuggestion={profileSuggestion} />
+                                  ))}
+                                </div>
                               </div>
-                            ) : randomNmbs?.includes(index) ? <h1 className='text-white'>No profile suggestions</h1> : null}
+                            ) : null}
                             <EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
                           </div>
                           
