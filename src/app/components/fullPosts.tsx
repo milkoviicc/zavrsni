@@ -301,12 +301,10 @@ const FullPosts = ({user}: {user: User}) => {
 
           if(!updatedPost) return null;
 
-          updatedPost.content = res.data.content;
-          updatedPost.fileUrls= res.data.fileUrls;
+          updatedPost.content = updatedContent;
+          updatedPost.fileUrls= updatedFiles;
 
           setReactionTrigger((prev) => !prev);
-
-          
       } catch(err) {
         console.error(err);
       }
@@ -329,9 +327,6 @@ const FullPosts = ({user}: {user: User}) => {
     setRandomNmbs(newRandomNmbs);
   }, []);
 
-  useEffect(() => {
-    randomNmbs?.map((numb) => console.log(numb));
-  }, [randomNmbs])
 
 
   const handleFeedState = (feedState: string) => {
@@ -362,7 +357,7 @@ const FullPosts = ({user}: {user: User}) => {
         }
   
       } catch(err) {
-        console.log(err);
+        console.error(err);
       }
     }
     getFollowSuggestions();

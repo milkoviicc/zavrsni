@@ -115,10 +115,10 @@ export default function Home() {
   }
   
   return (
-    <div className='h-full flex flex-col my-[75px]'>
+    <div className='flex flex-col mt-[75px]'>
       {isAuthenticated && fullyRegistered && !defaultPicture || ignoreDefaultPicture 
       ?
-      <div className="h-full flex flex-grow flex-col bg-[#222222]">
+      <div className="flex-col bg-[#222222] shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)]">
         <div className="flex w-full justify-evenly">
           <div className="flex flex-col gap-0 fixed w-fit top-28 left-40 text-center rounded-lg py-4 shadow-[0px_1px_1px_1px_rgba(0,_0,_0,_0.3)] bg-[#252525] px-2">
             <h1 className="font-Roboto text-3xl py-2 text-[#EFEFEF] font-normal">Who's popular</h1>

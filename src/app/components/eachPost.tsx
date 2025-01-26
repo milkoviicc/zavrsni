@@ -120,8 +120,6 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
       // spremam podatke korisnika iz localstoragea u varijablu userData za daljnje provjere. 
       const userData: User = JSON.parse(user);
 
-      console.log(post.content + post.commentCount);
-  
       // ako je id korisnika koji je objavio post jednak trenutnom korisniku state se stavlja na true kako bi se gumb 'Delete' prikazao, inače na false kako se ne bi prikazao
       if(post.user.userId === userData.userId) {
         setShowDelete(true);

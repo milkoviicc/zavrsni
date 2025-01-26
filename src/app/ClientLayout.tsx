@@ -46,8 +46,8 @@ export default function ClientLayout({
           {!isAuthRoute && fullyRegistered && <Navbar />}
           <main className="flex-grow">
               {children}  
+              {!isAuthRoute && fullyRegistered && <Footer />}
           </main>
-          {!isAuthRoute && fullyRegistered && <Footer />}
         </div>
   );
 }
