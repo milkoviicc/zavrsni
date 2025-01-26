@@ -240,9 +240,7 @@ const Auth = () => {
         animate={slideVariants.animate}
         transition={slideVariants.transition}>
           <h1 className="font-Kaisei lg:text-6xl md:text-5xl text-4xl text-white">Meet new people</h1>
-          <p className="text-white text-opacity-[42%] font-Ovo lg:text-xl md:text-base text-sm">
-            Make your boring days less boring!
-          </p>
+          <p className="text-white text-opacity-[42%] font-Ovo lg:text-xl md:text-base text-sm"> Make your boring days less boring! </p>
           <Image src={loginImg} alt="login img" className="w-1/2 sm:px-10 sm:w-full md:w-full md:px-10 lg:w-full lg:px-40 xl:w-1/2 xl:px-0" />
         </motion.div>
       </div>
