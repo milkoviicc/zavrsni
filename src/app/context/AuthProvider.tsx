@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
@@ -20,6 +21,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authError, setAuthError] = useState('');
   
   // nextjs router za preusmjeravanje na druge pathove.
   const router = useRouter();
@@ -193,6 +195,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // spremam primljene podatke u varijablu newUser tipa User
       const newUser: Auth = res.data;
 
+      if(res.status !== 200) {
+        setAuthError(res.statusText);
+      }
+
       // provjeravam sadrže li primljeni podatci token, id i username
       if(newUser.token && newUser.user.userId && newUser.user.username) {
 
@@ -213,14 +219,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // preusmjeravam na home page
         router.push('/');
-      } else {
-        // ukoliko dođe do greške ispisuje se u konzoli
-        console.error('Invalid response structure');
       }
-      
-    } catch(error) {
+    } catch (error: any) {
       // ukoliko dođe do greške ispisuje se u konzoli
-      console.error('Registration failed', error);
+      if(error.response && error.response.data) {
+        throw new Error(error.response.data.detail || 'Registration failed');
+      }
+      throw new Error("Invalid credentials");
     }
   };
 
@@ -233,6 +238,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name,
         password
       });
+
+      if(res.status !== 200) {
+        setAuthError(res.statusText);
+      }
 
       // spremam primljene podatke u varijablu 'loggedUser' tipa 'User'
       const loggedUser: Auth = res.data;
@@ -258,18 +267,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           // mjenjam isLoggedIn state u true kako bi se znalo da je korisnik prijavljen
           setIsLoggedIn(true);
-        } else {
-          // ukoliko dođe do greške ispisuje se u konzoli
-          throw new Error(`This username/email doesn't exist.`);
         }
-      } else {
-        // ukoliko dođe do greške ispisuje se u konzoli
-        throw new Error('Invalid response structure');
       }
-      
-    } catch (error) {
+    } catch (error: any) {
       // ukoliko dođe do greške ispisuje se u konzoli
       console.error("Login failed:", error);
+      if(error.response && error.response.data) {
+        throw new Error(error.response.data.detail || 'Login failed');
+      }
       throw new Error("Invalid credentials");
     }
   };
@@ -334,7 +339,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // AuthContext.Provider prenosi unešene vrijednosti kako bi ih mogao koristiti u drugim fileovima
   return (
-    <AuthContext.Provider value={{ user, login, register, addDetails, addImage, logout, deleteAccount, isAuthenticated, fullyRegistered, defaultPicture, ignoreDefaultPic, setIgnoreDefaultPic, loading }}>
+    <AuthContext.Provider value={{ user, login, register, addDetails, addImage, logout, deleteAccount, isAuthenticated, fullyRegistered, defaultPicture, ignoreDefaultPic, setIgnoreDefaultPic, loading, authError}}>
       {children}
     </AuthContext.Provider>
   );

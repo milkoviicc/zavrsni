@@ -115,7 +115,7 @@ export default function Home() {
   }
   
   return (
-    <div className='flex flex-col mt-[75px] min-h-[800px]'>
+    <div className='flex flex-col mt-[75px] min-h-[786px]'>
       {isAuthenticated && fullyRegistered && !defaultPicture || ignoreDefaultPicture 
       ?
       <div className="flex-col bg-[#222222] shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)] min-h-[800px]">
@@ -142,7 +142,7 @@ export default function Home() {
 
       :  isAuthenticated && !fullyRegistered 
       ?  
-      <div className="flex justify-center items-center h-full">
+      <div className="flex justify-center items-center h-full min-h-[786px] bg-[#222222]">
         <div className="border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg">
           <div className="px-8 py-14">
             <h1>We just need a little more information about you.</h1>
@@ -155,7 +155,7 @@ export default function Home() {
       </div>
       : isAuthenticated && fullyRegistered && defaultPicture && !ignoreDefaultPicture
       ? 
-        <div className="flex justify-center items-center h-full">
+        <div className="flex justify-center items-center h-full min-h-[786px] bg-[#222222]">
           <div className="border-1 border-black bg-[#f5f4f4] rounded-md shadow-lg">
             <div className="px-8 py-14">
               <h1>Add a profile picture</h1>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 'use client';
 
@@ -16,7 +17,7 @@ const Auth = () => {
 
   
   // prosljedjuje mi se funkcija login iz AuthProvider.tsx
-  const {login, register} = useAuth();
+  const {login, register, authError} = useAuth();
 
   // opceniti stateovi
   const [error, setError] = useState<string | null>(null);
@@ -77,10 +78,10 @@ const Auth = () => {
 
       // stavljamo loading state na false jer se više ne loada nego je sve gotovo
       setLoading(false);
-    } catch(err) {
+    } catch(err: any) {
       // ukoliko se username/email ne može pronaći u bazi podataka, postavljamo Error sa određenom porukom
       setLoading(false);
-      setError('Invalid username/email or password, try again!');
+      setError(err.message);
     }
   }
 
@@ -161,13 +162,10 @@ const Auth = () => {
 
       // stavljamo loading state na false jer se više ne loada nego je sve gotovo
       setLoading(false);
-    } catch(err) {
+    } catch(err: any) {
       setLoading(false);
       // ukoliko je došlo do greške, postavljamo Error sa određenom porukom
-      setTimeout(() =>{
-        setError(null);
-      }, 1500);
-      setError('This username or email are already registered, try a different one!')
+      setError(err.message);
     }
   }
   
