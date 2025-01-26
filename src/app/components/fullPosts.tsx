@@ -364,7 +364,7 @@ const FullPosts = ({user}: {user: User}) => {
   }, []);
 
   return (
-    <div className="border-1 border-gray-900 py-16 h-full flex flex-col items-center gap-12">
+    <div className="border-1 border-gray-900 py-8 h-full flex flex-col items-center gap-12">
         <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
             <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
                 <Flex gap="2" className='cursor-pointer'>
