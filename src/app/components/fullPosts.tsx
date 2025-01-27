@@ -365,6 +365,9 @@ const FullPosts = ({user}: {user: User}) => {
 
   return (
     <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-12">
+        <div className='flex sm:hidden text-white'>
+          <h1>Responsive in progress.</h1>
+        </div>
         <div className="sm:flex hidden gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
             <div className="flex flex-row w-fit justify-center items-center gap-4 py-2 px-4">
                 <Flex gap="2">
