@@ -410,13 +410,23 @@ const FullPosts = ({user}: {user: User}) => {
                         { posts.map((post, index) => (
                           <div key={index}>
                             {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
-                              <div className=' flex items-center flex-col py-8 border-t-[1px] border-[#515151]'>
+                              <div className=' flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A]'>You might like these</p>
                                 <div className='grid grid-cols-2 grid-rows-2 gap-8'>
                                   {profileSuggestions.map((profileSuggestion, index) => (
                                     <Suggestion key={index} profileSuggestion={profileSuggestion} />
                                   ))}
+                                  {profileSuggestions.map((profileSuggestion, index) => (
+                                    <Suggestion key={index} profileSuggestion={profileSuggestion} />
+                                  ))}
+                                  {profileSuggestions.map((profileSuggestion, index) => (
+                                    <Suggestion key={index} profileSuggestion={profileSuggestion} />
+                                  ))}
+                                  {profileSuggestions.map((profileSuggestion, index) => (
+                                    <Suggestion key={index} profileSuggestion={profileSuggestion} />
+                                  ))}
                                 </div>
+                                
                               </div>
                             ) : null}
                             <EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
