@@ -78,7 +78,7 @@ export default function Navbar() {
     // ukoliko je user state User vraća se sve ispod
 
     return (
-        <div className="border-1 border-black bg-[#222222] shadow-[0px_0.5px_20.16px_0px_rgba(0,_0,_0,_0.26)] h-[80px] fixed top-0 w-[80%]">
+        <div className="border-1 border-black bg-[#222222] shadow-[0px_0.5px_20.16px_0px_rgba(0,_0,_0,_0.26)] h-[80px] fixed top-0 w-full">
             <div className="sm:hidden flex flex-col px-4">
                 <div className="w-auto max-w-[100%] flex justify-between ml-2">
                     <button className="text-xl md:text-2xl font-Roboto font-[900] italic text-[#D0D0D0]" onClick={() => router.push('/')}>SNET</button>

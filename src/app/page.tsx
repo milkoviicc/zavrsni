@@ -115,7 +115,7 @@ export default function Home() {
   }
   
   return (
-    <div className='hidden flex-col mt-[70px] min-h-[786px]'>
+    <div className='flex-col mt-[70px] min-h-[786px]'>
       {isAuthenticated && fullyRegistered && !defaultPicture || ignoreDefaultPicture 
       ?
       <div className="flex-col bg-[#222222] shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)] min-h-[840px] py-24">
