@@ -364,11 +364,11 @@ const FullPosts = ({user}: {user: User}) => {
   }, []);
 
   return (
-    <div className="border-1 border-gray-900 py-8 h-full flex flex-col items-center gap-12">
-        <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
-            <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
-                <Flex gap="2" className='cursor-pointer'>
-                    <Avatar src={`${user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
+    <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-12">
+        <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
+            <div className="flex flex-row w-fit justify-center items-center gap-4 py-2 px-4">
+                <Flex gap="2">
+                    <Avatar src={`${user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 6px 6px 0px #00000040'}} fallback="A" />
                 </Flex>
                 <div className="flex flex-col">
                     <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content} className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#fff] outline-none py-3 pr-8 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
@@ -378,7 +378,7 @@ const FullPosts = ({user}: {user: User}) => {
                         <label htmlFor="file-input" className="hover:cursor-pointer w-fit text-[#CCCCCC] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
                         <span className="block bg-[#CCCCCC] w-[75px] h-[1px] -ml-[3px]"></span>
                       </div>
-                      <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-8 py-[0.30rem]">Post it</button>
+                      <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-6 py-[0.20rem] shadow-[1px_3px_3px_0px_rgba(0,_0,_0,_0.25)]">Post it</button>
                     </div>
                     <div className="flex items-center">
                         {postFile ? postFile.map((file, index) => (
@@ -394,17 +394,17 @@ const FullPosts = ({user}: {user: User}) => {
         <div className="h-full w-full flex flex-col items-center">
             <div className="flex gap-4 py-6 items-center">
             <div>
-                <button className={`text-2xl text-[#8A8A8A] ${postsState === "Popular" ? 'font-medium text-[#EFEFEF]' : null}`} onClick={() => setPostsState('Popular')}>Popular</button>
+                <button className={`text-2xl text-[#8A8A8A] ${postsState === "Popular" ? ' text-[#EFEFEF]' : null}`} onClick={() => setPostsState('Popular')}>Popular</button>
                 <span className={`${postsState === 'Popular' ? 'block bg-[#EFEFEF]' : 'hidden'} w-full h-[2px]`}></span>
             </div>
             <span className="h-10 block border-black bg-[#8A8A8A] w-[1px]"></span>
             <div>
-                <button className={`text-2xl text-[#8A8A8A] ${postsState === "Your Feed" ? 'font-medium text-[#EFEFEF]' : null}`} onClick={() => setPostsState('Your Feed')}>Your Feed</button>
+                <button className={`text-2xl text-[#8A8A8A] ${postsState === "Your Feed" ? 'text-[#EFEFEF]' : null}`} onClick={() => setPostsState('Your Feed')}>Your Feed</button>
                 <span className={`${postsState === 'Your Feed' ? 'block bg-[#EFEFEF]' : 'hidden'} w-full h-[1px]`}></span>
             </div>
             
             </div>
-            <div className='w-full flex justify-center'>
+            <div className='w-full flex justify-center mt-10'>
                 {posts.length === 0 && loading === false ? <h1 className='text-center'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center'>Loading posts...</h1> : (
                     <InfiniteScroll className='w-full flex flex-col bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                         { posts.map((post, index) => (
