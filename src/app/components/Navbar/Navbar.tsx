@@ -78,14 +78,14 @@ export default function Navbar() {
     // ukoliko je user state User vraća se sve ispod
 
     return (
-        <div className="border-1 border-black bg-[#222222] shadow-[0px_0.5px_20.16px_0px_rgba(0,_0,_0,_0.26)] h-[70px] fixed top-0 w-full">
-            <div className="sm:hidden flex flex-col">
+        <div className="border-1 border-black bg-[#222222] shadow-[0px_0.5px_20.16px_0px_rgba(0,_0,_0,_0.26)] h-[80px] fixed top-0 w-[80%]">
+            <div className="sm:hidden flex flex-col px-4">
                 <div className="w-auto max-w-[100%] flex justify-between ml-2">
                     <button className="text-xl md:text-2xl font-Roboto font-[900] italic text-[#D0D0D0]" onClick={() => router.push('/')}>SNET</button>
                     <div className="flex justify-end items-center md:hidden">
                         <button className="hover:cursor-pointer flex" onClick={() => router.push(`/my-profile`)}>
                             <Flex className="mr-2">
-                                <Avatar src={`${user.pictureUrl}?${new Date().getTime()}`} className="w-[20px]" style={{borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
+                                <Avatar src={`${user.pictureUrl}?${new Date().getTime()}`} className="w-[20px] h-[20px]" style={{borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
                             </Flex> 
                         </button>
                     </div>

@@ -115,12 +115,12 @@ export default function Home() {
   }
   
   return (
-    <div className='flex flex-col mt-[70px] min-h-[786px]'>
+    <div className='hidden flex-col mt-[70px] min-h-[786px]'>
       {isAuthenticated && fullyRegistered && !defaultPicture || ignoreDefaultPicture 
       ?
       <div className="flex-col bg-[#222222] shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)] min-h-[840px] py-24">
         <div className="flex w-full justify-evenly">
-          <div className="flex flex-col gap-0 fixed w-[220px] top-41 left-40 text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]">
+          <div className="sm:flex hidden flex-col gap-0 fixed w-[220px] top-41 left-40 text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]">
             <h1 className="font-Roboto text-3xl pb-4 px-4 text-[#EFEFEF] font-normal">Who's popular</h1>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
             <div className='group w-full flex flex-col gap-2 bg-transparent px-4 max-h-[600px] overflow-y-hidden  hover:overflow-y-scroll scrollbar'>
@@ -129,7 +129,7 @@ export default function Home() {
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
           </div>
           <FullPosts user={user} />
-          <div className="flex flex-col gap-0 fixed w-[220px] top-41 right-40 text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]">
+          <div className="sm:flex hidden flex-col gap-0 fixed w-[220px] top-41 right-40 text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]">
             <h1 className="font-Roboto text-3xl pb-4 px-4 text-[#EFEFEF] font-normal">Friends</h1>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
             <div className='group w-full h-[600px] flex flex-col gap-2 bg-transparent px-4 overflow-y-hidden hover:overflow-y-scroll scrollbar '>

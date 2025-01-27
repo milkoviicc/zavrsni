@@ -365,7 +365,7 @@ const FullPosts = ({user}: {user: User}) => {
 
   return (
     <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-12">
-        <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
+        <div className="sm:flex hidden gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
             <div className="flex flex-row w-fit justify-center items-center gap-4 py-2 px-4">
                 <Flex gap="2">
                     <Avatar src={`${user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 6px 6px 0px #00000040'}} fallback="A" />
@@ -391,7 +391,7 @@ const FullPosts = ({user}: {user: User}) => {
                 </div>
             </div>
         </div>
-        <div className="h-full w-full flex flex-col items-center">
+        <div className="h-full w-full sm:flex hidden flex-col items-center">
             <div className="flex gap-4 py-6 items-center">
             <div>
                 <button className={`text-2xl text-[#8A8A8A] ${postsState === "Popular" ? ' text-[#EFEFEF]' : null}`} onClick={() => setPostsState('Popular')}>Popular</button>
