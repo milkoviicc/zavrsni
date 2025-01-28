@@ -7,7 +7,7 @@ import Image from 'next/image'
 import EachPost from './eachPost'
 import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
+import { faImage, faPaperclip } from '@fortawesome/free-solid-svg-icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import UserComponent from './userComponent';
 import Suggestion from './suggestion';
@@ -398,9 +398,70 @@ const FullPosts = ({user}: {user: User}) => {
   }, [profileSuggestions, suggestionsChecked]);
 
   return (
-    <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-12">
-        <div className='flex sm:hidden text-white'>
-          <h1>Responsive in progress.</h1>
+    <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-12 w-full">
+        <div className='flex flex-col sm:hidden text-white w-full justify-center mt-8'>
+          <div className="flex items-center w-full flex-col">
+              <div className="flex flex-col w-[80%] relative py-2 px-4 shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636] rounded-full">
+                  <div className='w-full flex justify-between items-center gap-4'>
+                    <Flex gap="2">
+                        <Avatar src={`${user.pictureUrl}`} style={{ width: '32px', height: '32px', borderRadius: '50%', boxShadow: '0px 6px 6px 0px #00000040'}} fallback="A" />
+                    </Flex>
+                    <div className="flex flex-col w-full">
+                      <div className='flex justify-between items-center w-full'>
+                        <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content} className="font-Roboto font-normal scrollbar-none md:min-w-[310px] w-full md:w-full pr-2 h-fit text-sm text-[#fff] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                        <input type="file" id="file-input" className="hidden" onChange={handlePostFile} multiple/>
+                        <div className="flex justify-between">
+                          <div>
+                            <label htmlFor="file-input" className="hover:cursor-pointer text-[#CCCCCC] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" /></label>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center">
+                          {postFile ? postFile.map((file, index) => (
+                            <div key={index} className='w-fit relative'>
+                              <Image key={index} src={URL.createObjectURL(file)} width={100} height={64} alt="aaaaaaa" className="py-2 opacity-80"/>
+                              <button className="absolute text-white top-2 right-2" onClick={() => setPostFile(postFile.filter((_, postIndex) => postIndex != index))}>X</button>
+                            </div>
+                            )) : null}
+                      </div>
+                    </div>
+                  </div>
+              </div>
+          </div>
+          <div className='flex flex-col py-8'>
+            {posts.length === 0 && loading === false ? <h1 className='text-center'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center'>Loading posts...</h1> : (
+              <InfiniteScroll className='w-full flex flex-col bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
+                  { posts.map((post, index) => (
+                    <div key={index}>
+                      {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
+                        <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
+                          <p className='text-[#8A8A8A]'>You might like these</p>
+                          <div className='grid grid-cols-1 grid-rows-4 gap-4'>
+                            {profileSuggestions.map((profileSuggestion, index) => (
+                              <Suggestion key={index} profileSuggestion={profileSuggestion} />
+                            ))}
+                            {profileSuggestions.length !== 4 ? 
+                              fillSuggestions.map((suggestion, index) => (
+                                <Suggestion key={index} profileSuggestion={suggestion} />
+                              )) : null
+                            }
+                          </div>
+                        </div>
+                      ) : randomNmbs?.includes(index) && profileSuggestions.length === 0 ? (
+                        <div className='grid grid-cols-1 grid-rows-4 gap-4'>
+                            {fillSuggestions.map((suggestion, index) => (
+                                <Suggestion key={index} profileSuggestion={suggestion} />
+                              ))
+                            }
+                          </div>
+                      ): null}
+                      <EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
+                    </div>
+                    )
+                  )}
+              </InfiniteScroll>
+              )}
+          </div>
         </div>
         <div className="sm:flex hidden gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
             <div className="flex flex-row w-fit justify-center items-center gap-4 py-2 px-4">
@@ -447,9 +508,9 @@ const FullPosts = ({user}: {user: User}) => {
                         { posts.map((post, index) => (
                           <div key={index}>
                             {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
-                              <div className=' flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
+                              <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A]'>You might like these</p>
-                                <div className='grid grid-cols-2 grid-rows-2 gap-8'>
+                                <div className='grid grid-cols-2 grid-rows-2 gap-4'>
                                   {profileSuggestions.map((profileSuggestion, index) => (
                                     <Suggestion key={index} profileSuggestion={profileSuggestion} />
                                   ))}
@@ -460,10 +521,16 @@ const FullPosts = ({user}: {user: User}) => {
                                   }
                                 </div>
                               </div>
-                            ) : null}
+                            ) : randomNmbs?.includes(index) && profileSuggestions.length === 0 ? (
+                              <div className='grid grid-cols-2 grid-rows-2 gap-4'>
+                                  {fillSuggestions.map((suggestion, index) => (
+                                      <Suggestion key={index} profileSuggestion={suggestion} />
+                                    ))
+                                  }
+                                </div>
+                            ): null}
                             <EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
                           </div>
-                          
                           )
                         )}
                     </InfiniteScroll>

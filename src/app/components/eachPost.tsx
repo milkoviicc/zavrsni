@@ -226,23 +226,23 @@ const handleReaction = async (reaction: number) => {
 
 
   return (
-    <div className="mt-2 w-[800px] h-fit flex flex-col gap-2 text-white px-1 pt-2 overflow-hidden border-t-[1px] border-[#515151]">
+    <div className="mt-2 sm:w-[800px] w-full h-fit flex flex-col gap-2 text-white px-1 pt-2 overflow-hidden border-t-[1px] border-[#515151]">
       <div className="flex gap-2 flex-1">
         <div className='flex flex-col w-full'>
-          <div className='py-2 px-4 flex'>
+          <div className='sm:py-2 sm:px-4 py-1 px-1 flex'>
             <button onClick={() => router.push(`/users/${post.user.username}`)}>
               <Flex gap="2" className='items-center'>
                 <Avatar src={`${post.user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%'}} fallback="A" />
               </Flex>
             </button>
             
-            <div className="flex flex-col w-full px-3 py-2">
+            <div className="flex flex-col w-full px-1 py-1">
               <div className='flex justify-between'>
                 <div className='flex gap-2 items-center'>
                   <button onClick={() => router.push(`/users/${post.user.username}`)}>
-                    <h1 className="text-[#EFEFEF] font-[400] font-Roboto leading-[8.23px] text-base py-2">{post.user.firstName} {post.user.lastName}</h1>
+                    <h1 className="truncate whitespace-nowrap text-[#EFEFEF] font-[400] font-Roboto text-sm sm:text-base py-1 sm:py-2">{post.user.firstName} {post.user.lastName}</h1>
                   </button>
-                  <p className="text-sm text-[#888888]">
+                  <p className="truncate whitespace-nowrap text-xs sm:text-sm text-[#888888]">
                   {days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}
                   </p>
                 </div>
@@ -299,11 +299,11 @@ const handleReaction = async (reaction: number) => {
                 </div>
               </div>
               <button onClick={() => router.push(`/users/${post.user.username}`)} className='w-fit h-fit'>
-                <p className="text-[#888888] leading-[5.66px] pt-[0.30rem] text-md">@{post.user.username}</p>
+                <p className="text-[#888888] pt-0 sm:pt-[0.30rem] text-sm sm:text-md">@{post.user.username}</p>
               </button>
             </div>
           </div>
-          <div className={`flex flex-col mx-[90px]`}>
+          <div className={`flex flex-col sm:mx-[90px] mx-[5px] mt-2`}>
             {/* Paragraph content */}
             <p className={`max-w-full break-words pt-1 text-justify text-[#EFEFEF] font-normal font-Roboto`}>{post.content}</p>
 

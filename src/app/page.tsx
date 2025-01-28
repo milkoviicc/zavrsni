@@ -118,7 +118,7 @@ export default function Home() {
     <div className='flex-col mt-[70px] min-h-[786px]'>
       {isAuthenticated && fullyRegistered && !defaultPicture || ignoreDefaultPicture 
       ?
-      <div className="flex-col bg-[#222222] shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)] min-h-[840px] py-24">
+      <div className="flex-col bg-[#222222] shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)] min-h-[840px] sm:py-24 py-6">
         <div className="flex w-full justify-evenly">
           <div className="sm:flex hidden flex-col gap-0 fixed w-[240px] top-41 left-40 text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]">
             <h1 className="font-Roboto text-2xl pb-4 px-4 text-[#EFEFEF] font-normal">Who's popular</h1>
