@@ -11,6 +11,7 @@ import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import UserComponent from './userComponent';
 import Suggestion from './suggestion';
+import { filter } from 'lodash';
 
 const FullPosts = ({user}: {user: User}) => {
 
@@ -345,7 +346,8 @@ const FullPosts = ({user}: {user: User}) => {
   }
 
   const [profileSuggestions, setProfileSuggestions] = useState<FollowSuggestionStatus[]>([]);
-  const [profileFollowed, setProfileFollowed] = useState(false);
+  const [suggestionsChecked, setSuggestionsChecked] = useState(false);
+  const [fillSuggestions, setFillSuggestions] = useState<FollowSuggestionStatus[]>([]);
 
   useEffect(() => {
     const getFollowSuggestions = async () => {
@@ -362,6 +364,38 @@ const FullPosts = ({user}: {user: User}) => {
     }
     getFollowSuggestions();
   }, []);
+
+  useEffect(() => {
+    const checkFollowSuggestions = async () => {
+      try {
+        if(profileSuggestions.length !== 4 && !suggestionsChecked) {
+          const length = profileSuggestions.length;
+          const neededProfiles = 4 - length;
+          const res = await axios.get<User[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/popular?limit=4`);
+
+          if(res.status === 200) {
+            const receivedUsers: User[] = res.data;
+            let filteredUsers = receivedUsers.filter((receivedUser) => !profileSuggestions.some((profile) => receivedUser.userId === profile.user.userId));
+            if(filteredUsers.length > neededProfiles) {
+              filteredUsers = filteredUsers.slice(0, neededProfiles);
+              filteredUsers.map((filteredUser) => {
+                const newSuggestion: FollowSuggestionStatus = {user: filteredUser, mutual: 0};
+                setFillSuggestions((prev) => [...prev, newSuggestion]);
+              })
+            }
+          }
+          setSuggestionsChecked(true);
+        }
+      } catch(err) {
+        console.error(err);
+      }
+    };
+
+    if (!suggestionsChecked && profileSuggestions.length > 0) {
+      checkFollowSuggestions();
+    }
+
+  }, [profileSuggestions, suggestionsChecked]);
 
   return (
     <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-12">
@@ -419,17 +453,12 @@ const FullPosts = ({user}: {user: User}) => {
                                   {profileSuggestions.map((profileSuggestion, index) => (
                                     <Suggestion key={index} profileSuggestion={profileSuggestion} />
                                   ))}
-                                  {profileSuggestions.map((profileSuggestion, index) => (
-                                    <Suggestion key={index} profileSuggestion={profileSuggestion} />
-                                  ))}
-                                  {profileSuggestions.map((profileSuggestion, index) => (
-                                    <Suggestion key={index} profileSuggestion={profileSuggestion} />
-                                  ))}
-                                  {profileSuggestions.map((profileSuggestion, index) => (
-                                    <Suggestion key={index} profileSuggestion={profileSuggestion} />
-                                  ))}
+                                  {profileSuggestions.length !== 4 ? 
+                                    fillSuggestions.map((suggestion, index) => (
+                                      <Suggestion key={index} profileSuggestion={suggestion} />
+                                    )) : null
+                                  }
                                 </div>
-                                
                               </div>
                             ) : null}
                             <EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
