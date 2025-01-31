@@ -187,8 +187,8 @@ const Auth = () => {
         <div className='flex justify-center items-center sm:w-[37%] w-full'>
           <div className='flex items-center justify-center'>
             <div className='md:px-4 px-2 sm:py-14 py-10'>
-              <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
               <h1 className='text-black font-bold text-3xl'>Welcome back</h1>
+              <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
             
               <form className='my-4 flex flex-col' onSubmit={(e) => {e.preventDefault(); handleSignIn()}}>
                 <input type="text" className={`lg:w-80 md:w-64 sm:w-56 w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Email address or username' id="name" onChange={(e) => setName(e.target.value)}/>
@@ -204,9 +204,9 @@ const Auth = () => {
         </div>
         <div className='flex justify-center items-center sm:w-[37%] w-full'>
           <div className='flex items-center justify-center md:px-2 sm:px-2 px-1'>
-            <div className='md:px-8 px-0 sm:py-14 py-0'>
-              <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
+            <div className='md:px-8 px-0 sm:py-14 py-12'>
               <h1 className='text-black font-bold lg:text-4xl md:text-2xl sm:text-xl text-2xl'>Create an account</h1>
+              <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
               <form onSubmit={(e) => {
                   e.preventDefault();
                   handleRegister();

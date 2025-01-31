@@ -12,6 +12,12 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import UserComponent from './userComponent';
 import Suggestion from './suggestion';
 import { filter } from 'lodash';
+import { usePosts} from '../context/PostsProvider';
+
+import {Popover, PopoverContent, PopoverTrigger} from "../../components/ui/popover";
+import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "../../components/ui/command";
+import {Button} from "../../components/ui/button";
+import { Check, ChevronDown, ChevronsDown, ChevronsUpDown, ChevronUp} from 'lucide-react';
 
 const FullPosts = ({user}: {user: User}) => {
 
@@ -23,11 +29,11 @@ const FullPosts = ({user}: {user: User}) => {
   const [content, setContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [postFile, setPostFile] = useState<File[]>([]);
-  const [postsState, setPostsState] = useState('');
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [randomNmbs, setRandomNmbs] = useState<number[]>();
-    
+  const {postsState, setPostsState, handleFeedState} = usePosts();
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
@@ -329,22 +335,6 @@ const FullPosts = ({user}: {user: User}) => {
   }, []);
 
 
-
-  const handleFeedState = (feedState: string) => {
-    const currentFeed = localStorage.getItem('feed');
-    if(currentFeed === 'Popular' && feedState === 'Popular') {
-      return;
-    } else if (currentFeed === 'Popular' && feedState === 'Your Feed') {
-      localStorage.setItem('feed', 'Your Feed');
-      setReactionTrigger((prev) => !prev);
-    } else if (currentFeed === 'Your Feed' && feedState === 'Popular') {
-      localStorage.setItem('feed', 'Popular');
-      setReactionTrigger((prev) => !prev);
-    } else if (currentFeed === 'Your Feed' && feedState === 'Your Feed') {
-      return;
-    }
-  }
-
   const [profileSuggestions, setProfileSuggestions] = useState<FollowSuggestionStatus[]>([]);
   const [suggestionsChecked, setSuggestionsChecked] = useState(false);
   const [fillSuggestions, setFillSuggestions] = useState<FollowSuggestionStatus[]>([]);
@@ -398,8 +388,8 @@ const FullPosts = ({user}: {user: User}) => {
   }, [profileSuggestions, suggestionsChecked]);
 
   return (
-    <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-12 w-full">
-        <div className='flex flex-col sm:hidden text-white w-full justify-center mt-8'>
+    <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full">
+        <div className='flex flex-col md:hidden text-white w-full justify-center mt-8'>
           <div className="flex items-center w-full flex-col">
               <div className="flex flex-col w-[80%] relative py-2 px-4 shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636] rounded-full">
                   <div className='w-full flex justify-between items-center gap-4'>
@@ -429,14 +419,14 @@ const FullPosts = ({user}: {user: User}) => {
               </div>
           </div>
           <div className='flex flex-col py-8'>
-            {posts.length === 0 && loading === false ? <h1 className='text-center'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center'>Loading posts...</h1> : (
-              <InfiniteScroll className='w-full flex flex-col bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
+            {posts.length === 0 && loading === false ? <h1 className='text-center'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center text-[#AFAFAF]'>Loading posts...</h1> : (
+              <InfiniteScroll className='w-full flex flex-col bg-transparent' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                   { posts.map((post, index) => (
                     <div key={index}>
                       {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
                         <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
-                          <p className='text-[#8A8A8A]'>You might like these</p>
-                          <div className='grid grid-cols-1 grid-rows-4 gap-4'>
+                          <p className='text-[#8A8A8A] text-xs'>You might like these</p>
+                          <div className='grid grid-cols-2 grid-rows-2 gap-2'>
                             {profileSuggestions.map((profileSuggestion, index) => (
                               <Suggestion key={index} profileSuggestion={profileSuggestion} />
                             ))}
@@ -448,7 +438,7 @@ const FullPosts = ({user}: {user: User}) => {
                           </div>
                         </div>
                       ) : randomNmbs?.includes(index) && profileSuggestions.length === 0 ? (
-                        <div className='grid grid-cols-1 grid-rows-4 gap-4'>
+                        <div className='grid grid-cols-2 grid-rows-2 gap-4'>
                             {fillSuggestions.map((suggestion, index) => (
                                 <Suggestion key={index} profileSuggestion={suggestion} />
                               ))
@@ -463,7 +453,7 @@ const FullPosts = ({user}: {user: User}) => {
               )}
           </div>
         </div>
-        <div className="sm:flex hidden gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
+        <div className="md:flex hidden gap-2 items-center flex-col w-fit rounded-full shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
             <div className="flex flex-row w-fit justify-center items-center gap-4 py-2 px-4">
                 <Flex gap="2">
                     <Avatar src={`${user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 6px 6px 0px #00000040'}} fallback="A" />
@@ -503,7 +493,7 @@ const FullPosts = ({user}: {user: User}) => {
             
             </div>
             <div className='w-full flex justify-center mt-10'>
-                {posts.length === 0 && loading === false ? <h1 className='text-center'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center'>Loading posts...</h1> : (
+                {posts.length === 0 && loading === false ? <h1 className='text-center'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center text-[#AFAFAF]'>Loading posts...</h1> : (
                     <InfiniteScroll className='w-full flex flex-col bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                         { posts.map((post, index) => (
                           <div key={index}>

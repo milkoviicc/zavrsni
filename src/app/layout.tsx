@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Theme }  from '@radix-ui/themes';
 
 import {motion, AnimatePresence} from 'framer-motion';
+import { PostsProvider } from "./context/PostsProvider";
 /*
 export const metadata: Metadata = {
   title: "Društvena mreža",
@@ -30,7 +31,9 @@ export default function RootLayout({
       <body>
           <AuthProvider>
             <Theme>
-              <ClientLayout>{children}</ClientLayout>
+              <PostsProvider>
+                <ClientLayout>{children}</ClientLayout>
+              </PostsProvider>
             </Theme>
           </AuthProvider>
       </body>
