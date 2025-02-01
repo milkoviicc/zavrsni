@@ -33,12 +33,12 @@ const UserComponent = ({user, handleRoute}: {user: User | undefined, handleRoute
   return (
     <div>
       <div className="hover:cursor-pointer hidden gap-2 py-2 items-center sm:flex" onClick={() => routeToUser()}>
-          <Avatar className='w-[55px] h-[55px] rounded-full'>
+          <Avatar className='w-[55px] h-[55px] 2k:w-[75px] 2k:h-[75px] rounded-full'>
               <AvatarImage src={`${user?.pictureUrl}?${new Date().getTime()}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col h-full items-start justify-center lg:w-[100px] xl:w-[120px]">
-              <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-base lg:w-[100px] xl:max-w-[120px] truncate whitespace-nowrap" title={`${user?.firstName} ${user?.lastName}`}>{user?.firstName} {user?.lastName}</h1>
-              <p className="text-[#888888] lg:w-[100px] xl:max-w-[120px] text-base truncate whitespace-nowrap">@{user?.username}</p>
+          <div className="flex flex-col h-full items-start justify-center lg:w-[100px] xl:w-[120px] 2k:max-w-[150px]">
+              <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-base 2k:text-xl lg:max-w-[100px] xl:max-w-[120px] 2k:max-w-[150px] truncate whitespace-nowrap" title={`${user?.firstName} ${user?.lastName}`}>{user?.firstName} {user?.lastName}</h1>
+              <p className="text-[#888888] lg:max-w-[100px] xl:max-w-[120px] 2k:max-w-[150px] text-base 2k:text-xl truncate whitespace-nowrap">@{user?.username}</p>
           </div>    
       </div>
       <div className="hover:cursor-pointer flex gap-2 py-2 items-center sm:hidden" onClick={() => routeToUser()}>

@@ -83,7 +83,7 @@ const config: Config = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
 		screens: {
-			"2k": "1800px",
+			"2k": "1950px",
 			"3k": "2200px",
 		}
   	}

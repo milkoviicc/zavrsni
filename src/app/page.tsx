@@ -120,7 +120,7 @@ export default function Home() {
       ?
       <div className="flex-col bg-[#222222] shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)] min-h-[846px] py-0 sm:py-6 md:py-16">
         <div className="flex w-full justify-between 2xl:px-16 xl:px-14 lg:px-4 gap-4">
-          <div className="xl:flex hidden flex-col fixed 3k:left-64 2k:left-56 2xl:left-28 xl:left-6 lg:left-0 self-start gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]">
+          <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-28 xl:left-6 lg:left-0 self-start gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[300px] 3k:w-[350px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]">
             <h1 className="font-Roboto text-xl xl:text-2xl pb-4 px-4 text-[#EFEFEF] font-normal">Who's popular</h1>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
             <div className='group w-full flex flex-col gap-2 bg-transparent px-4 lg:max-h-[400px] xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] overflow-y-hidden  hover:overflow-y-scroll scrollbar'>
@@ -131,7 +131,7 @@ export default function Home() {
           <div className="flex-grow ">
             <FullPosts user={user} />
           </div>
-          <div className="xl:flex hidden flex-col fixed 3k:right-64 2k:right-56 2xl:right-28 xl:right-6 lg:right-0 gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]">
+          <div className="xl:flex hidden flex-col fixed 3k:right-80 2k:right-64 2xl:right-28 xl:right-6 lg:right-0 gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[300p] 3k:w-[350px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]">
             <h1 className="font-Roboto text-xl xl:text-2xl pb-4 px-4 text-[#EFEFEF] font-normal">Friends</h1>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
             <div className='group w-full xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] flex flex-col gap-2 bg-transparent px-4 overflow-y-hidden hover:overflow-y-scroll scrollbar '>
