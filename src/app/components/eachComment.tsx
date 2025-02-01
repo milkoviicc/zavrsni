@@ -1,5 +1,5 @@
+'use client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Avatar, Flex } from '@radix-ui/themes'
 import React, {useEffect, useState} from 'react'
 import { Post, Comment, User, Reply } from '../types/types'
 import { faDownLong, faPen, faThumbsDown, faThumbsUp, faTrash, faUpLong } from '@fortawesome/free-solid-svg-icons'
@@ -8,6 +8,7 @@ import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Dia
 import { useRouter } from 'next/navigation'
 import ResizableTextarea from './ResizableTextarea'
 import EachReply from './eachReply'
+import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
 
 const EachComment = ({post, comment, refreshComments, updateComment}: {post: Post, comment: Comment, refreshComments: () => void, updateComment: (commentId: string, newContent: string) => void})=> {
 
@@ -305,9 +306,9 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
 
       <div className='flex flex-col'>
         <div className='flex'>
-          <Flex gap="2" className='w-fit'>
-            <Avatar src={`${comment.user.pictureUrl}?${new Date().getTime()}`} style={{ width: '40px', height: '40px', borderRadius: '25px', boxShadow: '0px 3.3758866786956787px 3.3758866786956787px 0px rgba(0,0,0,0.25)'}} fallback="A" />
-          </Flex>
+          <Avatar className='w-[40px] h-[40px] rounded-full'>
+            <AvatarImage src={`${comment.user.pictureUrl}?${new Date().getTime()}`} style={{boxShadow: '0px 3.3758866786956787px 3.3758866786956787px 0px rgba(0,0,0,0.25)'}} />
+          </Avatar>
           <div className='flex-col w-full ml-4'>
             <div className='flex justify-between mr-2'>
               <div className='flex gap-2 items-center'>
@@ -323,9 +324,9 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
                         <DialogContent className='w-full h-[350px] flex flex-col bg-[#222222] border-transparent text-black overflow-y-auto min-w-fit'>
                           <DialogHeader className='flex flex-row gap-2'>
                             <button onClick={() => router.push(`/users/${post.user.username}`)}>
-                              <Flex gap="2" className='items-center'>
-                                <Avatar src={`${post.user.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
-                              </Flex>
+                              <Avatar className='w-[40px] h-[40px] rounded-full'>
+                                <AvatarImage src={`${post.user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" />
+                              </Avatar>
                             </button>
                             <div className='flex justify-between w-full pr-8 !mt-0 '>
                               <div className='flex flex-col'>
@@ -339,10 +340,10 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
                           </DialogHeader>
                           <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
                               <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
-                                  <Flex gap="2" className='cursor-pointer'>
-                                      <Avatar src={`${post.user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
-                                  </Flex>
-                                  <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-white outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                                  <Avatar className='w-[60px] h-[60px] rounded-full'>
+                                      <AvatarImage src={`${userData.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
+                                  </Avatar>
+                                  <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#EFEFEF] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                                   <button onClick={() => update()} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF] mr-4 py-[0.30rem]">Update comment</button>
                               </div>
                               {finishedUpdating ? <h1 className='font-Roboto text-[#EFEFEF] pb-4'>Comment successfully updated!</h1> : null}
@@ -366,29 +367,29 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
               <p className={`${commentReaction === -1  ? 'text-[#D25551]' : 'text-[#C7C7C7]'}`}>{commentDislikes}</p>
               <Dialog>
                 <DialogTrigger  className='flex ml-4 font-Roboto text-[#C7C7C7] gap-1'><svg width="25" height="25" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.33251 0.347656H0.440609C0.37643 0.347656 0.314879 0.375241 0.269495 0.424342C0.224112 0.473443 0.198613 0.54004 0.198608 0.609482V2.67901C0.198611 2.74846 0.224108 2.81506 0.269491 2.86416C0.314875 2.91327 0.376427 2.94086 0.440609 2.94086H1.33616C1.37046 2.94086 1.40336 2.95561 1.42762 2.98185C1.45187 3.0081 1.4655 3.0437 1.4655 3.08081V3.56928C1.4655 3.59907 1.47348 3.62823 1.48846 3.65322C1.50344 3.67822 1.52479 3.69798 1.54993 3.71013C1.57507 3.72228 1.60293 3.72629 1.63013 3.72169C1.65733 3.71708 1.68272 3.70404 1.70322 3.68416L2.41402 2.99487C2.4499 2.96009 2.49637 2.94085 2.54454 2.94084H3.3325C3.39668 2.94083 3.45823 2.91325 3.50362 2.86414C3.549 2.81504 3.57449 2.74844 3.57449 2.67899V0.609482C3.57449 0.540043 3.54899 0.47345 3.50361 0.424349C3.45823 0.375248 3.39669 0.347661 3.33251 0.347656ZM1.88655 2.08077H0.935229C0.919236 2.08119 0.903327 2.07815 0.888438 2.07182C0.873549 2.06549 0.859981 2.056 0.848532 2.04391C0.837083 2.03182 0.827985 2.01737 0.821774 2.00142C0.815562 1.98547 0.812362 1.96834 0.812362 1.95103C0.812362 1.93372 0.815562 1.91658 0.821774 1.90063C0.827985 1.88468 0.837083 1.87024 0.848532 1.85815C0.859981 1.84606 0.873549 1.83657 0.888438 1.83024C0.903327 1.8239 0.919236 1.82086 0.935229 1.82128H1.88655C1.90254 1.82086 1.91845 1.8239 1.93334 1.83024C1.94823 1.83657 1.9618 1.84606 1.97324 1.85815C1.98469 1.87024 1.99379 1.88468 2 1.90063C2.00621 1.91658 2.00941 1.93372 2.00941 1.95103C2.00941 1.96834 2.00621 1.98547 2 2.00142C1.99379 2.01737 1.98469 2.03182 1.97324 2.04391C1.9618 2.056 1.94823 2.06549 1.93334 2.07182C1.91845 2.07815 1.90254 2.08119 1.88655 2.08077ZM2.83795 2.08077H2.46693C2.45094 2.08119 2.43503 2.07815 2.42014 2.07182C2.40525 2.06549 2.39169 2.056 2.38024 2.04391C2.36879 2.03182 2.35969 2.01737 2.35348 2.00142C2.34727 1.98547 2.34407 1.96834 2.34407 1.95103C2.34407 1.93372 2.34727 1.91658 2.35348 1.90063C2.35969 1.88468 2.36879 1.87024 2.38024 1.85815C2.39169 1.84606 2.40525 1.83657 2.42014 1.83024C2.43503 1.8239 2.45094 1.82086 2.46693 1.82128H2.83795C2.86925 1.82211 2.89901 1.83614 2.92088 1.86038C2.94274 1.88462 2.95498 1.91715 2.95498 1.95103C2.95498 1.9849 2.94274 2.01743 2.92088 2.04167C2.89901 2.06592 2.86925 2.07995 2.83795 2.08077ZM2.83795 1.42341H0.935229C0.919236 1.42383 0.903327 1.42078 0.888438 1.41445C0.873549 1.40812 0.859981 1.39863 0.848532 1.38654C0.837083 1.37445 0.827985 1.36001 0.821774 1.34405C0.815562 1.3281 0.812362 1.31097 0.812362 1.29366C0.812362 1.27635 0.815562 1.25922 0.821774 1.24327C0.827985 1.22731 0.837083 1.21287 0.848532 1.20078C0.859981 1.18869 0.873549 1.1792 0.888438 1.17287C0.903327 1.16654 0.919236 1.16349 0.935229 1.16392H2.83795C2.86925 1.16474 2.89901 1.17877 2.92088 1.20301C2.94274 1.22726 2.95498 1.25979 2.95498 1.29366C2.95498 1.32753 2.94274 1.36007 2.92088 1.38431C2.89901 1.40855 2.86925 1.42258 2.83795 1.42341Z" fill="#C7C7C7"/></svg> Reply</DialogTrigger>
-                <DialogContent className='w-full h-[350px] flex flex-col  text-black overflow-y-auto min-w-fit'>
+                <DialogContent className='w-full h-[350px] flex flex-col bg-[#222222] overflow-y-auto min-w-fit'>
                   <DialogHeader className='flex flex-row gap-2'>
-                    <button onClick={() => router.push(`/users/${post.user.username}`)}>
-                      <Flex gap="2" className='items-center'>
-                        <Avatar src={`${post.user.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
-                      </Flex>
+                    <button onClick={() => router.push(`/users/${comment.user.username}`)}>
+                      <Avatar className='w-[40px] h-[40px] rounded-full'>
+                        <AvatarImage src={`${comment.user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" />
+                      </Avatar>
                     </button>
                     <div className='flex justify-between w-full pr-8 !mt-0 '>
                       <div className='flex flex-col'>
-                        <DialogDescription className='text-base text-black'><button onClick={() => router.push(`/users/${post.user.username}`)}>{post.user.firstName} {post.user.lastName}</button></DialogDescription>
-                        <DialogTitle className='text-sm font-[500] text-[#656565]'><button onClick={() => router.push(`/users/${post.user.username}`)}>@ {post.user.username}</button></DialogTitle>
+                        <DialogDescription className='text-base text-[#EFEFEF]'><button onClick={() => router.push(`/users/${comment.user.username}`)}>{comment.user.firstName} {comment.user.lastName}</button></DialogDescription>
+                        <DialogTitle className='text-sm font-[500] text-[#888888]'><button onClick={() => router.push(`/users/${comment.user.username}`)}>@ {comment.user.username}</button></DialogTitle>
                       </div>
                       <div>
-                        <p className='text-black text-opacity-60'>{commentDays >= 1 ? justCommentDate : commentDays <= 0 && commentHours > 0 && commentMinutes <= 60 ? `${commentHours}h ago` : commentDays < 1 && commentHours <= 24 && commentMinutes <= 60 && commentMinutes >= 1 ? `${commentMinutes}m ago` : "Just now"}</p>
+                        <p className='text-[#888888] text-opacity-60'>{commentDays >= 1 ? justCommentDate : commentDays <= 0 && commentHours > 0 && commentMinutes <= 60 ? `${commentHours}h ago` : commentDays < 1 && commentHours <= 24 && commentMinutes <= 60 && commentMinutes >= 1 ? `${commentMinutes}m ago` : "Just now"}</p>
                       </div>
                     </div>
                   </DialogHeader>
-                  <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#ededed]">
+                  <div className="flex gap-2 items-center flex-col w-fit rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
                       <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
-                          <Flex gap="2" className='cursor-pointer'>
-                              <Avatar src={`${userData.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
-                          </Flex>
-                          <ResizableTextarea onChange={(e) =>  setReplyContent(e.target.value)} value={replyContent} placeholder='Write a reply!' className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
+                          <Avatar className='w-[60px] h-[60px] rounded-full'>
+                              <AvatarImage src={`${userData.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} />
+                          </Avatar>
+                          <ResizableTextarea onChange={(e) =>  setReplyContent(e.target.value)} value={replyContent} placeholder='Write a reply!' className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#EFEFEF] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                           <button onClick={() => handleReply(replyContent)} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF] mr-4 py-[0.30rem]">Post reply</button>
                       </div>
                       {finishedUpdating ? <h1 className='font-Roboto text-[#EFEFEF]'>Comment successfully updated!</h1> : null}

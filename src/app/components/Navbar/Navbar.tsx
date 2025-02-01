@@ -6,7 +6,6 @@ import React, {useEffect, useRef, useState} from "react"
 import { useAuth } from '@/src/app/context/AuthProvider';
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
-import {usePosts} from "../../context/PostsProvider";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHouse, faUserGroup, faUser, faRightFromBracket, faBell, faGear, faComment, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { Button } from "@/src/components/ui/button";
@@ -22,8 +21,6 @@ import { Command, CommandGroup, CommandItem, CommandList } from "@/src/component
 import { ChevronDown, ChevronUp, LogOut, Menu, Users } from "lucide-react";
 import Suggestion from "../suggestion";
 export default function Navbar() {
-
-    const {setPostsState, handleFeedState, postsState} = usePosts();
 
     // prosljedjuje mi se user state i funkcija logout iz AuthProvider.tsx
 

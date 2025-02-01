@@ -1,11 +1,12 @@
+'use client';
 import React, { useEffect, useState } from 'react'
 import { Reply, User } from '../types/types';
-import { Avatar, Flex } from '@radix-ui/themes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger} from '@/src/components/ui/dialog';
 import ResizableTextarea from './ResizableTextarea';
 import { useRouter } from 'next/navigation';
+import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
 
 const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Reply, like: (commentReplyId: string) => void, dislike: (commentReplyId: string) => void, deleteReply: (commentReplyId: string) => void, updateReply: (commentReplyId: string, updatedContent: string) => void}) => {
 
@@ -35,11 +36,10 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
     const [updatedContent, setUpdatedContent] = useState('');
     const [finishedUpdating, setFinishedUpdating] = useState(false);
 
-    const user = localStorage.getItem('user');
     const router = useRouter();
 
     useEffect(() => {
-    
+        const user = localStorage.getItem('user');
           // svaki put kad se korisnik dobije iz localstoragea i post.userProfile.id promjeni, re-rendera se sve.
       
           // ako korisnik postoji ulazi u {}, ako ne ništa se ne dešava
@@ -56,7 +56,7 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
           }
     
          
-    }, [user, reply.userProfile.userId]);
+    }, [reply.userProfile.userId]);
 
     const handleUpdate = () => {
         setUpdatedContent(reply.content);
@@ -64,18 +64,22 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
 
     const update = async () => {
         updateReply(reply.commentReplyId, updatedContent);
+        reply.content = updatedContent;
         setFinishedUpdating(true);
         setTimeout(() => {
             setFinishedUpdating(false);
+            setIsDialogOpen(false);
         }, 1000);
     }
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   return (
     <div className='flex py-4'>
         <div className='flex items-center w-full'>
-            <Flex gap="2" className='w-fit'>
-                <Avatar src={`${reply.userProfile.pictureUrl}?${new Date().getTime()}`} style={{ width: '40px', height: '40px', borderRadius: '25px', boxShadow: '0px 3.3758866786956787px 3.3758866786956787px 0px rgba(0,0,0,0.25)'}} fallback="A" />
-            </Flex>
+            <Avatar className='w-[40px] h-[40px] rounded-full'>
+                <AvatarImage src={`${reply.userProfile.pictureUrl}?${new Date().getTime()}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.3758866786956787px 3.3758866786956787px 0px rgba(0,0,0,0.25)'}}/>
+            </Avatar>
             <div className='flex flex-col w-full ml-4'>
                 <div className='flex justify-between mr-2'>
                     <div className='flex gap-2 items-center'>
@@ -86,41 +90,41 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
                     </div>
                     <div>
                         {showUpdate && (
-                            <Dialog>
-                                <DialogTrigger onClick={() => handleUpdate()}><FontAwesomeIcon icon={faPen} /></DialogTrigger>
-                                <DialogContent className='w-full h-[350px] flex flex-col  text-black overflow-y-auto min-w-fit'>
+                            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                                <DialogTrigger onClick={() => {setIsDialogOpen(true); handleUpdate()}} className='text-[#C7C7C7]'><FontAwesomeIcon icon={faPen} /></DialogTrigger>
+                                <DialogContent className='w-full h-[350px] flex flex-col bg-[#222222] text-black overflow-y-auto min-w-fit'>
                                 <DialogHeader className='flex flex-row gap-2'>
                                     <button onClick={() => router.push(`/users/${reply.userProfile.username}`)}>
-                                    <Flex gap="2" className='items-center'>
-                                        <Avatar src={`${reply.userProfile.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
-                                    </Flex>
+                                    <Avatar className='w-[40px] h-[40px] rounded-full'>
+                                        <AvatarImage src={`${reply.userProfile.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}}/>
+                                    </Avatar>
                                     </button>
                                     <div className='flex justify-between w-full pr-8 !mt-0 '>
                                     <div className='flex flex-col'>
-                                        <DialogDescription className='text-base text-black'><button onClick={() => router.push(`/users/${reply.userProfile.username}`)}>{reply.userProfile.firstName} {reply.userProfile.lastName}</button></DialogDescription>
-                                        <DialogTitle className='text-sm font-[500] text-[#656565]'><button onClick={() => router.push(`/users/${reply.userProfile.username}`)}>@ {reply.userProfile.username}</button></DialogTitle>
+                                        <DialogDescription className='text-base text-[#EFEFEF]'><button onClick={() => router.push(`/users/${reply.userProfile.username}`)}>{reply.userProfile.firstName} {reply.userProfile.lastName}</button></DialogDescription>
+                                        <DialogTitle className='text-sm font-[500] text-[#888888]'><button onClick={() => router.push(`/users/${reply.userProfile.username}`)}>@ {reply.userProfile.username}</button></DialogTitle>
                                     </div>
                                     <div>
-                                        <p className='text-black text-opacity-60'>{replyDays >= 1 ? justReplyDate : replyDays <= 0 && replyHours > 0 && replyMinutes <= 60 ? `${replyHours}h ago` : replyDays < 1 && replyHours <= 24 && replyMinutes <= 60 && replyMinutes >= 1 ? `${replyMinutes}m ago` : "Just now"}</p>
+                                        <p className='text-[#888888] text-opacity-60'>{replyDays >= 1 ? justReplyDate : replyDays <= 0 && replyHours > 0 && replyMinutes <= 60 ? `${replyHours}h ago` : replyDays < 1 && replyHours <= 24 && replyMinutes <= 60 && replyMinutes >= 1 ? `${replyMinutes}m ago` : "Just now"}</p>
                                     </div>
                                     </div>
                                 </DialogHeader>
-                                <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#ededed]">
+                                <div className="flex gap-2 items-center flex-col w-fit rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
                                     <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
-                                        <Flex gap="2" className='cursor-pointer'>
-                                            <Avatar src={`${reply.userProfile.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
-                                        </Flex>
-                                        <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#363636] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-gray-900 bg-transparent transition-all"/>
-                                        <button onClick={() => update()} className="rounded-full w-[150px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Update reply</button>
+                                        <Avatar className='w-[60px] h-[60px] rounded-full'>
+                                            <AvatarImage src={`${reply.userProfile.pictureUrl}`} style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
+                                        </Avatar>
+                                        <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#EFEFEF]  outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                                        <button onClick={() => update()} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF]  mr-4 py-[0.30rem]">Update reply</button>
                                     </div>
-                                    {finishedUpdating ? <h1>Comment successfully updated!</h1> : null}
+                                    {finishedUpdating ? <h1 className='font-Roboto text-[#EFEFEF]'>Reply successfully updated!</h1> : null}
                                 </div>
                                 </DialogContent>
                             </Dialog>
                         )}
                         {showDelete && (
                             <button className="text-sm px-2">
-                            <FontAwesomeIcon icon={faTrash} className="text-xl" onClick={(() => deleteReply(reply.commentReplyId))}/>
+                            <FontAwesomeIcon icon={faTrash} className='text-[#C7C7C7] text-xl' onClick={(() => deleteReply(reply.commentReplyId))}/>
                             </button>
                         )}
                     </div>

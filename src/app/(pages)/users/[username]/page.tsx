@@ -209,6 +209,7 @@ const UserProfile = () => {
                 <Flex gap="2">
                     <Avatar src={`${user?.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
                 </Flex>
+                
                 {loading ? 'Loading...'
                 : friendStatus === 'sent' ? <h1>Friend request sent</h1>
                 : friendStatus === 'received' ? (

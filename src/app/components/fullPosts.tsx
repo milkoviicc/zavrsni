@@ -2,7 +2,6 @@
 'use client';
 import React, {useState, useEffect} from 'react'
 import ResizableTextarea from './ResizableTextarea'
-import { Avatar, Flex } from '@radix-ui/themes'
 import { FollowSuggestion, FollowSuggestionStatus, Friendship, FriendshipStatus, Post, Profile, User } from '../types/types'
 import Image from 'next/image'
 import EachPost from './eachPost'
@@ -13,12 +12,12 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import UserComponent from './userComponent';
 import Suggestion from './suggestion';
 import { filter } from 'lodash';
-import { usePosts} from '../context/PostsProvider';
 
 import {Popover, PopoverContent, PopoverTrigger} from "../../components/ui/popover";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "../../components/ui/command";
 import {Button} from "../../components/ui/button";
 import { Check, ChevronDown, ChevronsDown, ChevronsUpDown, ChevronUp} from 'lucide-react';
+import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
 
 const FullPosts = ({user}: {user: User}) => {
 
@@ -33,7 +32,7 @@ const FullPosts = ({user}: {user: User}) => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [randomNmbs, setRandomNmbs] = useState<number[]>();
-  const {postsState, setPostsState, handleFeedState} = usePosts();
+  const [postsState, setPostsState] = useState('');
   const [postPopoverOpen, setPostPopoverOpen] = useState(false);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,6 +81,9 @@ const FullPosts = ({user}: {user: User}) => {
 
   const getPosts = async (page: number) => {
     try {
+      if(page === 0) {
+        setPosts([]);
+      }
       setLoading(true);
       const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/popular-feed?page=${page}`);
 
@@ -112,6 +114,9 @@ const FullPosts = ({user}: {user: User}) => {
   
   const getYourFeed = async (page: number) => {
     try {
+      if(page === 0) {
+        setPosts([]);
+      }
       setLoading(true);
       const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/your-feed?page=${page}`);
 
@@ -172,7 +177,20 @@ const FullPosts = ({user}: {user: User}) => {
     if(feedState) {
       setPostsState(feedState); 
     }
-  }, [])
+  }, []);
+
+  const handleFeedState = (feedState: string) => {
+    const currentFeed = localStorage.getItem('feed');
+    if(currentFeed === 'Popular' && feedState === 'Popular') {
+      return;
+    } else if (currentFeed === 'Popular' && feedState === 'Your Feed') {
+      localStorage.setItem('feed', 'Your Feed');
+    } else if (currentFeed === 'Your Feed' && feedState === 'Popular') {
+      localStorage.setItem('feed', 'Popular');
+    } else if (currentFeed === 'Your Feed' && feedState === 'Your Feed') {
+      return;
+    }
+}
 
   useEffect(() => {
     handleFeedState(postsState);
@@ -348,7 +366,6 @@ const FullPosts = ({user}: {user: User}) => {
 
         if(res.status === 200) {
           setProfileSuggestions(res.data);
-          console.log(res.data);
         }
   
       } catch(err) {
@@ -390,6 +407,10 @@ const FullPosts = ({user}: {user: User}) => {
 
   }, [profileSuggestions, suggestionsChecked]);
 
+  if (!profileSuggestions.length) {
+    return <div>Loading...</div>;  // Avoid hydration mismatch by showing a loading state
+  }
+
   return (
     <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full lg:py-12">
         <div className='flex flex-col md:hidden text-white w-full justify-center'>
@@ -421,9 +442,9 @@ const FullPosts = ({user}: {user: User}) => {
               </div>
               <div className="flex flex-col w-[80%] relative mt-6 py-2 px-4 shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636] rounded-full ">
                   <div className='w-full flex justify-between items-center gap-4'>
-                    <Flex gap="2">
-                        <Avatar src={`${user.pictureUrl}`} style={{ width: '32px', height: '32px', borderRadius: '50%', boxShadow: '0px 6px 6px 0px #00000040'}} fallback="A" />
-                    </Flex>
+                    <Avatar className='w-[32px] h-[32px] rounded-full'>
+                        <AvatarImage src={`${user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
+                    </Avatar>
                     <div className="flex flex-col w-full">
                       <div className='flex justify-between items-center w-full'>
                         <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content} className="font-Roboto font-normal scrollbar-none md:min-w-[310px] w-full md:w-full pr-2 h-fit text-sm text-[#fff] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
@@ -483,9 +504,9 @@ const FullPosts = ({user}: {user: User}) => {
         </div>
         <div className="md:flex hidden gap-2 items-center flex-col w-fit rounded-full shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
             <div className="flex flex-row w-fit justify-center items-center gap-4 py-2 px-4">
-                <Flex gap="2">
-                    <Avatar src={`${user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 6px 6px 0px #00000040'}} fallback="A" />
-                </Flex>
+                <Avatar className='w-[60px] h-[60px] rounded-full'>
+                    <AvatarImage src={`${user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
+                </Avatar>
                 <div className="flex flex-col">
                     <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content} className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#fff] outline-none py-3 pr-8 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                     <input type="file" id="file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>

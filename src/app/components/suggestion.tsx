@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react'
 import UserComponent from './userComponent'
 import { FollowSuggestionStatus, FriendshipStatus, User } from '../types/types'

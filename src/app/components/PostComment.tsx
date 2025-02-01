@@ -1,6 +1,5 @@
+'use client';
 import React, {useState} from 'react'
-
-import {Flex, Avatar} from '@radix-ui/themes'
 import ResizableTextarea from './ResizableTextarea';
 import axios from 'axios';
 import { Post, User } from '../types/types';

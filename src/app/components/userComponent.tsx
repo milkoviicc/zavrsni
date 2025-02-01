@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useState } from 'react'
 import { FollowSuggestionStatus, Profile, User } from '../types/types'
 import { useRouter } from 'next/navigation';
@@ -9,13 +10,10 @@ const UserComponent = ({user, handleRoute}: {user: User | undefined, handleRoute
 
   const routeToUser = () => {
     if(handleRoute !== null) {
-      console.log('here');
       if(user) {
-        console.log('not here');
         handleRoute(user);
       }
     } else if (handleRoute === null) {
-      console.log('here');
       router.push(`/users/${user?.username}`);
       
     }
@@ -30,7 +28,7 @@ const UserComponent = ({user, handleRoute}: {user: User | undefined, handleRoute
   }, []);
 
   if(!user) {
-    return;
+    return null;
   }
   return (
     <div>

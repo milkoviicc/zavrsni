@@ -1,6 +1,6 @@
 /* eslint-disable no-var */
+'use client';
 import React, {useState, useEffect, useRef} from 'react'
-import {Flex, Avatar} from '@radix-ui/themes'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpLong, faDownLong, faPen, faTrash, faArrowUp, faPaperclip, faN } from '@fortawesome/free-solid-svg-icons';
@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import ResizableTextarea from './ResizableTextarea';
 import _ from 'lodash';
+import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
 
 const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refreshPosts}: {post: Post, handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string, updatedContent: string, updatedFiles: string[]) => void, refreshPosts: () => void})=> {
   
@@ -62,7 +63,6 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   const [finishedUpdating, setFinishedUpdating] = useState(false);
 
   // dobivam usera iz localStorage-a
-  const user = localStorage.getItem('user');
 
   const router = useRouter();
     
@@ -111,7 +111,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   }
 
   useEffect(() => {
-
+    const user = localStorage.getItem('user');
     // svaki put kad se korisnik dobije iz localstoragea i post.userProfile.id promjeni, re-rendera se sve.
 
     // ako korisnik postoji ulazi u {}, ako ne ništa se ne dešava
@@ -129,7 +129,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
         setShowUpdate(false);
       }
     }
-  }, [user, post.user.userId, post]);  
+  }, [post.user.userId, post]);  
 
   useEffect(() => {
     refreshPosts();
@@ -231,14 +231,14 @@ const handleReaction = async (reaction: number) => {
         <div className='flex flex-col w-full'>
           <div className='sm:py-2 sm:px-4 py-1 px-1 flex'>
             <button className='sm:hidden block' onClick={() => router.push(`/users/${post.user.username}`)}>
-              <Flex gap="2" className='items-center'>
-                <Avatar src={`${post.user.pictureUrl}`} style={{ width: '45px', height: '45px', borderRadius: '50%'}} fallback="A" />
-              </Flex>
+              <Avatar className='w-[45px] h-[45px] rounded-full'>
+                <AvatarImage src={`${post.user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" />
+              </Avatar>
             </button>
             <button className='hidden sm:block' onClick={() => router.push(`/users/${post.user.username}`)}>
-              <Flex gap="2" className='items-center'>
-                <Avatar src={`${post.user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%'}} fallback="A" />
-              </Flex>
+              <Avatar className='w-[60px] h-[60px] rounded-full'>
+                <AvatarImage src={`${post.user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" />
+              </Avatar>
             </button>
             
             <div className="flex flex-col w-full px-1 py-1">
@@ -258,9 +258,9 @@ const handleReaction = async (reaction: number) => {
                       <DialogContent className='w-full h-[350px] flex flex-col text-black overflow-y-auto min-w-fit bg-[#222222] border-transparent'>
                         <DialogHeader className='flex flex-row gap-2'>
                           <button onClick={() => router.push(`/users/${post.user.username}`)}>
-                            <Flex gap="2" className='items-center'>
-                              <Avatar src={`${post.user.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
-                            </Flex>
+                            <Avatar className='w-[40px] h-[40px] rounded-full'>
+                              <AvatarImage src={`${post.user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" />
+                            </Avatar>
                           </button>
                           <div className='flex justify-between w-full pr-8 !mt-0 '>
                             <div className='flex flex-col'>
@@ -274,9 +274,9 @@ const handleReaction = async (reaction: number) => {
                         </DialogHeader>
                         <div className="flex gap-1 items-center flex-col w-fit rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
                             <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
-                                <Flex gap="2" className='cursor-pointer'>
-                                    <Avatar src={`${post.user.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
-                                </Flex>
+                                <Avatar className='w-[60px] h-[60px] rounded-full'>
+                                  <AvatarImage src={`${post.user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
+                                </Avatar>
                                 <div className="flex flex-col">
                                     <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-white outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                                     <input type="file" id="new-file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
@@ -357,9 +357,9 @@ const handleReaction = async (reaction: number) => {
                 <DialogContent className='w-full h-[85vh] flex flex-col bg-[#222222] text-black overflow-y-auto max-w-[35%] border-transparent'>
                   <DialogHeader className='flex flex-row gap-2'>
                     <button onClick={() => router.push(`/users/${post.user.username}`)}>
-                      <Flex gap="2" className='items-center'>
-                        <Avatar src={`${post.user.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}} fallback="A" />
-                      </Flex>
+                      <Avatar className='w-[45px] h-[45px] rounded-full'>
+                        <AvatarImage src={`${post.user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full"/>
+                      </Avatar>
                     </button>
                     <div className='flex justify-between w-full pr-8 !mt-0 '>
                       <div className='flex flex-col'>
