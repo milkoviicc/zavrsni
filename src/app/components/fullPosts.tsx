@@ -412,7 +412,7 @@ const FullPosts = ({user}: {user: User}) => {
 
 
   return (
-    <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full lg:py-12">
+    <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full 2xl:py-12 py-0">
         <div className='flex flex-col md:hidden text-white w-full justify-center'>
           <div className="flex items-center w-full flex-col">
             <div className='w-full sm:hidden flex items-center px-2 py-2'>
