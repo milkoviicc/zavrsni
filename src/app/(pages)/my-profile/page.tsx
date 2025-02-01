@@ -107,7 +107,7 @@ const Profile = () => {
         />
       ) : (
         <img
-          src={`${profilePicture}?${new Date().getTime()}`} // This ensures no caching
+          src={`${profilePicture}`} // This ensures no caching
           alt="Profile"
           style={{ borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040' }}
           className="w-[60px] h-[60px] object-cover"
