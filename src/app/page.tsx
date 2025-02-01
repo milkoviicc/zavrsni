@@ -113,29 +113,29 @@ export default function Home() {
   if(!user) {
     return false;
   }
-  
+
   return (
-    <div className='flex-col mt-[70px] min-h-[786px]'>
+    <div className='flex-col mt-[35px] sm:mt-[80px] min-h-[786px]'>
       {isAuthenticated && fullyRegistered && !defaultPicture || ignoreDefaultPicture 
       ?
-      <div className="flex-col bg-[#222222] shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)] min-h-[840px] py-6 md:py-24">
+      <div className="flex-col bg-[#222222] shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)] min-h-[846px] py-0 sm:py-6 md:py-16">
         <div className="flex w-full justify-between 2xl:px-16 xl:px-14 lg:px-4 gap-4">
-          <div className="lg:flex hidden flex-col gap-0 w-[240px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]">
+          <div className="xl:flex hidden flex-col fixed 2xl:left-28 xl:left-6 lg:left-0 self-start gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] h-[700px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]">
             <h1 className="font-Roboto text-xl xl:text-2xl pb-4 px-4 text-[#EFEFEF] font-normal">Who's popular</h1>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
             <div className='group w-full flex flex-col gap-2 bg-transparent px-4 max-h-[600px] overflow-y-hidden  hover:overflow-y-scroll scrollbar'>
-              { popularUsers.map((user, index) => <UserComponent user={user} key={index} />)}
+              { popularUsers.map((user, index) => <UserComponent user={user} key={index} handleRoute={null}/>)}
             </div>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
           </div>
-          <div className="flex-grow">
+          <div className="flex-grow ">
             <FullPosts user={user} />
           </div>
-          <div className="lg:flex hidden flex-col gap-0 w-[240px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]">
+          <div className="xl:flex hidden flex-col fixed 2xl:right-28 xl:right-6 lg:right-0 gap-0 lg: xl:w-[200px] w-[180px] 2xl:w-[240px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]">
             <h1 className="font-Roboto text-xl xl:text-2xl pb-4 px-4 text-[#EFEFEF] font-normal">Friends</h1>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
             <div className='group w-full h-[600px] flex flex-col gap-2 bg-transparent px-4 overflow-y-hidden hover:overflow-y-scroll scrollbar '>
-              { friendsList.map((user, index) => <UserComponent user={user.user} key={index} />)}
+              { friendsList.map((user, index) => <UserComponent user={user.user} key={index} handleRoute={null}/>)}
             </div>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
           </div>

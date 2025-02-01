@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
@@ -14,11 +15,12 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/src/components/ui/avatar"
 import {Flex, Avatar as RadixAvatar } from "@radix-ui/themes";
 
 import searchOutline from "@/public/search-outline 1.svg"
-import { Profile } from "../../types/types";
+import { FollowSuggestion, FollowSuggestionStatus, Profile, User } from "../../types/types";
 import { Popover, PopoverTrigger, PopoverContent } from "@/src/components/ui/popover";
 import UserComponent from "../userComponent";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/src/components/ui/command";
 import { ChevronDown, ChevronUp, LogOut, Menu, Users } from "lucide-react";
+import Suggestion from "../suggestion";
 export default function Navbar() {
 
     const {setPostsState, handleFeedState, postsState} = usePosts();
@@ -79,12 +81,20 @@ export default function Navbar() {
     }, [search])
 
 
+    function isUser(user: any): user is User {
+        return (user as User).username !== undefined;
+    }
     
-    const handleRoute = (user: Profile) => {
-        router.push(`/users/${user.username}`);
+    const handleRoute = (user: User | FollowSuggestionStatus) => {
+        if(isUser(user)) {
+            router.push(`/users/${user.username}`);
+        } else {
+            router.push(`/users/${user.user.username}`);
+        }
         inputRef.current?.blur();
         setSearch('');
         setReceivedItems([]);
+        setSearchOpen((prev) => !prev);
     }
 
     const searchInputRef = useRef<HTMLInputElement | null>(null);
@@ -94,9 +104,11 @@ export default function Navbar() {
             setSearch('');
             setReceivedItems([]);
         } else {
-            searchInputRef.current?.focus(); // Focus the input
+            setSearchOpen((prev) => !prev);
         }
     }
+
+    const [searchOpen, setSearchOpen] = useState(false);
 
     // ukoliko je user state null vraća se null (kao da navbar ne postoji uopće)
     if(!user) return null;
@@ -104,13 +116,32 @@ export default function Navbar() {
     // ukoliko je user state User vraća se sve ispod
 
     return (
-        <div className="border-1 border-black bg-[#222222] shadow-[0px_0.5px_20.16px_0px_rgba(0,_0,_0,_0.26)] h-[90px] sm:h-[80px] fixed top-0 w-full z-10">
+        <div className="border-1 border-black bg-[#222222] shadow-[0px_0.5px_20.16px_0px_rgba(0,_0,_0,_0.26)] h-[40px] sm:h-[80px] fixed top-0 w-full z-10">
             <div className="sm:hidden flex flex-col px-4">
                 <div className="w-auto max-w-[100%] flex justify-between ml-2">
-                    <button className="text-xl md:text-2xl font-Roboto font-[900] italic text-[#D0D0D0]" onClick={() => router.push('/')}>SNET</button>
+                    <button className="text-2xl font-Roboto font-[900] italic text-[#D0D0D0]" onClick={() => router.push('/')}>SNET</button>
                     <div className="flex justify-end items-center md:hidden">
+                        <div className="sm:hidden flex">
+                            <Input type="text" id="searchInput" ref={searchInputRef} autoComplete="off" value={search} placeholder="Search anyone..." onChange={(e) => setSearch(e.target.value)} className={`${searchOpen ? 'absolute top-[2px] right-14 min-w-[55%] max-w-[80%] w-auto rounded-full' : 'hidden'} bg-[#363636] font-Roboto sm:w-[300px] md:w-[350px] lg:w-[400px] xl:w-[450px] 2xl:w-[500px] text-[#BBBBBB] text-[15px] shadow-[0px_0px_3px_0.2px_rgba(0,0,0,0.35)] border focus-visible:ring-0 border-transparent `}/>
+                            <label htmlFor="searchInput" onClick={() => clearSearch()} className={`hover:cursor-pointer z-20 absolute top-[2px] right-14 ${search !== '' ? 'top-[7px] right-16': ''}`}>{search !== '' ?  <svg width="25" height="25" fill="#AFAFAF"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0L284.2 0c12.1 0 23.2 6.8 28.6 17.7L320 32l96 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 96C14.3 96 0 81.7 0 64S14.3 32 32 32l96 0 7.2-14.3zM32 128l384 0 0 320c0 35.3-28.7 64-64 64L96 512c-35.3 0-64-28.7-64-64l0-320zm96 64c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16z"/></svg> : <svg width="35" height="35" viewBox="0 0 11 11" fill="#AFAFAF" xmlns="http://www.w3.org/2000/svg"><g id="search-outline 1" clipPath="url(#clip0_109_55)"><g id="Layer 2"><g id="search"><path id="Vector" d="M8.8472 8.21306L7.48959 6.85944C7.92761 6.3014 8.16528 5.6123 8.1644 4.90288C8.1644 4.27109 7.97705 3.65349 7.62605 3.12818C7.27505 2.60286 6.77615 2.19343 6.19246 1.95166C5.60876 1.70988 4.96648 1.64662 4.34683 1.76988C3.72718 1.89313 3.15799 2.19737 2.71125 2.64411C2.26451 3.09085 1.96027 3.66004 1.83702 4.27969C1.71376 4.89934 1.77702 5.54162 2.01879 6.12532C2.26057 6.70901 2.67 7.20791 3.19532 7.55891C3.72063 7.90992 4.33823 8.09726 4.97002 8.09726C5.67943 8.09815 6.36854 7.86047 6.92658 7.42245L8.2802 8.78006C8.31732 8.81749 8.36148 8.84719 8.41014 8.86747C8.4588 8.88774 8.51099 8.89817 8.5637 8.89817C8.61641 8.89817 8.6686 8.88774 8.71726 8.86747C8.76592 8.84719 8.81008 8.81749 8.8472 8.78006C8.88463 8.74294 8.91433 8.69878 8.9346 8.65012C8.95488 8.60146 8.96531 8.54927 8.96531 8.49656C8.96531 8.44385 8.95488 8.39166 8.9346 8.343C8.91433 8.29434 8.88463 8.25018 8.8472 8.21306ZM2.57423 4.90288C2.57423 4.42904 2.71474 3.96584 2.97799 3.57185C3.24125 3.17787 3.61542 2.87079 4.05319 2.68946C4.49096 2.50813 4.97268 2.46069 5.43741 2.55313C5.90215 2.64557 6.32904 2.87375 6.6641 3.2088C6.99915 3.54386 7.22733 3.97075 7.31977 4.43549C7.41221 4.90022 7.36477 5.38194 7.18344 5.81971C7.00211 6.25748 6.69503 6.63165 6.30105 6.8949C5.90706 7.15816 5.44386 7.29867 4.97002 7.29867C4.33462 7.29867 3.72524 7.04626 3.27594 6.59696C2.82664 6.14766 2.57423 5.53828 2.57423 4.90288Z" fill="#AFAFAF"/></g></g></g><defs><clipPath id="clip0_109_55"><rect width="9.58315" height="9.58315" fill="white" transform="translate(0.577637 0.51062)"/></clipPath></defs></svg>}</label>
+                            {recievedItems.length > 0 ? (
+                                <div className="bg-[#252525] min-w-[55%] max-w-[80%] w-auto h-fit absolute top-[38px] right-14 rounded-lg border-none text-[#AFAFAF] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+                                    <div className="flex flex-col items-start gap-2">
+                                        <div className="flex justify-center items-center gap-4 mt-4 px-2">
+                                            <div className=" border-[#515151] rounded-full border px-1 py-1 w-fit h-fit"><svg width="35" height="35" viewBox="0 0 11 11" fill="#AFAFAF" xmlns="http://www.w3.org/2000/svg"><g id="search-outline 1" clipPath="url(#clip0_109_55)"><g id="Layer 2"><g id="search"><path id="Vector" d="M8.8472 8.21306L7.48959 6.85944C7.92761 6.3014 8.16528 5.6123 8.1644 4.90288C8.1644 4.27109 7.97705 3.65349 7.62605 3.12818C7.27505 2.60286 6.77615 2.19343 6.19246 1.95166C5.60876 1.70988 4.96648 1.64662 4.34683 1.76988C3.72718 1.89313 3.15799 2.19737 2.71125 2.64411C2.26451 3.09085 1.96027 3.66004 1.83702 4.27969C1.71376 4.89934 1.77702 5.54162 2.01879 6.12532C2.26057 6.70901 2.67 7.20791 3.19532 7.55891C3.72063 7.90992 4.33823 8.09726 4.97002 8.09726C5.67943 8.09815 6.36854 7.86047 6.92658 7.42245L8.2802 8.78006C8.31732 8.81749 8.36148 8.84719 8.41014 8.86747C8.4588 8.88774 8.51099 8.89817 8.5637 8.89817C8.61641 8.89817 8.6686 8.88774 8.71726 8.86747C8.76592 8.84719 8.81008 8.81749 8.8472 8.78006C8.88463 8.74294 8.91433 8.69878 8.9346 8.65012C8.95488 8.60146 8.96531 8.54927 8.96531 8.49656C8.96531 8.44385 8.95488 8.39166 8.9346 8.343C8.91433 8.29434 8.88463 8.25018 8.8472 8.21306ZM2.57423 4.90288C2.57423 4.42904 2.71474 3.96584 2.97799 3.57185C3.24125 3.17787 3.61542 2.87079 4.05319 2.68946C4.49096 2.50813 4.97268 2.46069 5.43741 2.55313C5.90215 2.64557 6.32904 2.87375 6.6641 3.2088C6.99915 3.54386 7.22733 3.97075 7.31977 4.43549C7.41221 4.90022 7.36477 5.38194 7.18344 5.81971C7.00211 6.25748 6.69503 6.63165 6.30105 6.8949C5.90706 7.15816 5.44386 7.29867 4.97002 7.29867C4.33462 7.29867 3.72524 7.04626 3.27594 6.59696C2.82664 6.14766 2.57423 5.53828 2.57423 4.90288Z" fill="#AFAFAF"/></g></g></g><defs><clipPath id="clip0_109_55"><rect width="9.58315" height="9.58315" fill="white" transform="translate(0.577637 0.51062)"/></clipPath></defs></svg></div>
+                                            <p className="text-sm font-Roboto text-[#AFAFAF] sm:text-base">You searched {search}</p>
+                                        </div>
+                                        <hr className="h-[1px] w-full px-0 border-[#525252]" />
+                                        {recievedItems.map((item, index) => (<div key={index} className="ml-[12px]"><Suggestion key={index} profileSuggestion={null} user={item} handleRoute={handleRoute}/></div>))}
+                                        <div className="w-full flex justify-center py-4">
+                                            <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : null}
+                        </div>
                         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                            <PopoverTrigger><Menu className="text-[#AFAFAF] size-8" /></PopoverTrigger>
+                            <PopoverTrigger><Menu className="text-[#AFAFAF] size-10" /></PopoverTrigger>
                             <PopoverContent className="w-[150px] px-2">
                                 <Command>
                                     <CommandList>
@@ -135,47 +166,11 @@ export default function Navbar() {
                     </div>
                 </div>
                 <div className="flex py-1 w-auto max-w-[100%] justify-between">
-                    <div className='w-full sm:hidden flex items-center'>
-                        <Popover open={open} onOpenChange={setOpen}>
-                            <PopoverTrigger asChild className='bg-[#222222] text-[#AFAFAF] w-fit'>
-                            <Button role="combobox" aria-expanded={open} className="py-0 px-0 w-fit justify-start bg-[#222222] focus:bg-[#222222] text-[#AFAFAF] border-none shadow-none text-lg">{postsState} {!open ? <ChevronDown className='ml-2 h-4 w-4 shrink-0 opacity-50' /> : <ChevronUp className='ml-2 h-4 w-4 shrink-0 opacity-50'/>}</Button>
-                            </PopoverTrigger>
-                            <PopoverContent className='w-fit'>
-                            <Command>
-                                <CommandList>
-                                <CommandGroup className='bg-[#222222]'>
-                                    <CommandItem onSelect={(currentValue) => {
-                                        setPostsState(currentValue === 'Popular' ? 'Popular' : currentValue);
-                                        setOpen(false);
-                                        handleFeedState(currentValue);
-                                    }} className='text-[#AFAFAF] text-lg'>Popular</CommandItem>
-                                    <CommandItem onSelect={(currentValue) => {
-                                        setPostsState(currentValue === 'Your Feed' ? 'Your Feed' : currentValue);
-                                        setOpen(false);
-                                        handleFeedState(currentValue);
-                                    }} className=' text-[#AFAFAF] text-lg'>Your Feed</CommandItem>
-                                </CommandGroup>
-                                </CommandList>
-                            </Command>
-                            </PopoverContent>
-                        </Popover>
-                    </div>
-                    <div className="w-auto min-w-[65%] relative py-1 md:hidden">
-                        <label htmlFor="searchInput" onClick={() => clearSearch()} className={`absolute right-2 top-[4px] hover:cursor-pointer ${search !== '' ? 'top-[8px]': null}`}>{search !== '' ?  <svg width="25" height="25" fill="#AFAFAF"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0L284.2 0c12.1 0 23.2 6.8 28.6 17.7L320 32l96 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 96C14.3 96 0 81.7 0 64S14.3 32 32 32l96 0 7.2-14.3zM32 128l384 0 0 320c0 35.3-28.7 64-64 64L96 512c-35.3 0-64-28.7-64-64l0-320zm96 64c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16z"/></svg> : <svg width="35" height="35" viewBox="0 0 11 11" fill="#AFAFAF" xmlns="http://www.w3.org/2000/svg"><g id="search-outline 1" clipPath="url(#clip0_109_55)"><g id="Layer 2"><g id="search"><path id="Vector" d="M8.8472 8.21306L7.48959 6.85944C7.92761 6.3014 8.16528 5.6123 8.1644 4.90288C8.1644 4.27109 7.97705 3.65349 7.62605 3.12818C7.27505 2.60286 6.77615 2.19343 6.19246 1.95166C5.60876 1.70988 4.96648 1.64662 4.34683 1.76988C3.72718 1.89313 3.15799 2.19737 2.71125 2.64411C2.26451 3.09085 1.96027 3.66004 1.83702 4.27969C1.71376 4.89934 1.77702 5.54162 2.01879 6.12532C2.26057 6.70901 2.67 7.20791 3.19532 7.55891C3.72063 7.90992 4.33823 8.09726 4.97002 8.09726C5.67943 8.09815 6.36854 7.86047 6.92658 7.42245L8.2802 8.78006C8.31732 8.81749 8.36148 8.84719 8.41014 8.86747C8.4588 8.88774 8.51099 8.89817 8.5637 8.89817C8.61641 8.89817 8.6686 8.88774 8.71726 8.86747C8.76592 8.84719 8.81008 8.81749 8.8472 8.78006C8.88463 8.74294 8.91433 8.69878 8.9346 8.65012C8.95488 8.60146 8.96531 8.54927 8.96531 8.49656C8.96531 8.44385 8.95488 8.39166 8.9346 8.343C8.91433 8.29434 8.88463 8.25018 8.8472 8.21306ZM2.57423 4.90288C2.57423 4.42904 2.71474 3.96584 2.97799 3.57185C3.24125 3.17787 3.61542 2.87079 4.05319 2.68946C4.49096 2.50813 4.97268 2.46069 5.43741 2.55313C5.90215 2.64557 6.32904 2.87375 6.6641 3.2088C6.99915 3.54386 7.22733 3.97075 7.31977 4.43549C7.41221 4.90022 7.36477 5.38194 7.18344 5.81971C7.00211 6.25748 6.69503 6.63165 6.30105 6.8949C5.90706 7.15816 5.44386 7.29867 4.97002 7.29867C4.33462 7.29867 3.72524 7.04626 3.27594 6.59696C2.82664 6.14766 2.57423 5.53828 2.57423 4.90288Z" fill="#AFAFAF"/></g></g></g><defs><clipPath id="clip0_109_55"><rect width="9.58315" height="9.58315" fill="white" transform="translate(0.577637 0.51062)"/></clipPath></defs></svg>}</label>
-                        <Input type="text" id="searchInput" ref={searchInputRef} autoComplete="off" value={search} placeholder="Search anyone..." onChange={(e) => setSearch(e.target.value)} className="bg-[#363636] font-Roboto sm:w-[300px] md:w-[350px] lg:w-[400px] xl:w-[450px] 2xl:w-[500px] text-[#BBBBBB] text-[15px] rounded-3xl shadow-[0px_0px_3px_0.2px_rgba(0,0,0,0.35)] border focus-visible:ring-0 border-transparent "/>  
-                        {recievedItems.length > 0 ? (
-                            <div className=" bg-[#222222] w-full h-fit absolute top-[36px] left-0 rounded-sm border text-white border-black">
-                                <div className="flex flex-col items-start px-2 gap-2">
-                                    {recievedItems.map((item, index) => (<div key={index} onClick={() => handleRoute(item)}><UserComponent key={index} user={item}/></div>))}
-                                </div>
-                            </div>
-                        ) : null}
-                    </div>
                     <div className="hidden md:flex justify-end items-center">
                         <button className="hover:cursor-pointer flex" onClick={() => router.push(`/my-profile`)}>
-                            <Flex className="mr-2">
-                                <RadixAvatar src={`${user.pictureUrl}?${new Date().getTime()}`} className="w-[30px] h-[30px]" style={{borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
-                            </Flex> 
+                            <Avatar className="w-[30px] h-[30px]">
+                                <AvatarImage src={`${user.pictureUrl}?${new Date().getTime()}`} className="w-fit h-fit aspect-auto rounded-full" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                            </Avatar> 
                         </button>
                     </div>
                 </div>
@@ -188,11 +183,19 @@ export default function Navbar() {
                     <button className={`px-0 group w-[25px] h-[25px] md:w-[35px] md:h-[35px] 2xl:w-[40px] 2xl:h-[40px] `} onClick={() => router.push('/')}><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_109_85)"><path d="M13.6117 0.753662H0.841309V13.5241H13.6117V0.753662Z" fill="#222222" fillOpacity="0.01"/><path fillRule="evenodd" clipRule="evenodd" d="M3.23577 11.9278V5.54258L1.90552 6.60678L7.22652 2.34998L12.5475 6.60678L11.2173 5.54258V11.9278H3.23577Z" stroke="#AFAFAF" strokeWidth="0.605214" strokeLinecap="round" strokeLinejoin="round"/><path fillRule="evenodd" clipRule="evenodd" d="M5.89636 8.46899V11.9276H8.55686V8.46899H5.89636Z" stroke="#AFAFAF" strokeWidth="0.605214" strokeLinejoin="round"/><path d="M3.23572 11.9276H11.2172" stroke="#AFAFAF" strokeWidth="0.605214" strokeLinecap="round"/></g><defs><clipPath id="clip0_109_85"><rect width="12.7704" height="12.7704" fill="white" transform="translate(0.841309 0.753662)"/></clipPath></defs></svg>{path === '/' ? <span className="block bg-[#AFAFAF] border-[#AFAFAF] h-[2px]"></span> : <span className="block opacity-0 group-hover:opacity-100 transition-all bg-transparent border-[#222222] h-[2px]"></span>}</button>           
                     <div className="w-fit relative">
                         <label htmlFor="searchInput" onClick={() => clearSearch()} className={`absolute right-2 top-0 hover:cursor-pointer ${search !== '' ? 'top-[5px]': null}`}>{search !== '' ?  <svg width="25" height="25" fill="#AFAFAF"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0L284.2 0c12.1 0 23.2 6.8 28.6 17.7L320 32l96 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 96C14.3 96 0 81.7 0 64S14.3 32 32 32l96 0 7.2-14.3zM32 128l384 0 0 320c0 35.3-28.7 64-64 64L96 512c-35.3 0-64-28.7-64-64l0-320zm96 64c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16z"/></svg> : <svg width="35" height="35" viewBox="0 0 11 11" fill="#AFAFAF" xmlns="http://www.w3.org/2000/svg"><g id="search-outline 1" clipPath="url(#clip0_109_55)"><g id="Layer 2"><g id="search"><path id="Vector" d="M8.8472 8.21306L7.48959 6.85944C7.92761 6.3014 8.16528 5.6123 8.1644 4.90288C8.1644 4.27109 7.97705 3.65349 7.62605 3.12818C7.27505 2.60286 6.77615 2.19343 6.19246 1.95166C5.60876 1.70988 4.96648 1.64662 4.34683 1.76988C3.72718 1.89313 3.15799 2.19737 2.71125 2.64411C2.26451 3.09085 1.96027 3.66004 1.83702 4.27969C1.71376 4.89934 1.77702 5.54162 2.01879 6.12532C2.26057 6.70901 2.67 7.20791 3.19532 7.55891C3.72063 7.90992 4.33823 8.09726 4.97002 8.09726C5.67943 8.09815 6.36854 7.86047 6.92658 7.42245L8.2802 8.78006C8.31732 8.81749 8.36148 8.84719 8.41014 8.86747C8.4588 8.88774 8.51099 8.89817 8.5637 8.89817C8.61641 8.89817 8.6686 8.88774 8.71726 8.86747C8.76592 8.84719 8.81008 8.81749 8.8472 8.78006C8.88463 8.74294 8.91433 8.69878 8.9346 8.65012C8.95488 8.60146 8.96531 8.54927 8.96531 8.49656C8.96531 8.44385 8.95488 8.39166 8.9346 8.343C8.91433 8.29434 8.88463 8.25018 8.8472 8.21306ZM2.57423 4.90288C2.57423 4.42904 2.71474 3.96584 2.97799 3.57185C3.24125 3.17787 3.61542 2.87079 4.05319 2.68946C4.49096 2.50813 4.97268 2.46069 5.43741 2.55313C5.90215 2.64557 6.32904 2.87375 6.6641 3.2088C6.99915 3.54386 7.22733 3.97075 7.31977 4.43549C7.41221 4.90022 7.36477 5.38194 7.18344 5.81971C7.00211 6.25748 6.69503 6.63165 6.30105 6.8949C5.90706 7.15816 5.44386 7.29867 4.97002 7.29867C4.33462 7.29867 3.72524 7.04626 3.27594 6.59696C2.82664 6.14766 2.57423 5.53828 2.57423 4.90288Z" fill="#AFAFAF"/></g></g></g><defs><clipPath id="clip0_109_55"><rect width="9.58315" height="9.58315" fill="white" transform="translate(0.577637 0.51062)"/></clipPath></defs></svg>}</label>
-                        <Input type="text" id="searchInput" ref={searchInputRef} autoComplete="off" value={search} placeholder="Search something or someone..." onChange={(e) => setSearch(e.target.value)} className="bg-[#363636] font-Roboto sm:w-[300px] md:w-[350px] lg:w-[400px] xl:w-[450px] 2xl:w-[500px] text-[#BBBBBB] text-[15px] rounded-3xl shadow-[0px_0px_3px_0.2px_rgba(0,0,0,0.35)] border focus-visible:ring-0 border-transparent "/>  
+                        <Input type="text" id="searchInput" ref={searchInputRef} autoComplete="off" value={search} placeholder="Search something or someone..." onChange={(e) => setSearch(e.target.value)} className="bg-[#363636] font-Roboto sm:w-[300px] md:w-[350px] lg:w-[400px] xl:w-[450px] 2xl:w-[500px] text-[#BBBBBB] text-[15px] rounded-3xl shadow-[0px_0px_3px_0.2px_rgba(0,0,0,0.35)] border focus-visible:ring-0 border-transparent "/> 
                         {recievedItems.length > 0 ? (
-                            <div className=" bg-[#363636] w-full h-fit absolute top-[36px] left-0 rounded-xl text-white shadow-[0px_0px_3px_0.2px_rgba(0,0,0,0.35)]">
-                                <div className="flex flex-col items-start px-2 gap-2">
-                                {recievedItems.map((item, index) => (<div key={index} onClick={() => handleRoute(item)}><UserComponent key={index} user={item}/></div>))}
+                            <div className="bg-[#252525] sm:w-[300px] md:w-[350px] lg:w-[400px] xl:w-[450px] 2xl:w-[500px] h-fit absolute top-[38px] right-0 rounded-lg border-none text-[#AFAFAF] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+                                <div className="flex flex-col items-start gap-2">
+                                    <div className="flex justify-center items-center gap-4 mt-4 px-2">
+                                        <div className=" border-[#515151] rounded-full border px-1 py-1 w-fit h-fit"><svg width="35" height="35" viewBox="0 0 11 11" fill="#AFAFAF" xmlns="http://www.w3.org/2000/svg"><g id="search-outline 1" clipPath="url(#clip0_109_55)"><g id="Layer 2"><g id="search"><path id="Vector" d="M8.8472 8.21306L7.48959 6.85944C7.92761 6.3014 8.16528 5.6123 8.1644 4.90288C8.1644 4.27109 7.97705 3.65349 7.62605 3.12818C7.27505 2.60286 6.77615 2.19343 6.19246 1.95166C5.60876 1.70988 4.96648 1.64662 4.34683 1.76988C3.72718 1.89313 3.15799 2.19737 2.71125 2.64411C2.26451 3.09085 1.96027 3.66004 1.83702 4.27969C1.71376 4.89934 1.77702 5.54162 2.01879 6.12532C2.26057 6.70901 2.67 7.20791 3.19532 7.55891C3.72063 7.90992 4.33823 8.09726 4.97002 8.09726C5.67943 8.09815 6.36854 7.86047 6.92658 7.42245L8.2802 8.78006C8.31732 8.81749 8.36148 8.84719 8.41014 8.86747C8.4588 8.88774 8.51099 8.89817 8.5637 8.89817C8.61641 8.89817 8.6686 8.88774 8.71726 8.86747C8.76592 8.84719 8.81008 8.81749 8.8472 8.78006C8.88463 8.74294 8.91433 8.69878 8.9346 8.65012C8.95488 8.60146 8.96531 8.54927 8.96531 8.49656C8.96531 8.44385 8.95488 8.39166 8.9346 8.343C8.91433 8.29434 8.88463 8.25018 8.8472 8.21306ZM2.57423 4.90288C2.57423 4.42904 2.71474 3.96584 2.97799 3.57185C3.24125 3.17787 3.61542 2.87079 4.05319 2.68946C4.49096 2.50813 4.97268 2.46069 5.43741 2.55313C5.90215 2.64557 6.32904 2.87375 6.6641 3.2088C6.99915 3.54386 7.22733 3.97075 7.31977 4.43549C7.41221 4.90022 7.36477 5.38194 7.18344 5.81971C7.00211 6.25748 6.69503 6.63165 6.30105 6.8949C5.90706 7.15816 5.44386 7.29867 4.97002 7.29867C4.33462 7.29867 3.72524 7.04626 3.27594 6.59696C2.82664 6.14766 2.57423 5.53828 2.57423 4.90288Z" fill="#AFAFAF"/></g></g></g><defs><clipPath id="clip0_109_55"><rect width="9.58315" height="9.58315" fill="white" transform="translate(0.577637 0.51062)"/></clipPath></defs></svg></div>
+                                        <p className="text-sm font-Roboto text-[#AFAFAF] sm:text-base">You searched {search}</p>
+                                    </div>
+                                    <hr className="h-[1px] w-full px-0 border-[#525252]" />
+                                    {recievedItems.map((item, index) => (<div key={index} onClick={() => handleRoute(item)} className="ml-[12px]"><UserComponent key={index} user={item} handleRoute={() => handleRoute}/></div>))}
+                                    <div className="w-full flex justify-center py-4">
+                                        <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
+                                    </div>
                                 </div>
                             </div>
                         ) : null}
@@ -202,9 +205,9 @@ export default function Navbar() {
                 <div className="w-[33%] flex justify-end gap-1 items-center">
                     <Button asChild variant="link" onClick={logout} className="hover:cursor-pointer text-[#AFAFAF]"><FontAwesomeIcon icon={faRightFromBracket} className="text-sm -mt-1 font-thin sm:size-4 md:size-6"/></Button>
                     <button className="hover:cursor-pointer flex gap-2" onClick={() => router.push(`/my-profile`)}>
-                        <Flex gap="2" className="mr-6">
-                            <RadixAvatar src={`${user.pictureUrl}?${new Date().getTime()}`} style={{width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 6px 6px 0px #00000040'}} fallback="A" />
-                        </Flex> 
+                        <Avatar className="mr-6 xl:w-[45px] xl:h-[45px] 2xl:w-[60px] 2xl:h-[60px]">
+                            <AvatarImage src={`${user.pictureUrl}?${new Date().getTime()}`} className="w-fit h-fit aspect-auto rounded-full" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                        </Avatar> 
                     </button>
                 </div>
             </div>

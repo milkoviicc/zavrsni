@@ -102,7 +102,6 @@ const UserProfile = () => {
 
             if (res.status === 200) {
                 setFriendStatus('sent');
-                follow();
             }
         } catch (err) {
             console.error('Failed to send friend request:', err);
@@ -115,7 +114,6 @@ const UserProfile = () => {
 
             if(res.status === 200) {
                 setFriendStatus('friends');
-                follow();
             }
         } catch(err) {
             console.error(err);
@@ -139,7 +137,6 @@ const UserProfile = () => {
             const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/delete/${user?.userId}`);
             if(res.status === 200) {
                 setFriendStatus('not friends');
-                unfollow();
                 window.location.reload();
             }
         } catch(err) {

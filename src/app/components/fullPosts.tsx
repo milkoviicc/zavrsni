@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import React, {useState, useEffect} from 'react'
 import ResizableTextarea from './ResizableTextarea'
@@ -33,6 +34,7 @@ const FullPosts = ({user}: {user: User}) => {
   const [loading, setLoading] = useState(false);
   const [randomNmbs, setRandomNmbs] = useState<number[]>();
   const {postsState, setPostsState, handleFeedState} = usePosts();
+  const [postPopoverOpen, setPostPopoverOpen] = useState(false);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -346,6 +348,7 @@ const FullPosts = ({user}: {user: User}) => {
 
         if(res.status === 200) {
           setProfileSuggestions(res.data);
+          console.log(res.data);
         }
   
       } catch(err) {
@@ -388,10 +391,35 @@ const FullPosts = ({user}: {user: User}) => {
   }, [profileSuggestions, suggestionsChecked]);
 
   return (
-    <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full">
-        <div className='flex flex-col md:hidden text-white w-full justify-center mt-8'>
+    <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full lg:py-12">
+        <div className='flex flex-col md:hidden text-white w-full justify-center'>
           <div className="flex items-center w-full flex-col">
-              <div className="flex flex-col w-[80%] relative py-2 px-4 shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636] rounded-full">
+            <div className='w-full sm:hidden flex items-center px-2 py-2'>
+              <Popover open={postPopoverOpen} onOpenChange={setPostPopoverOpen}>
+                <PopoverTrigger asChild className='bg-[#222222] text-[#AFAFAF] w-fit'>
+                  <Button role="combobox" aria-expanded={postPopoverOpen} className="py-0 px-0 w-fit justify-start bg-[#222222] focus:bg-[#222222] text-[#AFAFAF] border-none shadow-none text-lg">{postsState} {!postPopoverOpen ? <ChevronDown className='ml-2 h-4 w-4 shrink-0 opacity-50' /> : <ChevronUp className='ml-2 h-4 w-4 shrink-0 opacity-50'/>}</Button>
+                </PopoverTrigger>
+                <PopoverContent className='w-fit'>
+                <Command>
+                  <CommandList>
+                    <CommandGroup className='bg-[#222222]'>
+                      <CommandItem onSelect={(currentValue) => {
+                          setPostsState(currentValue === 'Popular' ? 'Popular' : currentValue);
+                          setPostPopoverOpen(false);
+                          handleFeedState(currentValue);
+                      }} className='text-[#AFAFAF] text-lg'>Popular</CommandItem>
+                      <CommandItem onSelect={(currentValue) => {
+                          setPostsState(currentValue === 'Your Feed' ? 'Your Feed' : currentValue);
+                          setPostPopoverOpen(false);
+                          handleFeedState(currentValue);
+                      }} className=' text-[#AFAFAF] text-lg'>Your Feed</CommandItem>
+                    </CommandGroup>
+                  </CommandList>
+                  </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="flex flex-col w-[80%] relative mt-6 py-2 px-4 shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636] rounded-full ">
                   <div className='w-full flex justify-between items-center gap-4'>
                     <Flex gap="2">
                         <Avatar src={`${user.pictureUrl}`} style={{ width: '32px', height: '32px', borderRadius: '50%', boxShadow: '0px 6px 6px 0px #00000040'}} fallback="A" />
@@ -418,8 +446,8 @@ const FullPosts = ({user}: {user: User}) => {
                   </div>
               </div>
           </div>
-          <div className='flex flex-col py-8'>
-            {posts.length === 0 && loading === false ? <h1 className='text-center'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center text-[#AFAFAF]'>Loading posts...</h1> : (
+          <div className='flex sm:hidden flex-col py-8'>
+            {posts.length === 0 && loading === false ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center text-[#AFAFAF]'>Loading posts...</h1> : (
               <InfiniteScroll className='w-full flex flex-col bg-transparent' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                   { posts.map((post, index) => (
                     <div key={index}>
@@ -427,12 +455,12 @@ const FullPosts = ({user}: {user: User}) => {
                         <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
                           <p className='text-[#8A8A8A] text-xs'>You might like these</p>
                           <div className='grid grid-cols-2 grid-rows-2 gap-2'>
-                            {profileSuggestions.map((profileSuggestion, index) => (
-                              <Suggestion key={index} profileSuggestion={profileSuggestion} />
+                            {profileSuggestions.map((suggestion, index) => (
+                              <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
                             ))}
                             {profileSuggestions.length !== 4 ? 
                               fillSuggestions.map((suggestion, index) => (
-                                <Suggestion key={index} profileSuggestion={suggestion} />
+                                <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
                               )) : null
                             }
                           </div>
@@ -440,7 +468,7 @@ const FullPosts = ({user}: {user: User}) => {
                       ) : randomNmbs?.includes(index) && profileSuggestions.length === 0 ? (
                         <div className='grid grid-cols-2 grid-rows-2 gap-4'>
                             {fillSuggestions.map((suggestion, index) => (
-                                <Suggestion key={index} profileSuggestion={suggestion} />
+                                <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
                               ))
                             }
                           </div>
@@ -481,19 +509,19 @@ const FullPosts = ({user}: {user: User}) => {
         </div>
         <div className="h-full w-full sm:flex hidden flex-col items-center">
             <div className="flex gap-4 py-6 items-center">
-            <div>
-                <button className={`text-2xl text-[#8A8A8A] ${postsState === "Popular" ? ' text-[#EFEFEF]' : null}`} onClick={() => setPostsState('Popular')}>Popular</button>
-                <span className={`${postsState === 'Popular' ? 'block bg-[#EFEFEF]' : 'hidden'} w-full h-[2px]`}></span>
-            </div>
-            <span className="h-10 block border-black bg-[#8A8A8A] w-[1px]"></span>
-            <div>
-                <button className={`text-2xl text-[#8A8A8A] ${postsState === "Your Feed" ? 'text-[#EFEFEF]' : null}`} onClick={() => setPostsState('Your Feed')}>Your Feed</button>
-                <span className={`${postsState === 'Your Feed' ? 'block bg-[#EFEFEF]' : 'hidden'} w-full h-[1px]`}></span>
-            </div>
+              <div>
+                  <button className={`text-2xl text-[#8A8A8A] ${postsState === "Popular" ? ' text-[#EFEFEF]' : null}`} onClick={() => setPostsState('Popular')}>Popular</button>
+                  <span className={`${postsState === 'Popular' ? 'block bg-[#EFEFEF]' : 'hidden'} w-full h-[2px]`}></span>
+              </div>
+              <span className="h-10 block border-black bg-[#8A8A8A] w-[1px]"></span>
+              <div>
+                  <button className={`text-2xl text-[#8A8A8A] ${postsState === "Your Feed" ? 'text-[#EFEFEF]' : null}`} onClick={() => setPostsState('Your Feed')}>Your Feed</button>
+                  <span className={`${postsState === 'Your Feed' ? 'block bg-[#EFEFEF]' : 'hidden'} w-full h-[1px]`}></span>
+              </div>
             
             </div>
             <div className='w-full flex justify-center mt-10'>
-                {posts.length === 0 && loading === false ? <h1 className='text-center'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center text-[#AFAFAF]'>Loading posts...</h1> : (
+                {posts.length === 0 && loading === false ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center text-[#AFAFAF]'>Loading posts...</h1> : (
                     <InfiniteScroll className='w-full flex flex-col bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                         { posts.map((post, index) => (
                           <div key={index}>
@@ -501,12 +529,12 @@ const FullPosts = ({user}: {user: User}) => {
                               <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A]'>You might like these</p>
                                 <div className='grid grid-cols-2 grid-rows-2 gap-4'>
-                                  {profileSuggestions.map((profileSuggestion, index) => (
-                                    <Suggestion key={index} profileSuggestion={profileSuggestion} />
+                                  {profileSuggestions.map((suggestion, index) => (
+                                    <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
                                   ))}
                                   {profileSuggestions.length !== 4 ? 
                                     fillSuggestions.map((suggestion, index) => (
-                                      <Suggestion key={index} profileSuggestion={suggestion} />
+                                      <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
                                     )) : null
                                   }
                                 </div>
@@ -514,7 +542,7 @@ const FullPosts = ({user}: {user: User}) => {
                             ) : randomNmbs?.includes(index) && profileSuggestions.length === 0 ? (
                               <div className='grid grid-cols-2 grid-rows-2 gap-4'>
                                   {fillSuggestions.map((suggestion, index) => (
-                                      <Suggestion key={index} profileSuggestion={suggestion} />
+                                      <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
                                     ))
                                   }
                                 </div>

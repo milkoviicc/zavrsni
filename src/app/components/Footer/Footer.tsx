@@ -7,7 +7,7 @@ import { faInstagram, faTwitter, faLinkedin } from '@fortawesome/free-brands-svg
 export default function Footer() {
 
     return (
-        <div className="bg-[#222222] h-[75px] w-full">
+        <div className="bg-[#222222] h-[75px] w-full shadow-[0px_-0.5px_20.16px_0px_rgba(0,0,0,0.26)]">
             <div className="flex justify-evenly items-center h-full">
                 <p className="text-sm font-bold flex items-center text-[#D0D0D0]">milkoviicc <span className="mt-1 px-2">©</span> 2024</p>
                 <div className="flex gap-4"> 
