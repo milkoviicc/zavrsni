@@ -84,6 +84,7 @@ const config: Config = {
   		},
 		screens: {
 			"2k": "1800px",
+			"3k": "2200px",
 		}
   	}
   },
