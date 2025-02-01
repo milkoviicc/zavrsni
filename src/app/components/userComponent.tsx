@@ -34,16 +34,16 @@ const UserComponent = ({user, handleRoute}: {user: User | undefined, handleRoute
     <div>
       <div className="hover:cursor-pointer hidden gap-2 py-2 items-center sm:flex" onClick={() => routeToUser()}>
           <Avatar className='w-[55px] h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
-              <AvatarImage src={`${user?.pictureUrl}?${new Date().getTime()}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+              <AvatarImage src={`${user?.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col h-full items-start justify-center lg:w-[100px] xl:w-[120px] 2k:max-w-[150px]">
-              <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-base 2k:text-lg lg:max-w-[100px] xl:max-w-[120px] 2k:max-w-[150px] truncate whitespace-nowrap" title={`${user?.firstName} ${user?.lastName}`}>{user?.firstName} {user?.lastName}</h1>
-              <p className="text-[#888888] lg:max-w-[100px] xl:max-w-[120px] 2k:max-w-[150px] text-base 2k:text-lg truncate whitespace-nowrap">@{user?.username}</p>
+          <div className="flex flex-col h-full items-start justify-center lg:w-[80px] xl:w-[100px] 2xl:max-w-[150px]">
+              <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-base 2k:text-lg lg:max-w-[80px] xl:max-w-[100px] 2xl:max-w-[150px] truncate whitespace-nowrap" title={`${user?.firstName} ${user?.lastName}`}>{user?.firstName} {user?.lastName}</h1>
+              <p className="text-[#888888] lg:max-w-[80px] xl:max-w-[100px] 2xl:max-w-[150px] text-base 2k:text-lg truncate whitespace-nowrap">@{user?.username}</p>
           </div>    
       </div>
       <div className="hover:cursor-pointer flex gap-2 py-2 items-center sm:hidden" onClick={() => routeToUser()}>
           <Avatar className='w-[35px] h-[35px] rounded-full'>
-              <AvatarImage src={`${user?.pictureUrl}?${new Date().getTime()}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+              <AvatarImage src={`${user?.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col h-full items-start justify-center w-[70px]">
               <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-xs max-w-[70px] truncate whitespace-nowrap" title={`${user?.firstName} ${user?.lastName}`}>{user?.firstName} {user?.lastName}</h1>
