@@ -36,18 +36,18 @@ const UserComponent = ({user, handleRoute}: {user: User | undefined, handleRoute
           <Avatar className='w-[55px] h-[55px] rounded-full'>
               <AvatarImage src={`${user?.pictureUrl}?${new Date().getTime()}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col h-full items-start justify-center w-[120px]">
-              <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-base max-w-[120px] truncate whitespace-nowrap" title={`${user?.firstName} ${user?.lastName}`}>{user?.firstName} {user?.lastName}</h1>
-              <p className="text-[#888888] max-w-[120px] text-base truncate whitespace-nowrap">@{user?.username}</p>
+          <div className="flex flex-col h-full items-start justify-center lg:w-[100px] xl:w-[120px]">
+              <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-base lg:w-[100px] xl:max-w-[120px] truncate whitespace-nowrap" title={`${user?.firstName} ${user?.lastName}`}>{user?.firstName} {user?.lastName}</h1>
+              <p className="text-[#888888] lg:w-[100px] xl:max-w-[120px] text-base truncate whitespace-nowrap">@{user?.username}</p>
           </div>    
       </div>
       <div className="hover:cursor-pointer flex gap-2 py-2 items-center sm:hidden" onClick={() => routeToUser()}>
           <Avatar className='w-[35px] h-[35px] rounded-full'>
               <AvatarImage src={`${user?.pictureUrl}?${new Date().getTime()}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col h-full items-start justify-center w-[100px]">
-              <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-xs max-w-[100px] truncate whitespace-nowrap" title={`${user?.firstName} ${user?.lastName}`}>{user?.firstName} {user?.lastName}</h1>
-              <p className="text-[#888888] max-w-[100px] text-xs truncate whitespace-nowrap">@{user?.username}</p>
+          <div className="flex flex-col h-full items-start justify-center w-[70px]">
+              <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-xs max-w-[70px] truncate whitespace-nowrap" title={`${user?.firstName} ${user?.lastName}`}>{user?.firstName} {user?.lastName}</h1>
+              <p className="text-[#888888] max-w-[70px] text-xs truncate whitespace-nowrap">@{user?.username}</p>
           </div>    
       </div>
     </div>

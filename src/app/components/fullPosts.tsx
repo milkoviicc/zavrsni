@@ -367,6 +367,10 @@ const FullPosts = ({user}: {user: User}) => {
         if(res.status === 200) {
           setProfileSuggestions(res.data);
         }
+
+        if(res.data.length < 4) {
+          checkFollowSuggestions(res.data);
+        }
   
       } catch(err) {
         console.error(err);
@@ -375,41 +379,31 @@ const FullPosts = ({user}: {user: User}) => {
     getFollowSuggestions();
   }, []);
 
-  useEffect(() => {
-    const checkFollowSuggestions = async () => {
-      try {
-        if(profileSuggestions.length !== 4 && !suggestionsChecked) {
-          const length = profileSuggestions.length;
-          const neededProfiles = 4 - length;
-          const res = await axios.get<User[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/popular?limit=4`);
+  const checkFollowSuggestions = async (existingSuggestions: FollowSuggestionStatus[]) => {
+    if(existingSuggestions.length === 4 || suggestionsChecked) return;
+    setSuggestionsChecked(true);
+    const neededProfiles = 4 - existingSuggestions.length;
+    try {
+        const res = await axios.get<User[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/popular?limit=4`);
 
-          if(res.status === 200) {
-            const receivedUsers: User[] = res.data;
-            let filteredUsers = receivedUsers.filter((receivedUser) => !profileSuggestions.some((profile) => receivedUser.userId === profile.user.userId));
-            if(filteredUsers.length > neededProfiles) {
-              filteredUsers = filteredUsers.slice(0, neededProfiles);
-              filteredUsers.map((filteredUser) => {
-                const newSuggestion: FollowSuggestionStatus = {user: filteredUser, mutual: 0};
-                setFillSuggestions((prev) => [...prev, newSuggestion]);
-              })
-            }
+        if(res.status === 200) {
+          const receivedUsers: User[] = res.data;
+          const existingUserIds = new Set(existingSuggestions.map((p) => p.user.userId));
+          const filteredUsers = receivedUsers.filter((user) => !existingUserIds.has(user.userId)).slice(0, neededProfiles);
+          if(filteredUsers.length > 0) {
+            const newSuggestions: FollowSuggestionStatus[] = filteredUsers.map((filteredUser) => ({user: filteredUser, mutual: 0}));
+            setFillSuggestions((prev) => {
+              const allSuggestions = [...prev, ...newSuggestions];
+
+              return Array.from(new Map(allSuggestions.map((s) => [s.user.userId, s])).values()).slice(0,4);
+            });
           }
-          setSuggestionsChecked(true);
         }
-      } catch(err) {
-        console.error(err);
-      }
-    };
-
-    if (!suggestionsChecked && profileSuggestions.length > 0) {
-      checkFollowSuggestions();
+    } catch(err) {
+      console.error(err);
     }
+  };
 
-  }, [profileSuggestions, suggestionsChecked]);
-
-  if (!profileSuggestions.length) {
-    return <div>Loading...</div>;  // Avoid hydration mismatch by showing a loading state
-  }
 
   return (
     <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full lg:py-12">
@@ -473,7 +467,7 @@ const FullPosts = ({user}: {user: User}) => {
                   { posts.map((post, index) => (
                     <div key={index}>
                       {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
-                        <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
+                        <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-t-[#515151]'>
                           <p className='text-[#8A8A8A] text-xs'>You might like these</p>
                           <div className='grid grid-cols-2 grid-rows-2 gap-2'>
                             {profileSuggestions.map((suggestion, index) => (
@@ -487,7 +481,7 @@ const FullPosts = ({user}: {user: User}) => {
                           </div>
                         </div>
                       ) : randomNmbs?.includes(index) && profileSuggestions.length === 0 ? (
-                        <div className='grid grid-cols-2 grid-rows-2 gap-4'>
+                        <div className='grid grid-cols-2 grid-rows-2 gap-4 border-t-[1px] border-[#515151]'>
                             {fillSuggestions.map((suggestion, index) => (
                                 <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
                               ))
@@ -547,9 +541,9 @@ const FullPosts = ({user}: {user: User}) => {
                         { posts.map((post, index) => (
                           <div key={index}>
                             {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
-                              <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
+                              <div className='flex items-center flex-col my-4 py-2'>
                                 <p className='text-[#8A8A8A]'>You might like these</p>
-                                <div className='grid grid-cols-2 grid-rows-2 gap-4'>
+                                <div className='grid grid-cols-2 grid-rows-2 gap-4 border-t-[1px] border-[#515151]'>
                                   {profileSuggestions.map((suggestion, index) => (
                                     <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
                                   ))}
@@ -561,7 +555,7 @@ const FullPosts = ({user}: {user: User}) => {
                                 </div>
                               </div>
                             ) : randomNmbs?.includes(index) && profileSuggestions.length === 0 ? (
-                              <div className='grid grid-cols-2 grid-rows-2 gap-4'>
+                              <div className='grid grid-cols-2 grid-rows-2 gap-4 place-items-center border-t-[1px] border-[#515151]'>
                                   {fillSuggestions.map((suggestion, index) => (
                                       <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
                                     ))
