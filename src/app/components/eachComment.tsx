@@ -297,6 +297,12 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
       }
     };
 
+    const [cacheBuster, setCacheBuster] = useState(Date.now());
+              
+    useEffect(() => {
+        setCacheBuster(Date.now()); // Update only when `profilePicture` changes
+    }, [comment.user.pictureUrl]);
+
     if(!user) return null;
     // spremam podatke korisnika iz localstoragea u varijablu userData za daljnje provjere. 
     const userData: User = JSON.parse(user);
@@ -307,7 +313,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
       <div className='flex flex-col'>
         <div className='flex'>
           <Avatar className='w-[40px] h-[40px] rounded-full'>
-            <AvatarImage src={`${comment.user.pictureUrl}?${new Date().getTime()}`} style={{boxShadow: '0px 3.3758866786956787px 3.3758866786956787px 0px rgba(0,0,0,0.25)'}} />
+            <AvatarImage src={`${comment.user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.3758866786956787px 3.3758866786956787px 0px rgba(0,0,0,0.25)'}} />
           </Avatar>
           <div className='flex-col w-full ml-4'>
             <div className='flex justify-between mr-2'>
@@ -325,7 +331,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
                           <DialogHeader className='flex flex-row gap-2'>
                             <button onClick={() => router.push(`/users/${post.user.username}`)}>
                               <Avatar className='w-[40px] h-[40px] rounded-full'>
-                                <AvatarImage src={`${post.user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" />
+                                <AvatarImage src={`${comment.user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" />
                               </Avatar>
                             </button>
                             <div className='flex justify-between w-full pr-8 !mt-0 '>
@@ -341,7 +347,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
                           <div className="flex gap-2 items-center flex-col w-fit bg- rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
                               <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
                                   <Avatar className='w-[60px] h-[60px] rounded-full'>
-                                      <AvatarImage src={`${userData.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
+                                      <AvatarImage src={`${comment.user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
                                   </Avatar>
                                   <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#EFEFEF] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                                   <button onClick={() => update()} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF] mr-4 py-[0.30rem]">Update comment</button>
@@ -371,7 +377,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
                   <DialogHeader className='flex flex-row gap-2'>
                     <button onClick={() => router.push(`/users/${comment.user.username}`)}>
                       <Avatar className='w-[40px] h-[40px] rounded-full'>
-                        <AvatarImage src={`${comment.user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" />
+                        <AvatarImage src={`${comment.user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" />
                       </Avatar>
                     </button>
                     <div className='flex justify-between w-full pr-8 !mt-0 '>
@@ -387,7 +393,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
                   <div className="flex gap-2 items-center flex-col w-fit rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
                       <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
                           <Avatar className='w-[60px] h-[60px] rounded-full'>
-                              <AvatarImage src={`${userData.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} />
+                              <AvatarImage src={`${comment.user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} />
                           </Avatar>
                           <ResizableTextarea onChange={(e) =>  setReplyContent(e.target.value)} value={replyContent} placeholder='Write a reply!' className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#EFEFEF] outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                           <button onClick={() => handleReply(replyContent)} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF] mr-4 py-[0.30rem]">Post reply</button>

@@ -177,6 +177,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             // spremam u 'user' state korisnika sa svim novim podatcima
             setUser(updatedProfile);
+            window.location.reload();
         }
       }
     } catch(error) {

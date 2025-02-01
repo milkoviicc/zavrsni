@@ -35,6 +35,12 @@ const Profile = () => {
     }
   }, [user]);
 
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
+  
+  useEffect(() => {
+    setCacheBuster(Date.now()); // Update only when `profilePicture` changes
+  }, [profilePicture]);
+
   if(!user) return null;
 
 
@@ -100,14 +106,14 @@ const Profile = () => {
       <label htmlFor="file-input" className='w-2'>
         {selectedImage != null  ? (
         <img
-          src={profilePicture}// This ensures no caching
+          src={`${profilePicture}`}// This ensures no caching
           alt="Profile"
           style={{ borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040' }}
           className="w-[60px] h-[60px] object-cover"
         />
       ) : (
         <img
-          src={`${profilePicture}`} // This ensures no caching
+          src={`${profilePicture}?${cacheBuster}`} // This ensures no caching
           alt="Profile"
           style={{ borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040' }}
           className="w-[60px] h-[60px] object-cover"

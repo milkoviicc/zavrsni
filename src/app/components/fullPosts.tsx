@@ -404,6 +404,12 @@ const FullPosts = ({user}: {user: User}) => {
     }
   };
 
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
+        
+  useEffect(() => {
+    setCacheBuster(Date.now()); // Update only when `profilePicture` changes
+  }, [user?.pictureUrl]);
+
 
   return (
     <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full lg:py-12">
@@ -437,7 +443,7 @@ const FullPosts = ({user}: {user: User}) => {
               <div className="flex flex-col w-[80%] relative mt-6 py-2 px-4 shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636] rounded-full ">
                   <div className='w-full flex justify-between items-center gap-4'>
                     <Avatar className='w-[32px] h-[32px] rounded-full'>
-                        <AvatarImage src={`${user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
+                        <AvatarImage src={`${user?.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
                     </Avatar>
                     <div className="flex flex-col w-full">
                       <div className='flex justify-between items-center w-full'>
@@ -499,7 +505,7 @@ const FullPosts = ({user}: {user: User}) => {
         <div className="md:flex hidden gap-2 items-center flex-col w-fit rounded-full shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
             <div className="flex flex-row w-fit justify-center items-center gap-4 py-2 px-4">
                 <Avatar className='w-[60px] h-[60px] rounded-full'>
-                    <AvatarImage src={`${user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
+                    <AvatarImage src={`${user?.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
                 </Avatar>
                 <div className="flex flex-col">
                     <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content} className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#fff] outline-none py-3 pr-8 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>

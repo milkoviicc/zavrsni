@@ -74,11 +74,17 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+    const [cacheBuster, setCacheBuster] = useState(Date.now());
+          
+    useEffect(() => {
+        setCacheBuster(Date.now()); // Update only when `profilePicture` changes
+    }, [reply.userProfile.pictureUrl]);
+
   return (
     <div className='flex py-4'>
         <div className='flex items-center w-full'>
             <Avatar className='w-[40px] h-[40px] rounded-full'>
-                <AvatarImage src={`${reply.userProfile.pictureUrl}?${new Date().getTime()}`} className="w-fit h-fit aspect-auto rounded-full" style={{boxShadow: '0px 3.3758866786956787px 3.3758866786956787px 0px rgba(0,0,0,0.25)'}}/>
+                <AvatarImage src={`${reply.userProfile.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-auto rounded-full object-cover" style={{boxShadow: '0px 3.3758866786956787px 3.3758866786956787px 0px rgba(0,0,0,0.25)'}}/>
             </Avatar>
             <div className='flex flex-col w-full ml-4'>
                 <div className='flex justify-between mr-2'>
@@ -96,7 +102,7 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
                                 <DialogHeader className='flex flex-row gap-2'>
                                     <button onClick={() => router.push(`/users/${reply.userProfile.username}`)}>
                                     <Avatar className='w-[40px] h-[40px] rounded-full'>
-                                        <AvatarImage src={`${reply.userProfile.pictureUrl}`} style={{ width: '40px', height: '40px', borderRadius: '25px'}}/>
+                                        <AvatarImage src={`${reply.userProfile.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-auto rounded-full object-cover"/>
                                     </Avatar>
                                     </button>
                                     <div className='flex justify-between w-full pr-8 !mt-0 '>
@@ -112,7 +118,7 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
                                 <div className="flex gap-2 items-center flex-col w-fit rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
                                     <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
                                         <Avatar className='w-[60px] h-[60px] rounded-full'>
-                                            <AvatarImage src={`${reply.userProfile.pictureUrl}`} style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
+                                            <AvatarImage src={`${reply.userProfile.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-auto rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
                                         </Avatar>
                                         <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#EFEFEF]  outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                                         <button onClick={() => update()} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF]  mr-4 py-[0.30rem]">Update reply</button>
