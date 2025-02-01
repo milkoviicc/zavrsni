@@ -146,7 +146,7 @@ export default function Navbar() {
                                             <CommandItem className="text-[#AFAFAF] text-base" onSelect={(currentValue) => {
                                                 setPopoverOpen(false);
                                                 router.push('/my-profile');
-                                            }}><Avatar><AvatarImage src={`${user.pictureUrl}?${new Date().getTime()}`} className="w-[45px] h-[45px]" style={{borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback></Avatar> My profile</CommandItem>
+                                            }}><Avatar><AvatarImage src={`${user.pictureUrl}`} className="w-[45px] h-[45px]" style={{borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback></Avatar> My profile</CommandItem>
                                             <CommandItem className="text-[#AFAFAF] text-lg" onSelect={(currentValue) => {
                                                 setPopoverOpen(false);
                                                 router.push('/people');
@@ -166,7 +166,7 @@ export default function Navbar() {
                     <div className="hidden md:flex justify-end items-center">
                         <button className="hover:cursor-pointer flex" onClick={() => router.push(`/my-profile`)}>
                             <Avatar className="w-[30px] h-[30px]">
-                                <AvatarImage src={`${user.pictureUrl}?${new Date().getTime()}`} className="w-fit h-fit aspect-auto rounded-full" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                                <AvatarImage src={`${user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
                             </Avatar> 
                         </button>
                     </div>
@@ -203,7 +203,7 @@ export default function Navbar() {
                     <Button asChild variant="link" onClick={logout} className="hover:cursor-pointer text-[#AFAFAF]"><FontAwesomeIcon icon={faRightFromBracket} className="text-sm -mt-1 font-thin sm:size-4 md:size-6"/></Button>
                     <button className="hover:cursor-pointer flex gap-2" onClick={() => router.push(`/my-profile`)}>
                         <Avatar className="mr-6 xl:w-[45px] xl:h-[45px] 2xl:w-[60px] 2xl:h-[60px]">
-                            <AvatarImage src={`${user.pictureUrl}?${new Date().getTime()}`} className="w-fit h-fit aspect-auto rounded-full" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                            <AvatarImage src={`${user.pictureUrl}`} className="w-fit h-fit aspect-auto rounded-full" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
                         </Avatar> 
                     </button>
                 </div>
