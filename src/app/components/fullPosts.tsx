@@ -2,7 +2,7 @@
 'use client';
 import React, {useState, useEffect} from 'react'
 import ResizableTextarea from './ResizableTextarea'
-import { FollowSuggestion, FollowSuggestionStatus, Friendship, FriendshipStatus, Post, Profile, User } from '../types/types'
+import { FollowSuggestion, Friendship, FriendshipStatus, Post, Profile, User } from '../types/types'
 import Image from 'next/image'
 import EachPost from './eachPost'
 import axios from 'axios'
@@ -18,6 +18,7 @@ import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandL
 import {Button} from "../../components/ui/button";
 import { Check, ChevronDown, ChevronsDown, ChevronsUpDown, ChevronUp} from 'lucide-react';
 import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
+import { profile } from 'console';
 
 const FullPosts = ({user}: {user: User}) => {
 
@@ -330,8 +331,6 @@ const FullPosts = ({user}: {user: User}) => {
 
           updatedPost.content = updatedContent;
           updatedPost.fileUrls= updatedFiles;
-
-          setReactionTrigger((prev) => !prev);
       } catch(err) {
         console.error(err);
       }
@@ -355,14 +354,14 @@ const FullPosts = ({user}: {user: User}) => {
   }, []);
 
 
-  const [profileSuggestions, setProfileSuggestions] = useState<FollowSuggestionStatus[]>([]);
+  const [profileSuggestions, setProfileSuggestions] = useState<User[]>([]);
   const [suggestionsChecked, setSuggestionsChecked] = useState(false);
-  const [fillSuggestions, setFillSuggestions] = useState<FollowSuggestionStatus[]>([]);
+  const [fillSuggestions, setFillSuggestions] = useState<User[]>([]);
 
   useEffect(() => {
     const getFollowSuggestions = async () => {
       try {
-        const res = await axios.get('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/follow-suggestions?limit=4');
+        const res = await axios.get<User[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/follow-suggestions?limit=4');
 
         if(res.status === 200) {
           setProfileSuggestions(res.data);
@@ -379,7 +378,7 @@ const FullPosts = ({user}: {user: User}) => {
     getFollowSuggestions();
   }, []);
 
-  const checkFollowSuggestions = async (existingSuggestions: FollowSuggestionStatus[]) => {
+  const checkFollowSuggestions = async (existingSuggestions: User[]) => {
     if(existingSuggestions.length === 4 || suggestionsChecked) return;
     setSuggestionsChecked(true);
     const neededProfiles = 4 - existingSuggestions.length;
@@ -388,14 +387,14 @@ const FullPosts = ({user}: {user: User}) => {
 
         if(res.status === 200) {
           const receivedUsers: User[] = res.data;
-          const existingUserIds = new Set(existingSuggestions.map((p) => p.user.userId));
+          const existingUserIds = new Set(existingSuggestions.map((p) => p.userId));
           const filteredUsers = receivedUsers.filter((user) => !existingUserIds.has(user.userId)).slice(0, neededProfiles);
           if(filteredUsers.length > 0) {
-            const newSuggestions: FollowSuggestionStatus[] = filteredUsers.map((filteredUser) => ({user: filteredUser, mutual: 0}));
+            const newSuggestions: User[] = filteredUsers.map((filteredUser) => (filteredUser));
             setFillSuggestions((prev) => {
               const allSuggestions = [...prev, ...newSuggestions];
 
-              return Array.from(new Map(allSuggestions.map((s) => [s.user.userId, s])).values()).slice(0,4);
+              return Array.from(new Map(allSuggestions.map((s) => [s.userId, s])).values()).slice(0,4);
             });
           }
         }
@@ -447,7 +446,7 @@ const FullPosts = ({user}: {user: User}) => {
                     </Avatar>
                     <div className="flex flex-col w-full">
                       <div className='flex justify-between items-center w-full'>
-                        <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content} className="font-Roboto font-normal scrollbar-none md:min-w-[310px] w-full md:w-full pr-2 h-fit text-sm text-[#fff] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                        <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content} className="font-Roboto font-normal scrollbar-none md:min-w-[310px] w-full md:w-full pr-2 h-fit  text-sm text-[#fff] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                         <input type="file" id="file-input" className="hidden" onChange={handlePostFile} multiple/>
                         <div className="flex justify-between">
                           <div>
@@ -508,7 +507,7 @@ const FullPosts = ({user}: {user: User}) => {
                     <AvatarImage src={`${user?.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
                 </Avatar>
                 <div className="flex flex-col">
-                    <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content} className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#fff] outline-none py-3 pr-8 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                    <ResizableTextarea placeholder={`What's on your mind`} onChange={(e) =>  setContent(e.target.value)} value={content} className="flex justify-center font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#fff] outline-none py-3 pr-8 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                     <input type="file" id="file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
                     <div className="flex justify-between">
                       <div>
@@ -547,9 +546,9 @@ const FullPosts = ({user}: {user: User}) => {
                         { posts.map((post, index) => (
                           <div key={index}>
                             {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
-                              <div className='flex items-center flex-col my-4 py-2'>
+                              <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A]'>You might like these</p>
-                                <div className='grid grid-cols-2 grid-rows-2 gap-4 border-t-[1px] border-[#515151]'>
+                                <div className='min-w-[90%] grid grid-cols-2 grid-rows-2 gap-4'>
                                   {profileSuggestions.map((suggestion, index) => (
                                     <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
                                   ))}

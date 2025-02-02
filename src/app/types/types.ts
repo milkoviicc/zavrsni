@@ -88,11 +88,6 @@ export interface FriendshipStatus {
     friendshipStatus : number
 }
 
-export interface FollowSuggestionStatus {
-    user: User;
-    mutual: number;
-}
-
 export interface FollowSuggestion {
     user: User,
     isFollowed: boolean;

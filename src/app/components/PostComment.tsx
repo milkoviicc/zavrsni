@@ -39,7 +39,7 @@ const PostComment = ({post, refreshPosts, refreshComments, setComments}: {post: 
             <ResizableTextarea placeholder="Add comment..." value={content} onChange={(e) => setContent(e.target.value)} className="scrollbar-none text-white w-full max-h-[100px] font-Roboto outline-none px-4 py-1 my-4 rounded resize-none border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
           </div>
           <div className="w-full flex justify-end pr-2 py-2">
-          <button onClick={() => PostComment()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem] shadow-[1px_3px_3px_0px_rgba(0,_0,_0,_0.25)]">Submit</button>
+            <button onClick={() => PostComment()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem] shadow-[1px_3px_3px_0px_rgba(0,_0,_0,_0.25)]">Submit</button>
           </div>
         </div>
     </div>

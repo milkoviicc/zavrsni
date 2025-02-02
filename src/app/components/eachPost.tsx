@@ -61,6 +61,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   const [isProcessing, setIsProcessing] = useState(false);
   const [reactionTrigger, setReactionTrigger] = useState(false);
   const [finishedUpdating, setFinishedUpdating] = useState(false);
+  const [isUpdatePostDialogOpen, setIsUpdatePostDialogOpen] = useState(false);
 
   // dobivam usera iz localStorage-a
 
@@ -163,6 +164,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
     setFinishedUpdating(true);
     setTimeout(() => {
       setFinishedUpdating(false);
+      setIsUpdatePostDialogOpen(false);
     }, 1000);
   }
 
@@ -259,43 +261,49 @@ const handleReaction = async (reaction: number) => {
                 </div>
                 <div>
                   {showUpdate && (
-                    <Dialog>
+                    <Dialog open={isUpdatePostDialogOpen} onOpenChange={setIsUpdatePostDialogOpen}>
                       <DialogTrigger onClick={() => handleUpdate()}><FontAwesomeIcon icon={faPen} className='text-[#C7C7C7]' /></DialogTrigger>
-                      <DialogContent className='w-full h-[350px] flex flex-col text-black overflow-y-auto min-w-fit bg-[#222222] border-transparent'>
+                      <DialogContent className='h-fit flex flex-col px-2 lg:px-4 text-black overflow-y-auto overflow-x-hidden bg-[#222222] max-w-[90%] sm:max-w-[55%] lg:max-w-[45%] lg:min-w-fit border-transparent'>
                         <DialogHeader className='flex flex-row gap-2'>
                           <button onClick={() => router.push(`/users/${post.user.username}`)}>
-                            <Avatar className='w-[40px] h-[40px] rounded-full'>
+                            <Avatar className='lg:w-[40px] lg:h-[40px] rounded-full'>
                               <AvatarImage src={`${post.user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" />
                             </Avatar>
                           </button>
                           <div className='flex justify-between w-full pr-8 !mt-0 '>
                             <div className='flex flex-col'>
                               <DialogDescription className='text-base text-[#EFEFEF]'><button onClick={() => router.push(`/users/${post.user.username}`)}>{post.user.firstName} {post.user.lastName}</button></DialogDescription>
-                              <DialogTitle className='text-sm font-[500] text-[#888888]'><button onClick={() => router.push(`/users/${post.user.username}`)}>@ {post.user.username}</button></DialogTitle>
+                              <DialogTitle className='text-sm font-[500] text-[#888888] text-left'><button onClick={() => router.push(`/users/${post.user.username}`)}>@ {post.user.username}</button></DialogTitle>
                             </div>
                             <div>
                               <p className='text-[#888888] text-opacity-60'>{days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}</p>
                             </div>
                           </div>
                         </DialogHeader>
-                        <div className="flex gap-1 items-center flex-col w-fit rounded-full shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
-                            <div className="flex flex-row w-fit justify-center items-center gap-4 py-4 px-4">
-                                <Avatar className='w-[60px] h-[60px] rounded-full'>
+                        <div className="flex gap-1 items-center flex-col max-w-full rounded-md shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
+                            <div className="flex flex-row relative w-full justify-between items-center gap-4 lg:py-4 lg:px-4 py-2 px-2">
+                              <div className='flex w-full h-full justify-center'>
+                                <Avatar className='w-[35px] h-[35px] lg:w-[60px] lg:h-[60px] rounded-full'>
                                   <AvatarImage src={`${post.user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
                                 </Avatar>
-                                <div className="flex flex-col">
-                                    <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent}   className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-white outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                                <div className="flex flex-col flex-grow relative max-h-fit ml-4 lg:max-h-fit ">
+                                    <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent} className="font-Roboto font-normal leading-5 scrollbar-none lg:max-w-[80%] max-h-[100px] lg:max-h-[150px] text-lg text-white outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                                     <input type="file" id="new-file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
-                                    <div className="flex flex-col">
-                                      <label htmlFor="new-file-input" className="hover:cursor-pointer w-fit text-[#CCCCCC] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
-                                      <span className="block bg-[#CCCCCC] w-[75px] h-[1px] -ml-[3px]"></span>
+                                    <div className="flex justify-between">
+                                      <div>
+                                        <label htmlFor="new-file-input" className="hover:cursor-pointer w-fit text-[#CCCCCC] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
+                                        <span className="block bg-[#CCCCCC] w-[75px] h-[1px] -ml-[3px]"></span>
+                                      </div>
+                                      <div className='flex items-center justify-end w-fit h-full'>
+                                        <button onClick={() => update()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem] text-sm lg:text-base">Update post</button>
+                                      </div>
                                     </div>
                                     <div className="flex items-start">
                                         {previousFiles ? previousFiles.map((file, index) => (<Image key={index} src={file} width={100} height={64} alt="aaaaaaa" className="py-2"/>)) : null}
                                         {previousFiles.length > 0 ? <button className="w-fit px-2" onClick={() => setPreviousFiles([])}>X</button> : null}
                                     </div>
                                 </div>
-                                <button onClick={() => update()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem]">Update post</button>
+                              </div>
                             </div>
                             {finishedUpdating ? <h1 className='font-Roboto text-[#EFEFEF] pb-4'>Post successfully updated!</h1> : null}
                         </div>
@@ -360,7 +368,7 @@ const handleReaction = async (reaction: number) => {
               </div>
               <Dialog>
                 <DialogTrigger className='flex px-2 sm:px-8 py-2 mt-6 rounded-md w-fit text-[#C7C7C7]' onClick={() => handleComments()}><svg className='mr-1' width="24" height="24" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_54_1461)"> <path d="M7.34927 2.1044C7.12027 1.42273 6.57694 0.879395 5.89561 0.650729C4.63761 0.228729 3.36194 0.228729 2.10427 0.650729C1.42261 0.879395 0.879273 1.42273 0.650606 2.10406C0.228606 3.36206 0.228606 4.6374 0.650606 5.8954C0.879273 6.57673 1.42261 7.1204 2.10427 7.34906C2.73227 7.55973 3.36994 7.6664 3.99994 7.6664C5.00727 7.6664 6.02794 7.53373 7.03361 7.27206C7.15061 7.24173 7.24194 7.1504 7.27227 7.0334C7.53394 6.02773 7.66661 5.00706 7.66661 3.99973C7.66661 3.37006 7.55994 2.7324 7.34927 2.10406V2.1044ZM6.67527 6.67506C5.78627 6.89073 4.88727 7.00006 4.00027 7.00006C3.44294 7.00006 2.87627 6.90473 2.31694 6.71706C1.83227 6.55439 1.44594 6.16806 1.28327 5.68339C0.908273 4.56639 0.908273 3.4334 1.28327 2.3164C1.44561 1.83173 1.83194 1.4454 2.31694 1.28306C2.87527 1.09573 3.43794 1.00173 4.00027 1.00173C4.56261 1.00173 5.12527 1.0954 5.68394 1.28306C6.16861 1.4454 6.55494 1.83173 6.71761 2.31673C6.90527 2.8764 7.00061 3.44273 7.00061 4.00006C7.00061 4.8874 6.89127 5.78606 6.67561 6.67506H6.67527Z" fill="#C7C7C7"/> <path d="M5.68797 3.66675H2.31197C2.12797 3.66675 1.97864 3.81608 1.97864 4.00008C1.97864 4.18408 2.12797 4.33341 2.31197 4.33341H5.68797C5.87197 4.33341 6.0213 4.18408 6.0213 4.00008C6.0213 3.81608 5.87197 3.66675 5.68797 3.66675Z" fill="#C7C7C7"/> <path d="M5.35468 5.00708H2.64535C2.46135 5.00708 2.31201 5.15641 2.31201 5.34041C2.31201 5.52441 2.46135 5.67375 2.64535 5.67375H5.35468C5.53868 5.67375 5.68801 5.52441 5.68801 5.34041C5.68801 5.15641 5.53868 5.00708 5.35468 5.00708Z" fill="#C7C7C7"/> <path d="M2.64535 2.99308H3.61335C3.79735 2.99308 3.94668 2.84375 3.94668 2.65975C3.94668 2.47575 3.79735 2.32642 3.61335 2.32642H2.64535C2.46135 2.32642 2.31201 2.47575 2.31201 2.65975C2.31201 2.84375 2.46135 2.99308 2.64535 2.99308Z" fill="#C7C7C7"/> </g> <defs> <clipPath id="clip0_54_1461"> <rect width="8" height="8" fill="white"/></clipPath></defs></svg>{post.commentCount}</DialogTrigger>
-                <DialogContent className='w-full h-[85vh] flex flex-col bg-[#222222] text-black overflow-y-auto max-w-[35%] border-transparent'>
+                <DialogContent className='w-full h-[85vh] flex flex-col bg-[#222222] text-black overflow-y-auto max-w-[90%] sm:max-w-[55%] lg:max-w-[45%] xl:max-w-[35%] border-transparent'>
                   <DialogHeader className='flex flex-row gap-2'>
                     <button onClick={() => router.push(`/users/${post.user.username}`)}>
                       <Avatar className='w-[45px] h-[45px] rounded-full'>
@@ -369,8 +377,8 @@ const handleReaction = async (reaction: number) => {
                     </button>
                     <div className='flex justify-between w-full pr-8 !mt-0 '>
                       <div className='flex flex-col'>
-                        <DialogDescription className='text-base text-[#EFEFEF]'><button onClick={() => router.push(`/users/${post.user.username}`)}>{post.user.firstName} {post.user.lastName}</button></DialogDescription>
-                        <DialogTitle className='text-sm font-[500] text-[#888888]'><button onClick={() => router.push(`/users/${post.user.username}`)}>@ {post.user.username}</button></DialogTitle>
+                        <DialogDescription className='text-base text-[#EFEFEF] text-left'><button onClick={() => router.push(`/users/${post.user.username}`)}>{post.user.firstName} {post.user.lastName}</button></DialogDescription>
+                        <DialogTitle className='text-sm font-[500] text-[#888888] text-left'><button onClick={() => router.push(`/users/${post.user.username}`)}>@ {post.user.username}</button></DialogTitle>
                       </div>
                       <div>
                         <p className='text-[#888888] text-opacity-60'>{days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}</p>

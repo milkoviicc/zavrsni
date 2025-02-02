@@ -14,7 +14,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/src/components/ui/avatar"
 import {Flex, Avatar as RadixAvatar } from "@radix-ui/themes";
 
 import searchOutline from "@/public/search-outline 1.svg"
-import { FollowSuggestion, FollowSuggestionStatus, Profile, User } from "../../types/types";
+import { FollowSuggestion, Profile, User } from "../../types/types";
 import { Popover, PopoverTrigger, PopoverContent } from "@/src/components/ui/popover";
 import UserComponent from "../userComponent";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/src/components/ui/command";
@@ -76,18 +76,9 @@ export default function Navbar() {
         // Clear the timeout if `search` changes
         return () => clearTimeout(timeoutId);
     }, [search])
-
-
-    function isUser(user: any): user is User {
-        return (user as User).username !== undefined;
-    }
     
-    const handleRoute = (user: User | FollowSuggestionStatus) => {
-        if(isUser(user)) {
-            router.push(`/users/${user.username}`);
-        } else {
-            router.push(`/users/${user.user.username}`);
-        }
+    const handleRoute = (user: User) => {
+        router.push(`/users/${user.username}`);
         inputRef.current?.blur();
         setSearch('');
         setReceivedItems([]);
