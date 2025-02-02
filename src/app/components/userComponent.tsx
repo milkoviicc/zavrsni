@@ -37,7 +37,7 @@ const UserComponent = ({user, handleRoute}: {user: User | undefined, handleRoute
     return null;
   }
   return (
-    <div className='lg:w-full '>
+    <div className='w-full'>
       <div className="hover:cursor-pointer hidden gap-2 py-2 items-center lg:flex" onClick={() => routeToUser()}>
           <Avatar className='w-[55px] h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
               <AvatarImage src={`${user?.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
