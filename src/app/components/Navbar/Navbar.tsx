@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
@@ -21,7 +22,8 @@ import { Command, CommandGroup, CommandItem, CommandList } from "@/src/component
 import { ChevronDown, ChevronUp, LogOut, Menu, Users } from "lucide-react";
 import Suggestion from "../suggestion";
 import { useTime } from "framer-motion";
-const Navbar = () => {
+
+const Navbar = memo(() => {
 
     // prosljedjuje mi se user state i funkcija logout iz AuthProvider.tsx
 
@@ -36,52 +38,50 @@ const Navbar = () => {
     const [open, setOpen] = useState(false);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [popoverOpen, setPopoverOpen] = useState(false);
+    const [shortUsername, setShortUsername] = useState('');
 
 
-    const shortUsername = useMemo(() => {
-        if (user?.firstName && user?.lastName) {
-            return `${user.firstName[0]}${user.lastName[0]}`;
+    useEffect(() => {
+        if (user && user.firstName && user.lastName) {
+            const firstLetter = user.firstName.slice(0, 1);
+            const secondLetter = user.lastName.slice(0, 1);
+            setShortUsername(firstLetter + secondLetter);
         }
-        return "";
-    }, [user?.firstName, user?.lastName]);
-
+    }, [user]); 
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const handleSearch = useCallback((search: string) => {
+    useEffect(() => {
         if (search.trim() === '' || search.length < 3) {
             setOpen(false);
             setReceivedItems([]);
             return;
-        } else {
-            setOpen(true);
         }
 
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
-        timeoutRef.current = setTimeout(async () => {
+        const fetchData = async () => {
             try {
                 const res = await axios.get<Profile[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/search?searchTerm=${search}`);
 
                 setReceivedItems(prevData => JSON.stringify(prevData) !== JSON.stringify(res.data) ? res.data : prevData);
-
-                inputRef.current?.focus();
-            } catch (err) {
-                console.error(err);
+                setOpen(true);
+            } catch (error) {
+                console.error(error);
             }
+        };
+
+        // Avoid redundant API calls
+        const timeoutId = setTimeout(() => {
+            fetchData();
         }, 500);
-    }, []);
 
-    useEffect(() => {
-        handleSearch(search);
-    }, [search, handleSearch]);
+        return () => clearTimeout(timeoutId); // Clean up timeout on unmount
+    }, [search]);  // Only update when search changes
 
-    const handleRoute = useCallback((user: User) => {
-        router.push(`/users/${user.username}`);
-        inputRef.current?.blur();
+    const handleRoute = (user: User) => {
+        router.push(`/profile/${user.username}`);
         setSearch('');
         setReceivedItems([]);
         setOpen(false);
-    }, [router]);
+    };
 
     const clearSearch = () => {
         setSearch('');
@@ -118,7 +118,7 @@ const Navbar = () => {
                                             <p className="text-sm font-Roboto text-[#AFAFAF] sm:text-base">You searched {search}</p>
                                         </div>
                                         <hr className="h-[1px] w-full px-0 border-[#525252]" />
-                                        {recievedItems.map((item, index) => (<div key={index} className="ml-[12px] w-[85%]"><Suggestion key={index} profileSuggestion={null} user={item} handleRoute={handleRoute}/></div>))}
+                                        {recievedItems.map((item, index) => (<div key={index} className="ml-[12px] w-[85%]"><Suggestion key={index} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
                                         <div className="w-full flex justify-center py-4">
                                             <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
                                         </div>
@@ -178,7 +178,7 @@ const Navbar = () => {
                                         <p className="text-sm font-Roboto text-[#AFAFAF] sm:text-base">You searched {search}</p>
                                     </div>
                                     <hr className="h-[1px] w-full px-0 border-[#525252]" />
-                                    {recievedItems.map((item, index) => (<div key={index} className="ml-[12px] w-[95%]"><Suggestion key={index} profileSuggestion={null} user={item} handleRoute={handleRoute}/></div>))}
+                                    {recievedItems.map((item, index) => (<div key={item.userId} className="ml-[12px] w-[95%]"><Suggestion key={item.userId} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
                                     <div className="w-full flex justify-center py-4">
                                         <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
                                     </div>
@@ -199,6 +199,6 @@ const Navbar = () => {
             </div>
         </div>
     )
-};
+});
 
-export default memo(Navbar);
+export default Navbar;

@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Theme }  from '@radix-ui/themes';
 
 import {motion, AnimatePresence} from 'framer-motion';
+import QueryProvider from "./components/QueryProvider";
 
 /*
 export const metadata: Metadata = {
@@ -22,18 +23,22 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [hasAnimated, setHasAnimated] = useState(false); 
-  const router = usePathname();
-
 
   return (
     <html lang="en">
       <body>
+      <QueryProvider>
           <AuthProvider>
-            <Theme>
-              <ClientLayout>{children}</ClientLayout>
-            </Theme>
-          </AuthProvider>
+              <Theme>
+                <ClientLayout>
+
+                    {children}
+
+                </ClientLayout>
+              </Theme>
+            </AuthProvider>
+      </QueryProvider>
+          
       </body>
     </html>
   );

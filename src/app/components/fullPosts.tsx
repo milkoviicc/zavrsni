@@ -22,6 +22,7 @@ import { profile } from 'console';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog';
 import { useRouter } from 'next/navigation';
 import { CircleFadingPlus } from "lucide-react";
+import { useQuery } from '@tanstack/react-query';
 
 const FullPosts = ({user}: {user: User}) => {
 
@@ -372,24 +373,27 @@ const FullPosts = ({user}: {user: User}) => {
     setRandomNmbs(newRandomNmbs);
   }, []);
 
-  useEffect(() => {
-    const getFollowSuggestions = async () => {
-      try {
-        const res = await axios.get<User[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/follow-suggestions?limit=4');
-      
-        if(res.status === 200) {
-          setProfileSuggestions(res.data);
-          if(res.data.length < 4) {
-            checkFollowSuggestions(res.data);
-          }
+  const getFollowSuggestions = async (): Promise<User[]> => {
+    try {
+      const res = await axios.get<User[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/follow-suggestions?limit=4');
+    
+      if(res.status === 200) {
+        if(res.data.length < 4) {
+          checkFollowSuggestions(res.data);
+        } else {
+          return res.data;
         }
-  
-      } catch(err) {
-        console.error(err);
       }
+
+      return [];
+
+    } catch(err) {
+      console.error(err);
+      return[];
     }
-    getFollowSuggestions();
-  }, []);
+  }
+
+  const {data, error} = useQuery({queryKey: ["suggestions"], queryFn: getFollowSuggestions})
 
   const checkFollowSuggestions = async (existingSuggestions: User[]) => {
     if(existingSuggestions.length === 4 || suggestionsChecked) return;
@@ -420,6 +424,13 @@ const FullPosts = ({user}: {user: User}) => {
     setCacheBuster(Date.now()); // Update only when `profilePicture` changes
   }, [user?.pictureUrl]);
 
+  if(error) {
+    console.error('error fetching');
+  }
+
+  if(!data) {
+    return <div>Loading...</div>
+  }
 
 
   return (
@@ -521,20 +532,20 @@ const FullPosts = ({user}: {user: User}) => {
                         <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-t-[#515151]'>
                           <p className='text-[#8A8A8A] text-xs'>You might like these</p>
                           <div className='grid grid-cols-2 grid-rows-2 gap-2'>
-                            {profileSuggestions.map((suggestion, index) => (
-                              <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
+                            {data?.map((suggestion, index) => (
+                              <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                             ))}
-                            {profileSuggestions.length !== 4 ? 
-                              fillSuggestions.map((suggestion, index) => (
-                                <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
+                            {data.length !== 4 ? 
+                              data.map((suggestion, index) => (
+                                <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                               )) : null
                             }
                           </div>
                         </div>
                       ) : randomNmbs?.includes(index) && profileSuggestions.length === 0 ? (
                         <div className='grid grid-cols-2 grid-rows-2 gap-4 border-t-[1px] border-[#515151]'>
-                            {fillSuggestions.map((suggestion, index) => (
-                                <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
+                            {data.map((suggestion, index) => (
+                                <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                               ))
                             }
                           </div>
@@ -595,23 +606,26 @@ const FullPosts = ({user}: {user: User}) => {
                               <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A]'>You might like these</p>
                                 <div className='min-w-[90%] grid grid-cols-2 grid-rows-2 gap-4'>
-                                  {profileSuggestions.map((suggestion, index) => (
-                                    <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
+                                  {data.map((suggestion, index) => (
+                                    <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                                   ))}
-                                  {profileSuggestions.length !== 4 ? 
-                                    fillSuggestions.map((suggestion, index) => (
-                                      <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
+                                  {data.length !== 4 ? 
+                                    data.map((suggestion, index) => (
+                                      <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                                     )) : null
                                   }
                                 </div>
                               </div>
                             ) : randomNmbs?.includes(index) && profileSuggestions.length === 0 ? (
-                              <div className='grid grid-cols-2 grid-rows-2 gap-4 place-items-center border-t-[1px] border-[#515151]'>
-                                  {fillSuggestions.map((suggestion, index) => (
-                                      <Suggestion key={index} profileSuggestion={suggestion} user={null} handleRoute={null}/>
+                              <div className='border-t-[1px] border-[#515151]'>
+                                <p className='text-[#8A8A8A] text-center font-Roboto py-2'>You might like these</p>
+                                <div className='grid grid-cols-2 grid-rows-2 gap-4 place-items-center'>
+                                  {data.map((suggestion, index) => (
+                                      <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                                     ))
                                   }
                                 </div>
+                              </div>
                             ): null}
                             <EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
                           </div>
