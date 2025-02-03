@@ -507,10 +507,10 @@ const FullPosts = ({user}: {user: User}) => {
                           </div>
                           {finishedPosting ? <h1 className='font-Roboto text-[#EFEFEF] pb-4'>Post successfully posted!</h1> : null}
                       </div>
-                      <div className="flex w-full h-full ml-4">
-                        <div className='grid grid-cols-3 grid-rows-2'>
+                      <div className="flex w-full h-full sm:ml-4">
+                        <div className={`grid gap-2 ${postFile.length <= 2 ? "grid-cols-3" : ''} ${postFile.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>
                           {postFile ? postFile.map((file, index) => (
-                            <div key={index} className='w-full relative flex justify-center px-2'>
+                            <div key={index} className='w-full relative flex justify-center sm:px-2'>
                               <Image key={index} src={URL.createObjectURL(file)} width={100} height={100} alt="a" className="py-2 opacity-80] rounded-xl h-[150px] w-full"/>
                               <button className="absolute text-white top-2 right-4" onClick={() => setPostFile(postFile.filter((_, postIndex) => postIndex != index))}>X</button>
                             </div>
@@ -558,31 +558,42 @@ const FullPosts = ({user}: {user: User}) => {
               )}
           </div>
         </div>
-        <div className="md:flex hidden gap-2 items-center flex-col w-fit rounded-full shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
-            <div className="flex flex-row w-fit justify-center items-center gap-4 py-2 px-4">
-                <Avatar className='w-[60px] h-[60px] rounded-full'>
-                    <AvatarImage src={`${user?.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
-                </Avatar>
-                <div className="flex flex-col">
-                    <ResizableTextarea placeholder={`What's on your mind, ${user.firstName}`} onChange={(e) =>  setContent(e.target.value)} value={content} className="flex justify-center font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[150px] text-lg text-[#fff] outline-none py-3 pr-8 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
-                    <input type="file" id="file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
-                    <div className="flex justify-between">
-                      <div>
-                        <label htmlFor="file-input" className="hover:cursor-pointer w-fit text-[#CCCCCC] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
-                        <span className="block bg-[#CCCCCC] w-[75px] h-[1px] -ml-[3px]"></span>
+        <div className="md:flex hidden gap-2 items-center flex-col w-fit">
+        <div className="flex gap-2 items-center flex-col max-w-full rounded-3xl bg-[#363636] shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)]">
+              <div className="flex flex-col justify-between relative w-full min-h-full items-center gap-4 pt-4 px-4">
+                  <div className='w-full h-full flex gap-4 pb-2 '>
+                      <Avatar className='w-[45px] h-[45px] lg:w-[60px] lg:h-[60px] rounded-full'>
+                          <AvatarImage src={`${user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
+                      </Avatar>
+                      <div className='flex flex-col flex-grow gap-4'>  
+                        <ResizableTextarea onChange={(e) => setContent(e.target.value)} value={content} placeholder={`What's on your mind, ${user.firstName}`} className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[100px] lg:max-h-[150px] text-sm md:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                        <div className='flex justify-end gap-4 items-center'>
+                            <div className='flex h-full justify-center items-center'>
+                              <input type="file" id="file-input-pc" className="hidden" onChange={handlePostFile} multiple/>
+                              <div className='flex w-full h-full items-center'>
+                                <label htmlFor="file-input-pc" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" className='pt-[3px]'/></label>
+                              </div>
+                            </div>
+                            <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
+                        </div>
                       </div>
-                      <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-6 py-[0.20rem] shadow-[1px_3px_3px_0px_rgba(0,_0,_0,_0.25)]">Post it</button>
-                    </div>
-                    <div className="flex items-center">
-                        {postFile ? postFile.map((file, index) => (
-                          <div key={index} className='w-fit relative'>
-                            <Image key={index} src={URL.createObjectURL(file)} width={100} height={64} alt="aaaaaaa" className="py-2 opacity-80"/>
-                            <button className="absolute text-white top-2 right-2" onClick={() => setPostFile(postFile.filter((_, postIndex) => postIndex != index))}>X</button>
-                          </div>
-                          )) : null}
-                    </div>
+                  </div>
+              </div>
+              {finishedPosting ? <h1 className='font-Roboto text-[#EFEFEF] pb-4'>Post successfully posted!</h1> : null}
+          </div>
+          <div className="flex w-full h-full ml-4">
+            <div className={`grid gap-2 ${postFile.length <= 2 ? "grid-cols-3" : ''} ${postFile.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>
+              {postFile ? postFile.map((file, index) => (
+                <div key={index} className='w-full relative flex justify-center px-2'>
+                  <Image key={index} src={URL.createObjectURL(file)} width={100} height={100} alt="a" className="py-2 opacity-80 rounded-xl h-[150px] w-full"/>
+                  <button className="absolute text-white top-2 right-4" onClick={() => setPostFile(postFile.filter((_, postIndex) => postIndex != index))}>X</button>
                 </div>
+              )) : null}
+              <div className='w-full flex justify-center items-center'>
+                {postFile.length === 0 ? null : <label htmlFor="file-input-pc" className="hover:cursor-pointer text-[#646464] font-Roboto"><CircleFadingPlus className='text-[#646464] size-14' /></label>}
+              </div>
             </div>
+          </div>
         </div>
         <div className="h-full w-full sm:flex hidden flex-col items-center">
             <div className="flex gap-4 py-6 items-center">
@@ -599,7 +610,7 @@ const FullPosts = ({user}: {user: User}) => {
             </div>
             <div className='w-full flex justify-center mt-10'>
                 {posts.length === 0 && loading === false ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center text-[#AFAFAF]'>Loading posts...</h1> : (
-                    <InfiniteScroll className='w-full flex flex-col bg-transparent px-1' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
+                    <InfiniteScroll className='w-full flex flex-col bg-transparent px-8 sm:px-4' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                         { posts.map((post, index) => (
                           <div key={index}>
                             {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
