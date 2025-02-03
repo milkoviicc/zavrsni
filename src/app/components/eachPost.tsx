@@ -226,11 +226,6 @@ const handleReaction = async (reaction: number) => {
   }
 };
 
- const [cacheBuster, setCacheBuster] = useState(Date.now());
-      
-  useEffect(() => {
-      setCacheBuster(Date.now()); // Update only when `profilePicture` changes
-  }, [post.user.pictureUrl]);
 
 
   return (
@@ -240,12 +235,12 @@ const handleReaction = async (reaction: number) => {
           <div className='sm:py-2 sm:px-4 py-1 px-1 flex'>
             <button className='sm:hidden block' onClick={() => router.push(`/users/${post.user.username}`)}>
               <Avatar className='w-[45px] h-[45px] rounded-full'>
-                <AvatarImage src={`${post.user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" />
+                <AvatarImage src={`${post.user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" />
               </Avatar>
             </button>
             <button className='hidden sm:block' onClick={() => router.push(`/users/${post.user.username}`)}>
               <Avatar className='w-[60px] h-[60px] rounded-full'>
-                <AvatarImage src={`${post.user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" />
+                <AvatarImage src={`${post.user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" />
               </Avatar>
             </button>
             
@@ -267,7 +262,7 @@ const handleReaction = async (reaction: number) => {
                         <DialogHeader className='flex flex-row gap-2'>
                           <button onClick={() => router.push(`/users/${post.user.username}`)}>
                             <Avatar className='lg:w-[40px] lg:h-[40px] rounded-full'>
-                              <AvatarImage src={`${post.user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" />
+                              <AvatarImage src={`${post.user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" />
                             </Avatar>
                           </button>
                           <div className='flex justify-between w-full pr-8 !mt-0 '>
@@ -284,7 +279,7 @@ const handleReaction = async (reaction: number) => {
                             <div className="flex flex-row relative w-full justify-between items-center gap-4 lg:py-4 lg:px-4 py-2 px-2">
                               <div className='flex w-full h-full justify-center'>
                                 <Avatar className='w-[35px] h-[35px] lg:w-[60px] lg:h-[60px] rounded-full'>
-                                  <AvatarImage src={`${post.user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
+                                  <AvatarImage src={`${post.user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
                                 </Avatar>
                                 <div className="flex flex-col flex-grow relative max-h-fit ml-4 lg:max-h-fit ">
                                     <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent} className="font-Roboto font-normal leading-5 scrollbar-none lg:max-w-[80%] max-h-[100px] lg:max-h-[150px] text-lg text-white outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
@@ -372,7 +367,7 @@ const handleReaction = async (reaction: number) => {
                   <DialogHeader className='flex flex-row gap-2'>
                     <button onClick={() => router.push(`/users/${post.user.username}`)}>
                       <Avatar className='w-[45px] h-[45px] rounded-full'>
-                        <AvatarImage src={`${post.user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover"/>
+                        <AvatarImage src={`${post.user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"/>
                       </Avatar>
                     </button>
                     <div className='flex justify-between w-full pr-8 !mt-0 '>

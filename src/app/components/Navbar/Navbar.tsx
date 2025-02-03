@@ -55,16 +55,18 @@ const Navbar = memo(() => {
 
     useEffect(() => {
         const handleSearch = async (search: string) => {
-            setIsSearchLoading(true);
             try {
                 if (search.trim() === '') {
                     setSearchOpen(false);
+                    setReceivedItems([]);
                     return;
                 }
                 if(search.length > 0 && search.length < 3) {
                     setSearchOpen(true);
+                    setReceivedItems([]);
                     return;
                 }
+                setIsSearchLoading(true);
                 setSearchOpen(true);
                 
                 const res = await axios.get<Profile[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/search?searchTerm=${search}`);
@@ -104,13 +106,6 @@ const Navbar = memo(() => {
         }
     }
 
-
-    const [cacheBuster, setCacheBuster] = useState(Date.now());
-      
-    useEffect(() => {
-        setCacheBuster(Date.now()); // Update only when `profilePicture` changes
-    }, [user?.pictureUrl]);
-
     // ukoliko je user state null vraća se null (kao da navbar ne postoji uopće)
     if(!user) return null;
 
@@ -133,7 +128,7 @@ const Navbar = memo(() => {
                                             <p className="text-sm font-Roboto text-[#AFAFAF] sm:text-base">You searched {search}</p>
                                         </div>
                                         <hr className="h-[1px] w-full px-0 border-[#525252]" />
-                                        {isSearchLoading ? <h1>Loading...</h1> : recievedItems.length === 0 ? <h1>No users found!</h1> : recievedItems.map((item, index) => (<div key={index} className="ml-[12px] w-[85%]"><Suggestion key={index} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
+                                        {isSearchLoading ? <div className="w-full flex justify-center py-4"><span className="loader"></span></div> : recievedItems.length === 0 ? <div className="w-full text-center py-4"><h1>No users found!</h1></div> : recievedItems.map((item, index) => (<div key={index} className="ml-[12px] w-[85%]"><Suggestion key={index} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
                                         <div className="w-full flex justify-center py-4">
                                             <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
                                         </div>
@@ -150,7 +145,7 @@ const Navbar = memo(() => {
                                             <CommandItem className="text-[#AFAFAF] text-base" onSelect={(currentValue) => {
                                                 setPopoverOpen(false);
                                                 router.push('/my-profile');
-                                            }}><Avatar><AvatarImage src={`${user?.pictureUrl}?${cacheBuster}`} className="w-[45px] h-[45px] aspect-square rounded-full object-cover" style={{borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback></Avatar> My profile</CommandItem>
+                                            }}><Avatar><AvatarImage src={`${user?.pictureUrl}`} className="w-[45px] h-[45px] aspect-square rounded-full object-cover" style={{borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback></Avatar> My profile</CommandItem>
                                             <CommandItem className="text-[#AFAFAF] text-lg" onSelect={(currentValue) => {
                                                 setPopoverOpen(false);
                                                 router.push('/people');
@@ -170,7 +165,7 @@ const Navbar = memo(() => {
                     <div className="hidden md:flex justify-end items-center">
                         <button className="hover:cursor-pointer flex" onClick={() => router.push(`/my-profile`)}>
                             <Avatar className="w-[30px] h-[30px]">
-                                <AvatarImage src={`${user?.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                                <AvatarImage src={`${user?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
                             </Avatar> 
                         </button>
                     </div>
@@ -193,9 +188,9 @@ const Navbar = memo(() => {
                                         <p className="text-sm font-Roboto text-[#AFAFAF] sm:text-base">You searched {search}</p>
                                     </div>
                                     <hr className="h-[1px] w-full px-0 border-[#525252]" />
-                                    {isSearchLoading ? <h1>Loading...</h1> : recievedItems.length === 0 ? <h1>No users found!</h1> : recievedItems.map((item, index) => (<div key={item.userId} className="ml-[12px] w-[95%]"><Suggestion key={item.userId} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
-                                    <div className="w-full flex justify-center py-4">
-                                        <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
+                                    {isSearchLoading ? <div className="w-full flex justify-center py-4"><span className="loader"></span></div> : recievedItems.length === 0 ? <div className="w-full text-center py-4"><h1>No users found!</h1></div> : recievedItems.map((item, index) => (<div key={item.userId} className="ml-[12px] w-[95%]"><Suggestion key={item.userId} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
+                                    <div className={`w-full flex justify-center py-4 ${isSearchLoading || recievedItems.length === 0 ? 'hidden' : 'flex'}`}>
+                                        <button className={`flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base`} onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
                                     </div>
                                 </div>
                             </div>
@@ -207,7 +202,7 @@ const Navbar = memo(() => {
                     <Button asChild variant="link" onClick={logout} className="hover:cursor-pointer text-[#AFAFAF]"><FontAwesomeIcon icon={faRightFromBracket} className="text-sm -mt-1 font-thin sm:size-4 md:size-6"/></Button>
                     <button className="hover:cursor-pointer flex gap-2" onClick={() => router.push(`/my-profile`)}>
                         <Avatar className="mr-6 xl:w-[45px] xl:h-[45px] 2xl:w-[60px] 2xl:h-[60px]">
-                            <AvatarImage src={`${user?.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                            <AvatarImage src={`${user?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
                         </Avatar> 
                     </button>
                 </div>

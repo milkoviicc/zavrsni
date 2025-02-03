@@ -420,10 +420,6 @@ const FullPosts = ({user}: {user: User}) => {
     }
   };      
 
-  useEffect(() => {
-    setCacheBuster(Date.now()); // Update only when `profilePicture` changes
-  }, [user?.pictureUrl]);
-
   if(error) {
     console.error('error fetching');
   }
@@ -563,7 +559,7 @@ const FullPosts = ({user}: {user: User}) => {
               <div className="flex flex-col justify-between relative w-full min-h-full items-center gap-4 pt-4 px-4">
                   <div className='w-full h-full flex gap-4 pb-2 '>
                       <Avatar className='w-[45px] h-[45px] lg:w-[60px] lg:h-[60px] rounded-full'>
-                          <AvatarImage src={`${user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
+                          <AvatarImage src={`${user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
                       </Avatar>
                       <div className='flex flex-col flex-grow gap-4'>  
                         <ResizableTextarea onChange={(e) => setContent(e.target.value)} value={content} placeholder={`What's on your mind, ${user.firstName}`} className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[100px] lg:max-h-[150px] text-sm md:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>

@@ -159,7 +159,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const res = await axios.put<User>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile-picture', formData, {headers: {
           'Content-Type': 'multipart/form-data'}});
 
-
         if(res.status === 200) {
             // ukoliko sve postoji, spremam id, username, ime i prezime u varijablu updatedProfile tipa 'Profile'
             const updatedProfile: User = res.data;
@@ -177,7 +176,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             // spremam u 'user' state korisnika sa svim novim podatcima
             setUser(updatedProfile);
-            window.location.reload();
         }
       }
     } catch(error) {
