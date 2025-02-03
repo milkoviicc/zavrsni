@@ -57,12 +57,11 @@ const Navbar = memo(() => {
             setReceivedItems([]);
             return;
         }
-
-        inputRef.current?.focus();
+        
         setOpen(true);
+        setIsSearchLoading(true);
         const fetchData = async () => {
             try {
-                setIsSearchLoading(true);
                 const res = await axios.get<Profile[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/search?searchTerm=${search}`);
 
                 if(res.status === 200) {
@@ -93,6 +92,7 @@ const Navbar = memo(() => {
     const clearSearch = () => {
         setSearch('');
         setReceivedItems([]);
+        inputRef.current?.focus();
     };
 
     const [searchOpen, setSearchOpen] = useState(false);
@@ -125,7 +125,7 @@ const Navbar = memo(() => {
                                             <p className="text-sm font-Roboto text-[#AFAFAF] sm:text-base">You searched {search}</p>
                                         </div>
                                         <hr className="h-[1px] w-full px-0 border-[#525252]" />
-                                        {isSearchLoading ? <h1>Loading...</h1> : recievedItems.map((item, index) => (<div key={index} className="ml-[12px] w-[85%]"><Suggestion key={index} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
+                                        {isSearchLoading ? <h1>Loading...</h1> : recievedItems.length === 0 ? <h1>No users found!</h1> : recievedItems.map((item, index) => (<div key={index} className="ml-[12px] w-[85%]"><Suggestion key={index} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
                                         <div className="w-full flex justify-center py-4">
                                             <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
                                         </div>
@@ -185,7 +185,7 @@ const Navbar = memo(() => {
                                         <p className="text-sm font-Roboto text-[#AFAFAF] sm:text-base">You searched {search}</p>
                                     </div>
                                     <hr className="h-[1px] w-full px-0 border-[#525252]" />
-                                    {isSearchLoading ? <h1>Loading...</h1> : recievedItems.map((item, index) => (<div key={item.userId} className="ml-[12px] w-[95%]"><Suggestion key={item.userId} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
+                                    {isSearchLoading ? <h1>Loading...</h1> : recievedItems.length === 0 ? <h1>No users found!</h1> : recievedItems.map((item, index) => (<div key={item.userId} className="ml-[12px] w-[95%]"><Suggestion key={item.userId} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
                                     <div className="w-full flex justify-center py-4">
                                         <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
                                     </div>
