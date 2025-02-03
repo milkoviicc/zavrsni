@@ -58,7 +58,7 @@ const Navbar = memo(() => {
             return;
         }
 
-        searchInputRef.current?.focus();
+        inputRef.current?.focus();
         setOpen(true);
         const fetchData = async () => {
             try {
