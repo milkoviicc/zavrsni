@@ -41,6 +41,7 @@ const Navbar = memo(() => {
     const [shortUsername, setShortUsername] = useState('');
     const [isSearchLoading, setIsSearchLoading] = useState(false);
     const searchInputRef = useRef<HTMLInputElement | null>(null);
+    const [searchOpen, setSearchOpen] = useState(false);
 
 
     useEffect(() => {
@@ -56,13 +57,15 @@ const Navbar = memo(() => {
         const handleSearch = async (search: string) => {
             setIsSearchLoading(true);
             try {
-                if (search.trim() === '' || search.length < 3) {
-                    setOpen(false);
-                    setReceivedItems([]);
+                if (search.trim() === '') {
+                    setSearchOpen(false);
                     return;
-                } else {
-                    setOpen(true);
                 }
+                if(search.length > 0 && search.length < 3) {
+                    setSearchOpen(true);
+                    return;
+                }
+                setSearchOpen(true);
                 
                 const res = await axios.get<Profile[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/search?searchTerm=${search}`);
     
@@ -88,7 +91,7 @@ const Navbar = memo(() => {
         router.push(`/profile/${user.username}`);
         setSearch('');
         setReceivedItems([]);
-        setOpen(false);
+        setSearchOpen(false);
         searchInputRef.current?.blur();
     };
 
@@ -101,7 +104,6 @@ const Navbar = memo(() => {
         }
     }
 
-    const [searchOpen, setSearchOpen] = useState(false);
 
     const [cacheBuster, setCacheBuster] = useState(Date.now());
       
