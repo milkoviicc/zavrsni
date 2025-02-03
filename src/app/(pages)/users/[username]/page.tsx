@@ -1,5 +1,5 @@
 'use client';
-import { Friendship, Profile, User } from '@/src/app/types/types';
+import { Friendship, FriendshipStatus, Profile, User } from '@/src/app/types/types';
 import { Avatar, Flex } from '@radix-ui/themes';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -10,107 +10,82 @@ import React, { useEffect, useState } from 'react'
 const UserProfile = () => {
 
     const path = usePathname();
+
     const router = useRouter();
 
     const [user, setUser] = useState<Profile | null>();
     const [loggedUser, setLoggedUser] = useState<User | null>(null);
-    const [friendStatus, setFriendStatus] = useState('');
+    const [friendStatus, setFriendStatus] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [followStatus, setFollowStatus] = useState('');
+    const [followStatus, setFollowStatus] = useState(false);
     const [notFound, setNotFound] = useState(false);
-
-
-    const getUserQuery = useQuery({queryKey: ["userQuery"], queryFn: () => getUser()});
-    if(getUserQuery.error) {
-        setNotFound(true);
-    }
-
-    if(getUserQuery.isLoading) {
-        setLoading(true);
-    }
 
     const userName = path.slice(7, 100);
 
-    const getUser = async () => {
+    useEffect(() => {
+        const user = localStorage.getItem('user');
+        if(user) {
+            const userData: User = JSON.parse(user);
+            setLoggedUser(userData);
+        }
+    }, []);
+    
+    const getUser = async (userName: string) => {
         try {
-            const res = await axios.get<User>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/${userName}`);
+            const res = await axios.get<Profile>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/username/${userName}`);
+            setUser(res.data);
             return res.data;
         } catch (err) {
             console.error('Failed to fetch user profile:', err);
         }
     };
 
-    // Fetch logged-in user data from localStorage
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser && loggedUser) {
-            setLoggedUser(JSON.parse(storedUser));
-            if(userName === loggedUser.username) {
-                router.push('/my-profile');
-            }
+    const getStatus = async () => {
+        try {
+            const res = await axios.get<FriendshipStatus>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/friendship-status/${user?.userId}`)
+            setFollowStatus(res.data.isFollowed);
+            setFriendStatus(res.data.friendshipStatus);
+            return res.data;
+        } catch(err) {
+            console.error('Failed to fetch user status:', err);
         }
-    }, []);
+    }
 
-    // Check friendship status
+
+    const getUserQuery = useQuery({queryKey: ["userQuery", userName], queryFn:() => getUser(userName)});
+    const getUserStatus = useQuery({queryKey: ["userStatus", userName], queryFn:() => getStatus(), enabled: user !== undefined});
+
     useEffect(() => {
-        const checkFriendship = async () => {
-            if (!loggedUser || !user) return;
-
-            try {
-                setLoading(true);
-                const res = await axios.get<Friendship[]>(
-                    `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${loggedUser.userId}`
-                );
-
-                const isFriend = res.data.find((friend) => friend.user.userId === user.userId);
-                if (isFriend) {
-                    setFriendStatus('friends');
-                } else {
-                    const sentRequests = await axios.get<Friendship[]>(
-                        'https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/sent'
-                    );
-
-                    const receivedRequests = await axios.get<Friendship[]>(
-                        'https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/received'
-                    );
-
-                    const isFriendRequestSent = sentRequests.data.find((req) => req.user.userId === user.userId);
-                    const isFriendRequestReceived = receivedRequests.data.find((req) => req.user.userId === user.userId);
-
-                    setFriendStatus(isFriendRequestSent ? 'sent' : isFriendRequestReceived ? 'received' : 'not friends');
-                }
-                setLoading(false);
-            } catch (err) {
-                console.error('Failed to check friendship status:', err);
-            }
-        };
-
-        checkFriendship();
-    }, [loggedUser, user, friendStatus]);
+        if (getUserQuery.error) {
+            setNotFound(true);
+        }
+        if (getUserQuery.isLoading) {
+            setLoading(true);
+        }
+    }, [getUserQuery.error, getUserQuery.isLoading]);
 
     // Send friend request
     const sendFriendRequest = async () => {
         if (!user) return;
 
+        setFriendStatus(1);
         try {
             const res = await axios.post(
                 `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/send/${user.userId}`
             );
 
-            if (res.status === 200) {
-                setFriendStatus('sent');
-            }
         } catch (err) {
             console.error('Failed to send friend request:', err);
         }
     };
 
     const acceptRequest = async () => {
+
+        setFriendStatus(3);
         try {
             const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/accept/${user?.userId}`);
 
             if(res.status === 200) {
-                setFriendStatus('friends');
             }
         } catch(err) {
             console.error(err);
@@ -118,57 +93,30 @@ const UserProfile = () => {
     }
 
     const declineRequest = async () => {
+        setFriendStatus(0);
         try {
             const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/decline/${user?.userId}`);
-
-            if(res.status === 200) {
-                setFriendStatus('not friends');
-            }
         } catch(err) {
             console.error(err);
         }
     }
 
     const unFriend = async () => {
+        setFriendStatus(0);
         try {
             const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/delete/${user?.userId}`);
-            if(res.status === 200) {
-                setFriendStatus('not friends');
-                window.location.reload();
-            }
         } catch(err) {
             console.error(err);
         }
     }
-
-    useEffect(() => {
-        const checkFollowing = async () => {
-            if(!user) return;
-            try {
-
-                const res = await axios.get(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/friendship-status/${user?.userId}`);
-
-                const resData: { userId: string; isFollowed: boolean; friendshipStatus: number } = res.data;
-    
-                if (resData.isFollowed) {
-                    setFollowStatus('following');
-                } else {
-                    setFollowStatus('not following');
-                }
-            } catch (err) {
-                console.error('Failed to fetch following status:', err);
-            }
-        };
-        checkFollowing();
-    }, [user]);
     
 
     const follow = async () => {
+        setFollowStatus(true);
         try {
             const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/add-follow/${user?.userId}`);
 
             if(res.status === 200) {
-                setFollowStatus('following');
                 setUser((prevUserData) => prevUserData  ? {...prevUserData, followers: prevUserData.followers + 1} : prevUserData);
             }
             
@@ -178,43 +126,44 @@ const UserProfile = () => {
     }
 
     const unfollow = async () => {
+        setFollowStatus(false);
         try {
 
             const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/unfollow/${user?.userId}`);
             
             if(res.status === 200) {
-                setFollowStatus('not following');
+
                 setUser((prevUserData) => prevUserData  ? {...prevUserData, followers: prevUserData.followers - 1} : prevUserData);
             }
         } catch(err) {
             console.error(err);
         }
     }
-    
+
   return (
     <div className='h-full flex flex-col gap-8 justify-center items-center'>
-        {loading? <h1>Loading...</h1> : notFound ? <h1>User not found!</h1> : (
+        {getUserQuery.isLoading ? <h1>Loading...</h1> : getUserQuery.error || !getUserQuery.data ? <h1>User not found!</h1> : (
             <div>
-                <h1>{user?.username}</h1>
+                <h1>{getUserQuery.data.username}</h1>
                 <Flex gap="2">
-                    <Avatar src={`${user?.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
+                    <Avatar src={`${getUserQuery.data.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
                 </Flex>
                 
-                {loading ? 'Loading...'
-                : friendStatus === 'sent' ? <h1>Friend request sent</h1>
-                : friendStatus === 'received' ? (
+                {getUserStatus.isLoading ? 'Loading...'
+                : friendStatus === 1 ? <h1>Friend request sent</h1>
+                : friendStatus === 2 ? (
                     <div className='flex gap-2'>
                         <button onClick={acceptRequest}>Accept</button>
                         <button onClick={declineRequest}>Decline</button>
                     </div>
                 )
-                : friendStatus === 'friends' ? (
+                : friendStatus === 3 ? (
                     <div>
                         <button onClick={unFriend}>Unfriend</button> 
                     </div>
                 )
                 : <button onClick={() => sendFriendRequest()}>Add friend</button>}
-                {followStatus === 'following' ? (
+                { followStatus ? (
                     <div>
                         <button onClick={() => unfollow()}>Unfollow</button>
                     </div>
@@ -223,8 +172,8 @@ const UserProfile = () => {
                         <button onClick={() => follow()}>Follow</button>
                     </div>
                 )}
-                <h1>Followers: {user?.followers}</h1>
-                <h1>Following: {user?.following}</h1>
+                <h1>Followers: {getUserQuery.data.followers}</h1>
+                <h1>Following: {getUserQuery.data.following}</h1>
             </div>
         )}
     </div>

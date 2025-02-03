@@ -61,7 +61,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
       if(user) {
         const userData: User = JSON.parse(user);
         // ako je id korisnika koji je objavio post jednak trenutnom korisniku state se stavlja na true kako bi se gumb 'Delete' prikazao, inače na false kako se ne bi prikazao
-        if(comment.user.userId === userData.userId) {
+        if(comment.user.userId === userData.userId || post.user.userId === userData.userId) {
           setShowDelete(true);
           setShowUpdate(true);
           setShowReply(true);
@@ -73,7 +73,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
       }
 
      
-    }, [user, comment.user.userId, comment]);
+    }, [user, comment.user.userId, comment, post.user.userId]);
 
     useEffect(() => {
       setCommentReplies(comment.replies);
@@ -152,6 +152,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
           
           // ako je res.status jednak 200 znači da je post obrisan i onda mjenjam reactionTrigger state kako bi se postovi re-renderali na stranici.
           if(res.status === 200) {
+            post.commentCount--;
             refreshComments();
           }
       } catch(err) {

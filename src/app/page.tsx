@@ -26,6 +26,7 @@ import { debounce, set } from "lodash";
 import UserComponent from "./components/userComponent";
 import FullPosts from "./components/fullPosts";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useQuery } from "@tanstack/react-query";
 
 
 
@@ -47,6 +48,24 @@ export default function Home() {
 
   const user: User = JSON.parse(localStorage.getItem('user') || '{}');
 
+  const getPopularUsers = async () => {
+    try {
+      const res = await axios.get<Profile[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/popular?limit=10');
+
+
+      if(res.status === 200) {
+        const resData = res.data.filter((profile) => profile.firstName != null);
+        setPopularUsers(resData);
+        return resData;
+      }
+
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  const getPopularUsersQuery = useQuery({queryKey: ["getPopularUsersQuery"], queryFn: () => getPopularUsers()});
+
   const getPostsRef = useRef<(() => void) | undefined>();
   
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,25 +74,6 @@ export default function Home() {
       setSelectedImage(file);
     }
   };
-
-  useEffect(() => {
-    const getPopularUsers = async () => {
-      try {
-        const res = await axios.get<Profile[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/popular?limit=10');
-
-        const resData = res.data.filter((profile) => profile.firstName != null);
-
-        if(res.status === 200) {
-          setPopularUsers(resData);
-        }
-
-      } catch(err) {
-        console.error(err);
-      }
-    }
-
-    getPopularUsers();
-  },[]);
 
   useEffect(() => {
     const getFriends = async () => {
@@ -110,7 +110,7 @@ export default function Home() {
     setIgnoreDefaultPicture(true);
   }
 
-  if(!user) {
+  if(!user || !getPopularUsersQuery.data) {
     return false;
   }
 
@@ -124,12 +124,12 @@ export default function Home() {
             <h1 className="font-Roboto text-xl xl:text-2xl 2k:text-3xl pb-4 px-4 text-[#EFEFEF] font-normal">Who's popular</h1>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
             <div className='group w-full flex flex-col gap-2 bg-transparent px-4 lg:max-h-[400px] xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] overflow-y-hidden  hover:overflow-y-scroll scrollbar'>
-              { popularUsers.map((user, index) => <UserComponent user={user} key={index} handleRoute={null}/>)}
+              {getPopularUsersQuery.data?.map((user, index) => <UserComponent user={user} key={index} handleRoute={null}/>)}
             </div>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
           </div>
           <div className="flex-grow">
-            <FullPosts user={user} />
+            <FullPosts user={user} popularUsers={getPopularUsersQuery.data}/>
           </div>
           <div className="xl:flex hidden flex-col fixed 3k:right-80 2k:right-64 2xl:right-24 xl:right-0 gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[-20px] 2xl:translate-x-0 2k:translate-x-[-40px] xl:translate-y-0 2xl:translate-y-[40px]">
             <h1 className="font-Roboto text-xl xl:text-2xl 2k:text-3xl pb-4 px-4 text-[#EFEFEF] font-normal">Your Friends</h1>

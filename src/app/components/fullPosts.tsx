@@ -22,10 +22,13 @@ import { profile } from 'console';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog';
 import { useRouter } from 'next/navigation';
 import { CircleFadingPlus } from "lucide-react";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-const FullPosts = ({user}: {user: User}) => {
 
+
+const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => {
+
+  const queryClient = useQueryClient();
   // stateovi
 
   const [posts, setPosts] = useState<Post[]>([]);
@@ -60,6 +63,17 @@ const FullPosts = ({user}: {user: User}) => {
 
   const popularFeedQuery = useQuery({queryKey: ["popularFeed"], queryFn: () => getPosts(postsPage), enabled: postsState === 'Popular'});
   const yourFeedQuery = useQuery({queryKey: ["yourFeedQuery"], queryFn: () => getYourFeed(postsPage), enabled: postsState === 'Your Feed'});
+  const getFollowedQuery = useQuery({queryKey: ["getFollowed"], queryFn: () => getFollowedUsers()});
+  
+  const getFollowedUsers = async () => {
+    try {
+        const res = await axios.get<string[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/get-followed/${user.userId}`);
+        return res.data; // Return the string[]
+    } catch (error) {
+        console.error("Error fetching followed users:", error);
+        throw error; // Rethrow error so it can be handled by React Query
+    }
+};
 
   const getPosts = async (page: number) => {
     try {
@@ -158,31 +172,25 @@ const getFollowSuggestions = async (): Promise<User[]> => {
 
 
 const checkFollowSuggestions = async (existingSuggestions: User[]) => {
-  if(existingSuggestions.length === 4 || suggestionsChecked) return;
+  if(suggestionsChecked) return;
+
   setSuggestionsChecked(true);
   const neededProfiles = 4 - existingSuggestions.length;
-  try {
-      const res = await axios.get<User[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/popular?limit=4`);
 
-      if(res.status === 200) {
-        const receivedUsers: User[] = res.data;
-        const existingUserIds = new Set(existingSuggestions.map((p) => p.userId));
-        const filteredUsers = receivedUsers.filter((user) => !existingUserIds.has(user.userId)).slice(0, neededProfiles);
-        if(filteredUsers.length > 0) {
-          const newSuggestions: User[] = filteredUsers.map((filteredUser) => (filteredUser));
-          setFillSuggestions((prev) => {
-            const allSuggestions = [...prev, ...newSuggestions];
+  const existingUsersIds = new Set(existingSuggestions.map(existingSuggestion => existingSuggestion.userId));
 
-            return Array.from(new Map(allSuggestions.map((s) => [s.userId, s])).values()).slice(0,4);
-          });
-        }
-      }
-  } catch(err) {
-    console.error(err);
-  }
+
+  const followedUserIds = new Set(getFollowedQuery.data);
+
+  const filteredPopularUsers = popularUsers.filter(popularUser => !existingUsersIds.has(popularUser.userId) && !followedUserIds?.has(popularUser.userId) && popularUser.userId !== user.userId).slice(0, neededProfiles);
+
+  const mergedUsers: User[] = [...existingSuggestions, ...filteredPopularUsers];
+
+  setFillSuggestions(mergedUsers);
+  queryClient.setQueryData(['suggestions'], mergedUsers);
 }; 
 
-const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn: getFollowSuggestions});
+const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn: getFollowSuggestions, enabled: getFollowedQuery.data !== undefined});
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -528,7 +536,7 @@ const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn: getFollow
                               <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                             ))}
                             {suggestionsQuery.data?.length !== 4 ? 
-                              suggestionsQuery.data?.map((suggestion, index) => (
+                              fillSuggestions.map((suggestion, index) => (
                                 <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                               )) : null
                             }
@@ -536,7 +544,7 @@ const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn: getFollow
                         </div>
                       ) : randomNmbs?.includes(index) && profileSuggestions.length === 0 ? (
                         <div className='grid grid-cols-2 grid-rows-2 gap-4 border-t-[1px] border-[#515151]'>
-                            {suggestionsQuery.data?.map((suggestion, index) => (
+                            {fillSuggestions.map((suggestion, index) => (
                                 <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                               ))
                             }
@@ -613,7 +621,7 @@ const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn: getFollow
                                     <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                                   ))}
                                   {suggestionsQuery.data?.length !== 4 ? 
-                                    suggestionsQuery.data?.map((suggestion, index) => (
+                                    fillSuggestions.map((suggestion, index) => (
                                       <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                                     )) : null
                                   }
@@ -623,7 +631,7 @@ const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn: getFollow
                               <div className='border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A] text-center font-Roboto py-2'>You might like these</p>
                                 <div className='grid grid-cols-2 grid-rows-2 gap-4 place-items-center'>
-                                  {suggestionsQuery.data?.map((suggestion, index) => (
+                                  {fillSuggestions.map((suggestion, index) => (
                                       <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                                     ))
                                   }
