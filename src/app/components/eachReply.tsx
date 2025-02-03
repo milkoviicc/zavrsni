@@ -14,7 +14,7 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
 
     // pretvaram datum u Date objekt
     const replyFullDate = new Date(replyDate);
-    replyFullDate.setUTCHours(replyFullDate.getUTCHours()+1);
+    replyFullDate.setUTCHours(replyFullDate.getUTCHours());
     const justReplyDate = replyFullDate.toLocaleString('en-us', {year: 'numeric', month: 'short', day:'numeric'});
 
     const currentDate = new Date();

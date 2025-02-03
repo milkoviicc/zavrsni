@@ -15,7 +15,6 @@ const UserComponent = ({user, handleRoute}: {user: User | undefined, handleRoute
       }
     } else if (handleRoute === null) {
       router.push(`/users/${user?.username}`);
-      
     }
   }
 
@@ -26,12 +25,6 @@ const UserComponent = ({user, handleRoute}: {user: User | undefined, handleRoute
           setShortUsername(firstLetter + secondLetter);
       }
   }, []);
-
-  const [cacheBuster, setCacheBuster] = useState(Date.now());
-
-  useEffect(() => {
-    setCacheBuster(Date.now()); // Update only when `profilePicture` changes
-  }, [user?.pictureUrl]);
 
   if(!user) {
     return null;

@@ -26,11 +26,10 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   // pretvaram datum u Date objekt
   const fullDate = new Date(timestamp);
 
-  fullDate.setUTCHours(fullDate.getUTCHours()+1);
+  fullDate.setUTCHours(fullDate.getUTCHours());
 
   const justDate = fullDate.toLocaleString('en-us', {year: 'numeric', month: 'short', day:'numeric'});
   
-
   // dobivam trenutan datum i vrijeme
   const currentDate = new Date();
 
@@ -45,6 +44,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
   const hours = Math.floor((totalSeconds % 86400) / 3600); // Remaining seconds converted to hours
   const minutes = Math.floor((totalSeconds % 3600) / 60); // Remaining seconds converted to minutes
   const seconds = totalSeconds % 60; // Remaining seconds after full minutes  
+
 
   // state za prikazivanje Delete i Update gumbova
   const [showDelete, setShowDelete] = useState(false);
@@ -251,7 +251,7 @@ const handleReaction = async (reaction: number) => {
                     <h1 className="truncate whitespace-nowrap text-[#EFEFEF] font-[400] font-Roboto text-sm sm:text-base py-0">{post.user.firstName} {post.user.lastName}</h1>
                   </button>
                   <p className="truncate whitespace-nowrap text-xs sm:text-sm text-[#888888]">
-                  {days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}
+                  {days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days <= 0 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}
                   </p>
                 </div>
                 <div>
@@ -271,7 +271,7 @@ const handleReaction = async (reaction: number) => {
                               <DialogTitle className='text-sm font-[500] text-[#888888] text-left'><button onClick={() => router.push(`/users/${post.user.username}`)}>@ {post.user.username}</button></DialogTitle>
                             </div>
                             <div>
-                              <p className='text-[#888888] text-opacity-60'>{days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}</p>
+                              <p className='text-[#888888] text-opacity-60'>{days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days <= 0 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}</p>
                             </div>
                           </div>
                         </DialogHeader>
@@ -376,7 +376,7 @@ const handleReaction = async (reaction: number) => {
                         <DialogTitle className='text-sm font-[500] text-[#888888] text-left'><button onClick={() => router.push(`/users/${post.user.username}`)}>@ {post.user.username}</button></DialogTitle>
                       </div>
                       <div>
-                        <p className='text-[#888888] text-opacity-60'>{days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days < 1 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}</p>
+                        <p className='text-[#888888] text-opacity-60'>{days >= 1 ? justDate : days <= 0 && hours > 0 && minutes <= 60 ? `${hours}h ago` : days <= 0 && hours <= 24 && minutes <= 60 && minutes >= 1 ? `${minutes}m ago` : "Just now"}</p>
                       </div>
                     </div>
                   </DialogHeader>

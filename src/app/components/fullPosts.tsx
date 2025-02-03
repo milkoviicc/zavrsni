@@ -46,6 +46,143 @@ const FullPosts = ({user}: {user: User}) => {
   const [fillSuggestions, setFillSuggestions] = useState<User[]>([]);
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const [postDialogOpen, setPostDialogOpen] = useState(false);  
+  const [postsPage, setPostsPage] = useState(0);
+
+  const feed = localStorage.getItem('feed');
+
+  useEffect(() => {
+    if(feed) {
+      setPostsState(feed);
+    }
+  }, [feed])
+
+
+
+  const popularFeedQuery = useQuery({queryKey: ["popularFeed"], queryFn: () => getPosts(postsPage), enabled: postsState === 'Popular'});
+  const yourFeedQuery = useQuery({queryKey: ["yourFeedQuery"], queryFn: () => getYourFeed(postsPage), enabled: postsState === 'Your Feed'});
+
+  const getPosts = async (page: number) => {
+    try {
+      if(page === 0) {
+        setPosts([]);
+      }
+      const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/popular-feed?page=${page}`);
+      if (res.status === 200) {
+        if (page === 0) {
+          setPosts(res.data);
+          return res.data;
+        } else {
+          // Dodajem nove postove trenutnima i pazim da se ne bi postovi ponavljali
+          setPosts((prevPosts) => {
+            const newPosts = res.data.filter((newPost) => !prevPosts.some((existingPost) => existingPost.postId === newPost.postId));
+            return [...prevPosts, ...newPosts];
+          });
+        }
+        if (res.data.length === 0) {
+          setHasMore(false);
+        }
+        setLoading(false);
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error('Could not fetch posts', err);
+    }
+  };
+
+  
+  
+  const getYourFeed = async (page: number) => {
+    try {
+      if(page === 0) {
+        setPosts([]);
+      }
+      const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/your-feed?page=${page}`);
+
+      if (res.status === 200) {
+        if (page === 0) {
+          setPosts(res.data);
+          return res.data;
+        } else {
+          setPosts((prevPosts) => {
+            const newPosts = res.data.filter((newPost) => !prevPosts.some((existingPost) => existingPost.postId === newPost.postId));
+            return [...prevPosts, ...newPosts];
+          });
+        }
+
+        if (res.data.length === 0) {
+          setHasMore(false);
+        }
+        setLoading(false);
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  
+  useEffect(() => {  
+    if (postsState === 'Popular') {
+      if(popularFeedQuery.data) {
+        setPosts(popularFeedQuery.data);
+      } else {
+        setPosts([]);
+      }
+    } else if (postsState === 'Your Feed') {
+      if(yourFeedQuery.data) {
+        setPosts(yourFeedQuery.data);
+      } else {
+        setPosts([]);
+      }
+    }
+}, [postsState, currentPage, reactionTrigger]);
+
+
+const getFollowSuggestions = async (): Promise<User[]> => {
+  try {
+    const res = await axios.get<User[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/follow-suggestions?limit=4');
+  
+    if(res.status === 200) {
+      if(res.data.length < 4) {
+        checkFollowSuggestions(res.data);
+      } else {
+        return res.data;
+      }
+    }
+    return [];
+  } catch(err) {
+    console.error(err);
+    return[];
+  }
+}
+
+
+const checkFollowSuggestions = async (existingSuggestions: User[]) => {
+  if(existingSuggestions.length === 4 || suggestionsChecked) return;
+  setSuggestionsChecked(true);
+  const neededProfiles = 4 - existingSuggestions.length;
+  try {
+      const res = await axios.get<User[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/popular?limit=4`);
+
+      if(res.status === 200) {
+        const receivedUsers: User[] = res.data;
+        const existingUserIds = new Set(existingSuggestions.map((p) => p.userId));
+        const filteredUsers = receivedUsers.filter((user) => !existingUserIds.has(user.userId)).slice(0, neededProfiles);
+        if(filteredUsers.length > 0) {
+          const newSuggestions: User[] = filteredUsers.map((filteredUser) => (filteredUser));
+          setFillSuggestions((prev) => {
+            const allSuggestions = [...prev, ...newSuggestions];
+
+            return Array.from(new Map(allSuggestions.map((s) => [s.userId, s])).values()).slice(0,4);
+          });
+        }
+      }
+  } catch(err) {
+    console.error(err);
+  }
+}; 
+
+const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn: getFollowSuggestions});
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -67,6 +204,16 @@ const FullPosts = ({user}: {user: User}) => {
   // async funkcija koja se poziva kada se klikne na gumb 'Send'
   const sendPost = async () => {
     try {
+      if(content !== '' || postFile.length !== 0) {
+        setContent('');
+        setPostFile([]);
+        setFinishedPosting(true);
+        setTimeout(() => {
+          setFinishedPosting(false);
+          setPostDialogOpen(false);
+        }, 1000);
+      }
+
       const formData = new FormData();
       formData.append('Content', content);
 
@@ -80,86 +227,14 @@ const FullPosts = ({user}: {user: User}) => {
 
       // ukoliko je res.status jednak 200 novi post je dodan i vrijednost content statea se ponovno stavlja na empty string tj. ''
       if(res.status === 200) {
-        setContent('');
-        setPostFile([]);
         const newPost: Post = res.data;
-        setPosts((prev) => [...prev, newPost]);
-        setFinishedPosting(true);
-        setTimeout(() => {
-          setFinishedPosting(false);
-          setPostDialogOpen(false);
-        }, 1000)
+        setPosts((prev) => [newPost, ...prev]);
       }
     } catch(err) {
         // ukoliko je došlo do greške, ispisuje se u konzoli
         console.error('Could not add post', err);
     }
   }
-
-  const getPosts = async (page: number) => {
-    try {
-      if(page === 0) {
-        setPosts([]);
-      }
-      setLoading(true);
-      const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/popular-feed?page=${page}`);
-
-      if (res.status === 200) {
-        if (page === 0) {
-          setPosts(res.data);
-        } else {
-          // Dodajem nove postove trenutnima i pazim da se ne bi postovi ponavljali
-          setPosts((prevPosts) => {
-            const newPosts = res.data.filter((newPost) => !prevPosts.some((existingPost) => existingPost.postId === newPost.postId));
-            return [...prevPosts, ...newPosts];
-          });
-        }
-
-        if (res.data.length === 0) {
-          setHasMore(false);
-        }
-        setLoading(false);
-        return true;
-      }
-      setLoading(false);
-      return false;
-    } catch (err) {
-      console.error('Could not fetch posts', err);
-      return false;
-    }
-  };
-  
-  const getYourFeed = async (page: number) => {
-    try {
-      if(page === 0) {
-        setPosts([]);
-      }
-      setLoading(true);
-      const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/your-feed?page=${page}`);
-
-      if (res.status === 200) {
-        if (page === 0) {
-          setPosts(res.data);
-        } else {
-          setPosts((prevPosts) => {
-            const newPosts = res.data.filter((newPost) => !prevPosts.some((existingPost) => existingPost.postId === newPost.postId));
-            return [...prevPosts, ...newPosts];
-          });
-        }
-
-        if (res.data.length === 0) {
-          setHasMore(false);
-        }
-        setLoading(false);
-        return true;
-      }
-      setLoading(false);
-      return false;
-    } catch (err) {
-      console.error(err);
-      return false;
-    }
-  };
   
   const fetchMoreData = () => {
     if (postsState === 'Popular') {
@@ -187,14 +262,6 @@ const FullPosts = ({user}: {user: User}) => {
           console.error('Could not delete post: ', err);
       }
   }
-  
-
-  useEffect(() => {
-    const feedState = localStorage.getItem('feed');
-    if(feedState) {
-      setPostsState(feedState); 
-    }
-  }, []);
 
   const handleFeedState = (feedState: string) => {
     const currentFeed = localStorage.getItem('feed');
@@ -202,35 +269,20 @@ const FullPosts = ({user}: {user: User}) => {
       return;
     } else if (currentFeed === 'Popular' && feedState === 'Your Feed') {
       localStorage.setItem('feed', 'Your Feed');
+      setCurrentPage(0);
     } else if (currentFeed === 'Your Feed' && feedState === 'Popular') {
       localStorage.setItem('feed', 'Popular');
+      setCurrentPage(0);
     } else if (currentFeed === 'Your Feed' && feedState === 'Your Feed') {
       return;
     }
 }
 
   useEffect(() => {
-    handleFeedState(postsState);
-  }, [postsState])
-
-  useEffect(() => {
       if (posts.length === 0 && currentPage >= 1) {
           setCurrentPage((prev) => Math.max(prev - 1, 0));
       }
   }, [posts, currentPage]);
-
-  // re-rendera se na svakoj promjeni reactionTrigger statea i na svakom pozivu setGetPostsRef
-  useEffect(() => {  
-      if (postsState === 'Popular') {
-          getPosts(currentPage);
-      } else if (postsState === 'Your Feed') {
-          getYourFeed(currentPage);
-      }
-  }, [postsState, currentPage, reactionTrigger]);
-
-  useEffect(() => {
-      setCurrentPage(0);
-  }, [postsState]);
 
   useEffect(() => {
     setContent('');
@@ -373,62 +425,6 @@ const FullPosts = ({user}: {user: User}) => {
     setRandomNmbs(newRandomNmbs);
   }, []);
 
-  const getFollowSuggestions = async (): Promise<User[]> => {
-    try {
-      const res = await axios.get<User[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/follow-suggestions?limit=4');
-    
-      if(res.status === 200) {
-        if(res.data.length < 4) {
-          checkFollowSuggestions(res.data);
-        } else {
-          return res.data;
-        }
-      }
-
-      return [];
-
-    } catch(err) {
-      console.error(err);
-      return[];
-    }
-  }
-
-  const {data, error} = useQuery({queryKey: ["suggestions"], queryFn: getFollowSuggestions})
-
-  const checkFollowSuggestions = async (existingSuggestions: User[]) => {
-    if(existingSuggestions.length === 4 || suggestionsChecked) return;
-    setSuggestionsChecked(true);
-    const neededProfiles = 4 - existingSuggestions.length;
-    try {
-        const res = await axios.get<User[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/popular?limit=4`);
-
-        if(res.status === 200) {
-          const receivedUsers: User[] = res.data;
-          const existingUserIds = new Set(existingSuggestions.map((p) => p.userId));
-          const filteredUsers = receivedUsers.filter((user) => !existingUserIds.has(user.userId)).slice(0, neededProfiles);
-          if(filteredUsers.length > 0) {
-            const newSuggestions: User[] = filteredUsers.map((filteredUser) => (filteredUser));
-            setFillSuggestions((prev) => {
-              const allSuggestions = [...prev, ...newSuggestions];
-
-              return Array.from(new Map(allSuggestions.map((s) => [s.userId, s])).values()).slice(0,4);
-            });
-          }
-        }
-    } catch(err) {
-      console.error(err);
-    }
-  };      
-
-  if(error) {
-    console.error('error fetching');
-  }
-
-  if(!data) {
-    return <div>Loading...</div>
-  }
-
-
   return (
     <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full 2xl:py-12 py-0">
         <div className='flex flex-col md:hidden text-white w-full justify-center'>
@@ -481,8 +477,8 @@ const FullPosts = ({user}: {user: User}) => {
                     <DialogHeader>
                       <DialogTitle className='text-[#EFEFEF] font-Roboto text-left px-1 font-normal'>Post something</DialogTitle>
                     </DialogHeader>
-                      <div className="flex gap-2 items-center flex-col max-w-full bg- rounded-3xl shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
-                          <div className="flex flex-col justify-between relative w-full min-h-full items-center gap-4 pt-4 px-4">
+                      <div className="flex gap-2 items-center flex-col max-w-full rounded-3xl shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
+                          <div className="flex flex-col justify-between relative w-full min-h-fit items-center gap-4 pt-4 px-4">
                               <div className='w-full h-full flex gap-4 pb-2'>
                                   <Avatar className='w-[45px] h-[45px] lg:w-[60px] lg:h-[60px] rounded-full'>
                                       <AvatarImage src={`${user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
@@ -528,11 +524,11 @@ const FullPosts = ({user}: {user: User}) => {
                         <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-t-[#515151]'>
                           <p className='text-[#8A8A8A] text-xs'>You might like these</p>
                           <div className='grid grid-cols-2 grid-rows-2 gap-2'>
-                            {data?.map((suggestion, index) => (
+                            {suggestionsQuery.data?.map((suggestion, index) => (
                               <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                             ))}
-                            {data.length !== 4 ? 
-                              data.map((suggestion, index) => (
+                            {suggestionsQuery.data?.length !== 4 ? 
+                              suggestionsQuery.data?.map((suggestion, index) => (
                                 <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                               )) : null
                             }
@@ -540,7 +536,7 @@ const FullPosts = ({user}: {user: User}) => {
                         </div>
                       ) : randomNmbs?.includes(index) && profileSuggestions.length === 0 ? (
                         <div className='grid grid-cols-2 grid-rows-2 gap-4 border-t-[1px] border-[#515151]'>
-                            {data.map((suggestion, index) => (
+                            {suggestionsQuery.data?.map((suggestion, index) => (
                                 <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                               ))
                             }
@@ -555,8 +551,8 @@ const FullPosts = ({user}: {user: User}) => {
           </div>
         </div>
         <div className="md:flex hidden gap-2 items-center flex-col w-fit">
-        <div className="flex gap-2 items-center flex-col max-w-full rounded-3xl bg-[#363636] shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)]">
-              <div className="flex flex-col justify-between relative w-full min-h-full items-center gap-4 pt-4 px-4">
+          <div className="flex gap-2 items-center flex-col max-w-full rounded-3xl bg-[#363636] shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)]">
+              <div className="flex flex-col justify-between relative w-full min-h-fit items-center gap-4 pt-4 px-4">
                   <div className='w-full h-full flex gap-4 pb-2 '>
                       <Avatar className='w-[45px] h-[45px] lg:w-[60px] lg:h-[60px] rounded-full'>
                           <AvatarImage src={`${user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
@@ -607,17 +603,17 @@ const FullPosts = ({user}: {user: User}) => {
             <div className='w-full flex justify-center mt-10'>
                 {posts.length === 0 && loading === false ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center text-[#AFAFAF]'>Loading posts...</h1> : (
                     <InfiniteScroll className='w-full flex flex-col bg-transparent px-8 sm:px-4' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
-                        { posts.map((post, index) => (
+                        {posts.map((post, index) => (
                           <div key={index}>
                             {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
                               <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A]'>You might like these</p>
                                 <div className='min-w-[90%] grid grid-cols-2 grid-rows-2 gap-4'>
-                                  {data.map((suggestion, index) => (
+                                  {suggestionsQuery.data?.map((suggestion, index) => (
                                     <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                                   ))}
-                                  {data.length !== 4 ? 
-                                    data.map((suggestion, index) => (
+                                  {suggestionsQuery.data?.length !== 4 ? 
+                                    suggestionsQuery.data?.map((suggestion, index) => (
                                       <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                                     )) : null
                                   }
@@ -627,7 +623,7 @@ const FullPosts = ({user}: {user: User}) => {
                               <div className='border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A] text-center font-Roboto py-2'>You might like these</p>
                                 <div className='grid grid-cols-2 grid-rows-2 gap-4 place-items-center'>
-                                  {data.map((suggestion, index) => (
+                                  {suggestionsQuery.data?.map((suggestion, index) => (
                                       <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                                     ))
                                   }

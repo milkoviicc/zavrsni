@@ -1,6 +1,7 @@
 'use client';
 import { Friendship, Profile, User } from '@/src/app/types/types';
 import { Avatar, Flex } from '@radix-ui/themes';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { usePathname, useRouter } from 'next/navigation'
 import { Router } from 'next/router';
@@ -10,7 +11,7 @@ const UserProfile = () => {
 
     const path = usePathname();
     const router = useRouter();
-    const userName = path.slice(7, 100);
+
     const [user, setUser] = useState<Profile | null>();
     const [loggedUser, setLoggedUser] = useState<User | null>(null);
     const [friendStatus, setFriendStatus] = useState('');
@@ -18,41 +19,37 @@ const UserProfile = () => {
     const [followStatus, setFollowStatus] = useState('');
     const [notFound, setNotFound] = useState(false);
 
-    const pathname = usePathname();
+
+    const getUserQuery = useQuery({queryKey: ["userQuery"], queryFn: () => getUser()});
+    if(getUserQuery.error) {
+        setNotFound(true);
+    }
+
+    if(getUserQuery.isLoading) {
+        setLoading(true);
+    }
+
+    const userName = path.slice(7, 100);
+
+    const getUser = async () => {
+        try {
+            const res = await axios.get<User>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/${userName}`);
+            return res.data;
+        } catch (err) {
+            console.error('Failed to fetch user profile:', err);
+        }
+    };
 
     // Fetch logged-in user data from localStorage
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
-        if (storedUser) {
+        if (storedUser && loggedUser) {
             setLoggedUser(JSON.parse(storedUser));
+            if(userName === loggedUser.username) {
+                router.push('/my-profile');
+            }
         }
     }, []);
-
-    // Fetch user profile
-    useEffect(() => {
-        const getUser = async () => {
-            try {
-                setLoading(true);
-                const res = await axios.get<User[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles');
-                const profile = res.data.find((p) => p.username === userName);
-
-                if(profile?.userId === undefined) {
-                    setNotFound(true);
-                    setLoading(false);
-                }
-                const response = await axios.get<Profile>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/${profile?.userId}`)
-                if (response.status === 200) {
-                    setUser(response.data);
-                    setLoading(false);
-                }
-
-            } catch (err) {
-                console.error('Failed to fetch user profile:', err);
-            }
-        };
-
-        getUser();
-    }, [userName]);
 
     // Check friendship status
     useEffect(() => {
@@ -193,13 +190,6 @@ const UserProfile = () => {
             console.error(err);
         }
     }
-
-    useEffect(() => {
-        if(pathname === `/users/${loggedUser?.username}`) {
-            router.push('/my-profile');
-            return;
-        }
-    })
     
   return (
     <div className='h-full flex flex-col gap-8 justify-center items-center'>

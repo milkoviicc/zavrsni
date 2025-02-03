@@ -16,7 +16,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
 
     // pretvaram datum u Date objekt
     const commentFullDate = new Date(commentDate);
-    commentFullDate.setUTCHours(commentFullDate.getUTCHours()+1);
+    commentFullDate.setUTCHours(commentFullDate.getUTCHours());
     const justCommentDate = commentFullDate.toLocaleString('en-us', {year: 'numeric', month: 'short', day:'numeric'});
 
     const currentDate = new Date();
