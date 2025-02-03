@@ -125,7 +125,7 @@ const Navbar = memo(() => {
                                             <p className="text-sm font-Roboto text-[#AFAFAF] sm:text-base">You searched {search}</p>
                                         </div>
                                         <hr className="h-[1px] w-full px-0 border-[#525252]" />
-                                        {searchIsLoading ? <h1>Loading...</h1> : recievedItems.map((item, index) => (<div key={index} className="ml-[12px] w-[85%]"><Suggestion key={index} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
+                                        {isSearchLoading ? <h1>Loading...</h1> : recievedItems.map((item, index) => (<div key={index} className="ml-[12px] w-[85%]"><Suggestion key={index} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
                                         <div className="w-full flex justify-center py-4">
                                             <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
                                         </div>
