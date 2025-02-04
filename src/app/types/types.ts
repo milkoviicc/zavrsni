@@ -2,7 +2,6 @@
 // useAuth koristi ovu klasu kako bi mogao prenesti sve funkcije i varijable
 export interface AuthContextType {
     user: User | null;
-    role: string
     login: (username: string, password: string) => Promise<void>;
     register: (username: string, email: string, password: string, confirmPassword: string) => Promise<void>;
     addDetails: (firstName: string, lastName: string) => Promise<void>;

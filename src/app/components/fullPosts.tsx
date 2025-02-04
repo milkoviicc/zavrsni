@@ -23,6 +23,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/componen
 import { useRouter } from 'next/navigation';
 import { CircleFadingPlus } from "lucide-react";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import PostSkeleton from './PostSkeleton';
 
 
 
@@ -422,6 +423,18 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
   }, []);
 
   const [getComments, setGetComments] = useState(false);
+  const [isRendering, setIsRendering] = useState(true);
+
+  useEffect(() => {
+    if (popularFeedQuery.data) {
+      const timeout = setTimeout(() => setIsRendering(false), 500);
+      return () => clearTimeout(timeout);
+    }
+    if(yourFeedQuery.data) {
+      const timeout = setTimeout(() => setIsRendering(false), 500);
+      return () => clearTimeout(timeout);
+    }
+  }, [popularFeedQuery.data, yourFeedQuery.data]);
 
 
 
@@ -601,7 +614,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
             
             </div>
             <div className='w-full flex justify-center mt-10'>
-                {popularFeedQuery.isFetching || yourFeedQuery.isFetching ? <span className="loader"></span> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
+                {popularFeedQuery.isLoading || yourFeedQuery.isLoading || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
                     <InfiniteScroll className='w-full flex flex-col bg-transparent px-8 sm:px-4' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                         {posts.map((post, index) => (
                           <div key={index}>

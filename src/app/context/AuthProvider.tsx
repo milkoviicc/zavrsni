@@ -22,7 +22,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authError, setAuthError] = useState('');
-  const [role, setRole] = useState('');
   
   // nextjs router za preusmjeravanje na druge pathove.
   const router = useRouter();
@@ -279,7 +278,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if(role === null) {
           return;
         }
-        setRole(role);
+        localStorage.setItem('role', role);
 
 
         // preusmjeravam na home page
@@ -358,7 +357,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // AuthContext.Provider prenosi unešene vrijednosti kako bi ih mogao koristiti u drugim fileovima
   return (
-    <AuthContext.Provider value={{ user, role, login, register, addDetails, addImage, logout, deleteAccount, isAuthenticated, fullyRegistered, defaultPicture, ignoreDefaultPic, setIgnoreDefaultPic, loading, authError}}>
+    <AuthContext.Provider value={{ user, login, register, addDetails, addImage, logout, deleteAccount, isAuthenticated, fullyRegistered, defaultPicture, ignoreDefaultPic, setIgnoreDefaultPic, loading, authError}}>
       {children}
     </AuthContext.Provider>
   );

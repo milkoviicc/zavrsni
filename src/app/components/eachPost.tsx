@@ -65,7 +65,7 @@ const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, upd
   const [finishedUpdating, setFinishedUpdating] = useState(false);
   const [isUpdatePostDialogOpen, setIsUpdatePostDialogOpen] = useState(false);
 
-  const {role} = useAuth();
+  const role = localStorage.getItem('role');
 
   // dobivam usera iz localStorage-a
 

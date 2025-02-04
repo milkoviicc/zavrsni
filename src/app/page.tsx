@@ -27,6 +27,7 @@ import UserComponent from "./components/userComponent";
 import FullPosts from "./components/fullPosts";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useQuery } from "@tanstack/react-query";
+import UserSkeleton from "./components/UserSkeleton";
 
 
 
@@ -109,6 +110,19 @@ export default function Home() {
     setIgnoreDefaultPicture(true);
   }
 
+  const [isRendering, setIsRendering] = useState(true);
+
+  useEffect(() => {
+    if (getPopularUsersQuery.data) {
+      const timeout = setTimeout(() => setIsRendering(false), 500);
+      return () => clearTimeout(timeout);
+    }
+    if(getFriendsQuery.data) {
+      const timeout = setTimeout(() => setIsRendering(false), 500);
+      return () => clearTimeout(timeout);
+    }
+  }, [getPopularUsersQuery.data, getFriendsQuery.data]);
+
   if(!user || !getPopularUsersQuery.data) {
     return false;
   }
@@ -123,7 +137,7 @@ export default function Home() {
             <h1 className="font-Roboto text-xl xl:text-2xl 2k:text-3xl pb-4 px-4 text-[#EFEFEF] font-normal">Who's popular</h1>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
             <div className='group w-full flex flex-col gap-2 bg-transparent px-4 lg:max-h-[400px] xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] overflow-y-hidden  hover:overflow-y-scroll scrollbar'>
-              {getPopularUsersQuery.data?.map((user, index) => <UserComponent user={user} key={index} handleRoute={null}/>)}
+              {getPopularUsersQuery.isLoading || isRendering ? <UserSkeleton /> : getPopularUsersQuery.data?.map((user, index) => <UserComponent user={user} key={index} handleRoute={null}/>)}
             </div>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
           </div>
@@ -134,7 +148,7 @@ export default function Home() {
             <h1 className="font-Roboto text-xl xl:text-2xl 2k:text-3xl pb-4 px-4 text-[#EFEFEF] font-normal">Your Friends</h1>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
             <div className='group w-full h-full lg:max-h-[400px] xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] flex flex-col gap-2 bg-transparent px-4 overflow-y-hidden hover:overflow-y-scroll scrollbar '>
-              { friendsList.map((user, index) => <UserComponent user={user.user} key={index} handleRoute={null}/>)}
+              {getFriendsQuery.isLoading || isRendering ? <UserSkeleton /> : getFriendsQuery.data?.map((user, index) => <UserComponent user={user.user} key={index} handleRoute={null}/>)}
             </div>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
           </div>

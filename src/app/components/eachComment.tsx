@@ -53,7 +53,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
 
     const user = localStorage.getItem('user');
     const router = useRouter();
-    const {role} = useAuth();
+    const role = localStorage.getItem('role');
 
     useEffect(() => {
 
@@ -73,8 +73,6 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
           setShowReply(false);
         }
       }
-
-     
     }, [user, comment.user.userId, comment, post.user.userId]);
 
     useEffect(() => {
