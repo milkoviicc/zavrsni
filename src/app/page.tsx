@@ -51,8 +51,6 @@ export default function Home() {
   const getPopularUsers = async () => {
     try {
       const res = await axios.get<Profile[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/popular?limit=10');
-
-
       if(res.status === 200) {
         const resData = res.data.filter((profile) => profile.firstName != null);
         setPopularUsers(resData);
@@ -64,9 +62,27 @@ export default function Home() {
     }
   }
 
+  const getFriends = async () => {
+    try {
+      const res = await axios.get<Friendship[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${user.userId}`);
+
+      const resData = res.data.filter((profile) => profile.user.firstName != null);
+
+      if(res.status === 200) {
+        setFriendsList(resData);
+        return resData;
+      }
+    } catch(err) {
+      console.error(err);
+      return [];
+    }
+  };
+
   const getPopularUsersQuery = useQuery({queryKey: ["getPopularUsersQuery"], queryFn: () => getPopularUsers()});
+  const getFriendsQuery = useQuery({queryKey: ["getFriends"], queryFn: () => getFriends()});
 
   const getPostsRef = useRef<(() => void) | undefined>();
+
   
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -74,23 +90,6 @@ export default function Home() {
       setSelectedImage(file);
     }
   };
-
-  useEffect(() => {
-    const getFriends = async () => {
-      try {
-        const res = await axios.get<Friendship[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${user.userId}`);
-
-        const resData = res.data.filter((profile) => profile.user.firstName != null);
-
-        if(res.status === 200) {
-          setFriendsList(resData);
-        }
-      } catch(err) {
-        console.error(err);
-      }
-    };
-    getFriends();
-  }, [user.userId]);
 
   useEffect(() => {
     if(defaultPicture) {

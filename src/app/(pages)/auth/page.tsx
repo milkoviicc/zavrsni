@@ -10,6 +10,7 @@ import { useAuth } from '../../context/AuthProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 
 const Auth = () => {
 
@@ -194,7 +195,7 @@ const Auth = () => {
                 {error !== null ? <p className='text-red-500 text-sm my-2'>{error}</p> : null}
                 {loading ? <h1>Signing you in...</h1> : null}
                 {showMessage ? <p className='text-green-600 text-sm my-2'>You have been succesfully registered. Redirecting you to our login page.</p> : null}
-                <button className='bg-[#2F2F2F] hover:bg-[#232F5C] text-white font-bold lg:w-80 md:w-64 w-full sm:w-56 py-2 border border-[#232F5C] rounded transition-all' onClick={() => handleSignIn()} >Sign in <FontAwesomeIcon icon={faArrowRight} className='px-2'/></button>
+                <button className='bg-[#2F2F2F] hover:bg-[#232F5C] text-white font-bold lg:w-80 md:w-64 w-full sm:w-56 py-2 border border-[#232F5C] rounded transition-all'>Sign in <FontAwesomeIcon icon={faArrowRight} className='px-2'/></button>
               </form>
               <p className='my-4 text-sm text-black text-opacity-[42%]'>Not a member? <a onClick={() => {setLoginRoute((prev) => !prev); setError(null)}} className='text-black hover:text-[#232F5C] underline hover:cursor-pointer transition-all'>Create an account</a></p>
             </div>

@@ -262,33 +262,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // provjeravam sadrže li primljeni podatci token, id i username 
       if(loggedUser.token && loggedUser.user.userId && loggedUser.user.userId) {
-        if(res.status === 200) {
 
-          // ukoliko je uneseni username jednak usernameu vraćenog korisnika ili unešeni email jednak emailu vraćenog korisnika, spremam token u localStorage
-          localStorage.setItem('token', loggedUser.token);
-          axios.defaults.headers.common['Authorization'] = `Bearer ${loggedUser.token}`;
+        // ukoliko je uneseni username jednak usernameu vraćenog korisnika ili unešeni email jednak emailu vraćenog korisnika, spremam token u localStorage
+        localStorage.setItem('token', loggedUser.token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${loggedUser.token}`;
 
-          // spremam korisnika u state 'user'
-          setUser(loggedUser.user);
+        // spremam korisnika u state 'user'
+        setUser(loggedUser.user);
 
-          // spremam korisnika u localStorage
-          localStorage.setItem('user', JSON.stringify(loggedUser.user));
+        // spremam korisnika u localStorage
+        localStorage.setItem('user', JSON.stringify(loggedUser.user));
 
-          localStorage.setItem('feed', 'Popular');
+        localStorage.setItem('feed', 'Popular');
 
-          const role = getRoleFromToken(loggedUser.token);
-          if(role === null) {
-            return;
-          }
-          setRole(role);
-
-
-          // preusmjeravam na home page
-          router.push('/');
-
-          // mjenjam isLoggedIn state u true kako bi se znalo da je korisnik prijavljen
-          setIsLoggedIn(true);
+        const role = getRoleFromToken(loggedUser.token);
+        if(role === null) {
+          return;
         }
+        setRole(role);
+
+
+        // preusmjeravam na home page
+        router.push('/');
+
+        // mjenjam isLoggedIn state u true kako bi se znalo da je korisnik prijavljen
+        setIsLoggedIn(true);
       }
     } catch (error: any) {
       // ukoliko dođe do greške ispisuje se u konzoli
