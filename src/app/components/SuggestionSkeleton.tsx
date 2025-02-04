@@ -29,7 +29,7 @@ const SuggestionSkeleton = () => {
             <div className='flex flex-row'>
                 <Skeleton className='w-[45px] h-[45px] rounded-full bg-[#515151]'/>
                 <div className='flex flex-col justify-center ml-2 gap-2'>
-                    <Skeleton className='w-[100px] h-[10px] rounded-xl bg-[#515151]' />
+                    <Skeleton className='w-[120px] h-[10px] rounded-xl bg-[#515151]' />
                     <Skeleton className='w-[95px] h-[10px] rounded-xl bg-[#515151]' />
                 </div>
             </div>
@@ -39,7 +39,7 @@ const SuggestionSkeleton = () => {
             <div className='flex flex-row'>
                 <Skeleton className='w-[45px] h-[45px] rounded-full bg-[#515151]'/>
                 <div className='flex flex-col justify-center ml-2 gap-2'>
-                    <Skeleton className='w-[50px] h-[10px] rounded-xl bg-[#515151]' />
+                    <Skeleton className='w-[100px] h-[10px] rounded-xl bg-[#515151]' />
                     <Skeleton className='w-[75px] h-[10px] rounded-xl bg-[#515151]' />
                 </div>
             </div>

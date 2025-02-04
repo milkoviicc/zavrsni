@@ -40,11 +40,8 @@ const PostSkeleton = () => {
                 <Skeleton className='w-[60px] h-[15px] rounded-xl bg-[#515151]' />
             </div>
         </div>
-        
         <hr className='w-full h-[1px] bg-[#515151] border-none'/>
-        <div className='flex max-w-full w-auto'>
-            <SuggestionSkeleton />
-        </div>
+        <SuggestionSkeleton />
 
         <hr className='w-full h-[1px] bg-[#515151] border-none'/>
         <div className='flex flex-col my-2 gap-4 w-[700px]'>
