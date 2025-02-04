@@ -142,7 +142,7 @@ const UserProfile = () => {
 
   return (
     <div className='h-full flex flex-col gap-8 justify-center items-center'>
-        {getUserQuery.isLoading ? <h1>Loading...</h1> : getUserQuery.error || !getUserQuery.data ? <h1>User not found!</h1> : (
+        {getUserQuery.isFetching ? <span className="loader"></span> : getUserQuery.error || !getUserQuery.data ? <h1>User not found!</h1> : (
             <div>
                 <h1>{getUserQuery.data.username}</h1>
                 <Flex gap="2">

@@ -60,7 +60,7 @@ const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => 
 
 
   const popularFeedQuery = useQuery({queryKey: ["popularFeed"], queryFn: () => getPosts(postsPage), enabled: postsState === 'Popular'});
-  const yourFeedQuery = useQuery({queryKey: ["yourFeedQuery"], queryFn: () => getYourFeed(postsPage), enabled: postsState === 'Your Feed'});
+  const yourFeedQuery = useQuery({queryKey: ["yourFeed"], queryFn: () => getYourFeed(postsPage), enabled: postsState === 'Your Feed'});
   const getFollowedQuery = useQuery({queryKey: ["getFollowed"], queryFn: () => getFollowedUsers()});
   
   const getFollowedUsers = async () => {
@@ -131,23 +131,6 @@ const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => 
       console.error(err);
     }
   };
-
-  
-  useEffect(() => {  
-    if (postsState === 'Popular') {
-      if(popularFeedQuery.data) {
-        setPosts(popularFeedQuery.data);
-      } else {
-        setPosts([]);
-      }
-    } else if (postsState === 'Your Feed') {
-      if(yourFeedQuery.data) {
-        setPosts(yourFeedQuery.data);
-      } else {
-        setPosts([]);
-      }
-    }
-}, [postsState, currentPage, reactionTrigger]);
 
 
 
@@ -235,6 +218,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
       if(res.status === 200) {
         const newPost: Post = res.data;
         setPosts((prev) => [newPost, ...prev]);
+        queryClient.invalidateQueries({queryKey: [postsState === "Popular" ? "popularFeed" : "yourFeed"]});
       }
     } catch(err) {
         // ukoliko je došlo do greške, ispisuje se u konzoli
@@ -269,10 +253,6 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
       }
   }
 
-  useEffect(() => {
-    handleFeedState(postsState);
-  }, [postsState])
-
   const handleFeedState = (feedState: string) => {
     const currentFeed = localStorage.getItem('feed');
     if(currentFeed === 'Popular' && feedState === 'Popular') {
@@ -295,6 +275,10 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
           setCurrentPage((prev) => Math.max(prev - 1, 0));
       }
   }, [posts, currentPage]);
+
+  useEffect(() => {
+    handleFeedState(postsState);
+  }, [postsState])
 
   useEffect(() => {
     setContent('');
@@ -532,7 +516,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
               </Dialog>
           </div>
           <div className='flex sm:hidden flex-col py-8'>
-            {posts.length === 0 && loading === false ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center text-[#AFAFAF]'>Loading posts...</h1> : (
+          {popularFeedQuery.isFetching || yourFeedQuery.isFetching ? <span className="loader"></span> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
               <InfiniteScroll className='w-full flex flex-col bg-transparent' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                   { posts.map((post, index) => (
                     <div key={index}>
@@ -617,7 +601,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
             
             </div>
             <div className='w-full flex justify-center mt-10'>
-                {posts.length === 0 && loading === false ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : posts.length === 0 && loading ? <h1 className='text-center text-[#AFAFAF]'>Loading posts...</h1> : (
+                {popularFeedQuery.isFetching || yourFeedQuery.isFetching ? <span className="loader"></span> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
                     <InfiniteScroll className='w-full flex flex-col bg-transparent px-8 sm:px-4' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                         {posts.map((post, index) => (
                           <div key={index}>
