@@ -17,6 +17,7 @@ import ResizableTextarea from './ResizableTextarea';
 import _ from 'lodash';
 import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '../context/AuthProvider';
 
 const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, updatePost, refreshPosts}: {post: Post, getComments: boolean, handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string, updatedContent: string, updatedFiles: string[]) => void, refreshPosts: () => void})=> {
   
@@ -63,6 +64,8 @@ const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, upd
   const [reactionTrigger, setReactionTrigger] = useState(false);
   const [finishedUpdating, setFinishedUpdating] = useState(false);
   const [isUpdatePostDialogOpen, setIsUpdatePostDialogOpen] = useState(false);
+
+  const {role} = useAuth();
 
   // dobivam usera iz localStorage-a
 
@@ -126,7 +129,7 @@ const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, upd
       const userData: User = JSON.parse(user);
 
       // ako je id korisnika koji je objavio post jednak trenutnom korisniku state se stavlja na true kako bi se gumb 'Delete' prikazao, inače na false kako se ne bi prikazao
-      if(post.user.userId === userData.userId) {
+      if(post.user.userId === userData.userId || role === "admin") {
         setShowDelete(true);
         setShowUpdate(true);
       } else {

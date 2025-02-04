@@ -65,7 +65,6 @@ const Auth = () => {
 
     // ukoliko unešeno ime i prezime nije prazno ulazi u try/catch
     try {
-
       // poziva se login funckija iz AuthProvider.tsx filea, i uz pomoć await čeka se response
       await login(name,loginPassword);
 

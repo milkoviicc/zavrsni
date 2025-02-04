@@ -7,6 +7,7 @@ import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Dia
 import ResizableTextarea from './ResizableTextarea';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
+import { useAuth } from '../context/AuthProvider';
 
 const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Reply, like: (commentReplyId: string) => void, dislike: (commentReplyId: string) => void, deleteReply: (commentReplyId: string) => void, updateReply: (commentReplyId: string, updatedContent: string) => void}) => {
 
@@ -39,6 +40,7 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
     const router = useRouter();
 
     const user = localStorage.getItem('user');
+    const {role} = useAuth();
 
     useEffect(() => {
 
@@ -47,7 +49,7 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
 
             const userData: User = JSON.parse(user);
             // ako je id korisnika koji je objavio post jednak trenutnom korisniku state se stavlja na true kako bi se gumb 'Delete' prikazao, inače na false kako se ne bi prikazao
-            if(reply.userProfile.userId === userData.userId) {
+            if(reply.userProfile.userId === userData.userId || role === "admin") {
                 setShowDelete(true);
                 setShowUpdate(true);
             } else {

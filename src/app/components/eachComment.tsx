@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import ResizableTextarea from './ResizableTextarea'
 import EachReply from './eachReply'
 import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
+import { useAuth } from '../context/AuthProvider';
 
 const EachComment = ({post, comment, refreshComments, updateComment}: {post: Post, comment: Comment, refreshComments: () => void, updateComment: (commentId: string, newContent: string) => void})=> {
 
@@ -52,6 +53,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
 
     const user = localStorage.getItem('user');
     const router = useRouter();
+    const {role} = useAuth();
 
     useEffect(() => {
 
@@ -61,7 +63,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
       if(user) {
         const userData: User = JSON.parse(user);
         // ako je id korisnika koji je objavio post jednak trenutnom korisniku state se stavlja na true kako bi se gumb 'Delete' prikazao, inače na false kako se ne bi prikazao
-        if(comment.user.userId === userData.userId || post.user.userId === userData.userId) {
+        if(comment.user.userId === userData.userId || post.user.userId === userData.userId || role === "admin") {
           setShowDelete(true);
           setShowUpdate(true);
           setShowReply(true);

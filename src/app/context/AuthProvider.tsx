@@ -6,8 +6,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
 
-import { AuthContextType, User, Profile, Auth } from '../types/types';
 import { error } from 'console';
+import { AuthContextType, User, Profile, Auth } from '../types/types';
 
 import {jwtDecode} from 'jwt-decode';
 import jwt from 'jsonwebtoken';
@@ -22,6 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authError, setAuthError] = useState('');
+  const [role, setRole] = useState('');
   
   // nextjs router za preusmjeravanje na druge pathove.
   const router = useRouter();
@@ -182,6 +183,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Could not update image: ', error);
     }
   }
+  interface DecodedTokenRole {
+    role?: string;
+  }
+
+  const getRoleFromToken = (token: string): "admin" | "user" | null => {
+    try {
+      const decoded: {role?: "admin" | "user"} = jwtDecode(token)
+      return decoded.role ?? null;
+    } catch(err) {
+      console.error(err);
+      return null;
+    }
+
+  }
   
 
   // async funkcija register koja služi za registriranje novih korisnika, prima username, email, lozinku i potvrdjenu lozinku
@@ -261,6 +276,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           localStorage.setItem('feed', 'Popular');
 
+          const role = getRoleFromToken(loggedUser.token);
+          if(role === null) {
+            return;
+          }
+          setRole(role);
+
+
           // preusmjeravam na home page
           router.push('/');
 
@@ -338,7 +360,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // AuthContext.Provider prenosi unešene vrijednosti kako bi ih mogao koristiti u drugim fileovima
   return (
-    <AuthContext.Provider value={{ user, login, register, addDetails, addImage, logout, deleteAccount, isAuthenticated, fullyRegistered, defaultPicture, ignoreDefaultPic, setIgnoreDefaultPic, loading, authError}}>
+    <AuthContext.Provider value={{ user, role, login, register, addDetails, addImage, logout, deleteAccount, isAuthenticated, fullyRegistered, defaultPicture, ignoreDefaultPic, setIgnoreDefaultPic, loading, authError}}>
       {children}
     </AuthContext.Provider>
   );
