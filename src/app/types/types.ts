@@ -4,7 +4,7 @@ export interface AuthContextType {
     user: User | null;
     login: (username: string, password: string) => Promise<void>;
     register: (username: string, email: string, password: string, confirmPassword: string) => Promise<void>;
-    addDetails: (firstName: string, lastName: string) => Promise<void>;
+    addDetails: (firstName: string, lastName: string, description: string, occupation: string) => Promise<void>;
     addImage: (selectedImage: File) => Promise<void>;
     logout: () => void;
     deleteAccount: () => void;

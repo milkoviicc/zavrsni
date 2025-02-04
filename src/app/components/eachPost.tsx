@@ -18,6 +18,9 @@ import _ from 'lodash';
 import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthProvider';
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover';
+import { Command, CommandGroup, CommandItem, CommandList } from '@/src/components/ui/command';
+import { Ellipsis, EllipsisIcon, Pencil, Settings, Trash2 } from 'lucide-react';
 
 const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, updatePost, refreshPosts}: {post: Post, getComments: boolean, handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string, updatedContent: string, updatedFiles: string[]) => void, refreshPosts: () => void})=> {
   
@@ -232,6 +235,7 @@ const handleReaction = async (reaction: number) => {
     console.error("Error handling reaction:", err);
   }
 };
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   return (
     <div className="mt-2 md:max-w-[800px] w-auto h-fit flex flex-col gap-2 text-white px-1 pt-2 overflow-hidden border-t-[1px] border-[#515151]">
@@ -261,8 +265,29 @@ const handleReaction = async (reaction: number) => {
                 </div>
                 <div>
                   {showUpdate && (
+                    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                      <PopoverTrigger><EllipsisIcon className="text-[#AFAFAF] size-7" /></PopoverTrigger>
+                      <PopoverContent className="w-fit px-2">
+                        <Command>
+                          <CommandList>
+                            <CommandGroup >
+                              <CommandItem className="text-[#AFAFAF] text-lg cursor-pointer w-fit" onSelect={(currentValue) => {
+                                  setPopoverOpen(false);
+                                  setIsUpdatePostDialogOpen(true);
+                                  handleUpdate();
+                              }}><Pencil className="w-6 h-6"/>Update</CommandItem>
+                              <CommandItem className="text-[#AFAFAF] text-lg cursor-pointer w-fit" onSelect={(currentValue) => {
+                                  setPopoverOpen(false);
+                                  deletePost(post.postId);
+                              }}><Trash2 className="w-6 h-6"/>Delete</CommandItem>
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                  {showUpdate && (
                     <Dialog open={isUpdatePostDialogOpen} onOpenChange={setIsUpdatePostDialogOpen}>
-                      <DialogTrigger onClick={() => handleUpdate()}><FontAwesomeIcon icon={faPen} className='text-[#C7C7C7]' /></DialogTrigger>
                       <DialogContent className='h-fit flex flex-col px-2 lg:px-4 text-black overflow-y-auto overflow-x-hidden bg-[#222222] max-w-[90%] sm:max-w-[55%] lg:max-w-[45%] lg:min-w-fit border-transparent'>
                         <DialogHeader className='flex flex-row gap-2'>
                           <button onClick={() => router.push(`/users/${post.user.username}`)}>
@@ -309,11 +334,6 @@ const handleReaction = async (reaction: number) => {
                         </div>
                       </DialogContent>
                     </Dialog>
-                  )}
-                  {showDelete && (
-                    <button className="text-sm px-2" onClick={() => deletePost(post.postId)}>
-                      <FontAwesomeIcon icon={faTrash} className="text-xl text-[#C7C7C7]" />
-                    </button>
                   )}
                 </div>
               </div>

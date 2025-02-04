@@ -68,7 +68,7 @@ const Suggestion = ({profileSuggestion, handleRoute }: { profileSuggestion: User
     return (
         <div className='relative w-full flex justify-around items-center gap-2 sm:gap-4 px-1'>
             <UserComponent user={profileSuggestion} handleRoute={handleRoute}/>
-            <button className={`${isFollowed ? 'bg-[#3E3E3E] shadow-[1px_2px_4px_1px_rgba(0,0,0,0.1)] hover:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.3)]' : 'bg-[#1565CE] shadow-[1px_2px_4px_1px_rgba(12,75,156,1)] hover:shadow-[0px_0px_2px_2px_rgba(12,75,156,1)]'} px-2 sm:px-4 lg:px-8 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] text-xs sm:text-base transition-all`} onClick={() => handleFollow(profileSuggestion.userId)}>{isFollowed ? 'Followed' : 'Follow'}</button>
+            <button className={`${isFollowed ? 'bg-[#3E3E3E] shadow-[1px_2px_4px_1px_rgba(0,0,0,0.1)] hover:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.3)]' : 'bg-[#1565CE] shadow-[1px_2px_4px_1px_rgba(12,75,156,1)] hover:shadow-[0px_0px_2px_2px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-[82px] sm:w-[150px] h-fit rounded-2xl font-Roboto text-[#E3E3E3] text-xs sm:text-base transition-all`} onClick={() => handleFollow(profileSuggestion.userId)}>{isFollowed ? 'Followed' : 'Follow'}</button>
         </div> 
     )
 

@@ -87,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 
   // async funkcija koja prima ime i prezime varijable, oba tipa string, nakon unošenja punog imena i prezimena na stranici.
-  const addDetails = async (firstName: string, lastName: string) => {
+  const addDetails = async (firstName: string, lastName: string, description: string, occupation: string) => {
     try {
       // // spremam token i korisnika iz localstoragea u varijable 'token' i 'storedUser' 
       const user = localStorage.getItem('user');
@@ -102,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // šaljem axios put request na API, primam nazad response tipa 'Profile', a prenosim username, firstName i lastName
         const res = await axios.put<User>(
           `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile`,
-          { username: userData.username, firstName, lastName }
+          { username: userData.username, firstName, lastName, description, occupation}
         );
 
         // provjeravam postoji li token, korisnikov id, ime i prezime

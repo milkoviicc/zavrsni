@@ -611,7 +611,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
               </div>
             
             </div>
-            <div className='w-fit lg:min-w-[832px] flex flex-col justify-center mt-10'>
+            <div className='w-full lg:min-w-[832px] flex flex-col justify-center items-center mt-10'>
                 {popularFeedQuery.isFetching || yourFeedQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
                     <InfiniteScroll className='w-full flex flex-col bg-transparent px-8 sm:px-4' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                         {posts.map((post, index) => (
