@@ -152,24 +152,25 @@ const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => 
 }, [postsState, currentPage, reactionTrigger]);
 
 
-const getFollowSuggestions = async (): Promise<User[]> => {
+
+const getFollowSuggestions = async () => {
   try {
     const res = await axios.get<User[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/follow-suggestions?limit=4');
   
-    if(res.status === 200) {
-      if(res.data.length < 4) {
-        checkFollowSuggestions(res.data);
-      } else {
-        return res.data;
-      }
+    if(res.status === 200 && res.data.length < 4) {
+      checkFollowSuggestions(res.data);
+      return [];
     }
-    return [];
+    return res.data;
   } catch(err) {
     console.error(err);
     return[];
   }
 }
 
+
+
+const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn:getFollowSuggestions});
 
 const checkFollowSuggestions = async (existingSuggestions: User[]) => {
   if(suggestionsChecked) return;
@@ -189,8 +190,6 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
   setFillSuggestions(mergedUsers);
   queryClient.setQueryData(['suggestions'], mergedUsers);
 }; 
-
-const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn: getFollowSuggestions, enabled: getFollowedQuery.data !== undefined});
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -433,6 +432,7 @@ const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn: getFollow
     setRandomNmbs(newRandomNmbs);
   }, []);
 
+
   return (
     <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full 2xl:py-12 py-0">
         <div className='flex flex-col md:hidden text-white w-full justify-center'>
@@ -613,13 +613,13 @@ const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn: getFollow
                     <InfiniteScroll className='w-full flex flex-col bg-transparent px-8 sm:px-4' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                         {posts.map((post, index) => (
                           <div key={index}>
-                            {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
+                            {randomNmbs?.includes(index) && suggestionsQuery.data?.length !== 0 ? (
                               <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A]'>You might like these</p>
                                 <div className='min-w-[90%] grid grid-cols-2 grid-rows-2 gap-4'>
-                                  {suggestionsQuery.data?.map((suggestion, index) => (
+                                  {suggestionsQuery.isSuccess ? suggestionsQuery.data?.map((suggestion, index) => (
                                     <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
-                                  ))}
+                                  )) : null}
                                   {suggestionsQuery.data?.length !== 4 ? 
                                     fillSuggestions.map((suggestion, index) => (
                                       <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
@@ -627,7 +627,7 @@ const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn: getFollow
                                   }
                                 </div>
                               </div>
-                            ) : randomNmbs?.includes(index) && profileSuggestions.length === 0 ? (
+                            ) : randomNmbs?.includes(index) && suggestionsQuery.data?.length === 0 ? (
                               <div className='border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A] text-center font-Roboto py-2'>You might like these</p>
                                 <div className='grid grid-cols-2 grid-rows-2 gap-4 place-items-center'>
