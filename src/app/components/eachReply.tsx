@@ -40,7 +40,7 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
     const router = useRouter();
 
     const user = localStorage.getItem('user');
-    const {role} = useAuth();
+    const role = localStorage.getItem('role');
 
     useEffect(() => {
 
