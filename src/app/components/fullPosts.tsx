@@ -43,8 +43,6 @@ const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => 
   const [postsState, setPostsState] = useState('');
   const [postPopoverOpen, setPostPopoverOpen] = useState(false);
   const [finishedPosting, setFinishedPosting] = useState(false);
-  
-  const [profileSuggestions, setProfileSuggestions] = useState<User[]>([]);
   const [suggestionsChecked, setSuggestionsChecked] = useState(false);
   const [fillSuggestions, setFillSuggestions] = useState<User[]>([]);
   const [cacheBuster, setCacheBuster] = useState(Date.now());
@@ -170,7 +168,7 @@ const getFollowSuggestions = async () => {
 
 
 
-const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn:getFollowSuggestions});
+const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn:getFollowSuggestions, enabled: getFollowedQuery.isSuccess});
 
 const checkFollowSuggestions = async (existingSuggestions: User[]) => {
   if(suggestionsChecked) return;
@@ -181,9 +179,11 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
   const existingUsersIds = new Set(existingSuggestions.map(existingSuggestion => existingSuggestion.userId));
 
 
+
   const followedUserIds = new Set(getFollowedQuery.data);
 
   const filteredPopularUsers = popularUsers.filter(popularUser => !existingUsersIds.has(popularUser.userId) && !followedUserIds?.has(popularUser.userId) && popularUser.userId !== user.userId).slice(0, neededProfiles);
+
 
   const mergedUsers: User[] = [...existingSuggestions, ...filteredPopularUsers];
 
@@ -528,7 +528,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
               <InfiniteScroll className='w-full flex flex-col bg-transparent' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                   { posts.map((post, index) => (
                     <div key={index}>
-                      {randomNmbs?.includes(index) && profileSuggestions.length !== 0 ? (
+                      {randomNmbs?.includes(index) && suggestionsQuery.data?.length !== 0 ? (
                         <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-t-[#515151]'>
                           <p className='text-[#8A8A8A] text-xs'>You might like these</p>
                           <div className='grid grid-cols-2 grid-rows-2 gap-2'>
@@ -542,7 +542,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                             }
                           </div>
                         </div>
-                      ) : randomNmbs?.includes(index) && profileSuggestions.length === 0 ? (
+                      ) : randomNmbs?.includes(index) && suggestionsQuery.data?.length === 0 ? (
                         <div className='grid grid-cols-2 grid-rows-2 gap-4 border-t-[1px] border-[#515151]'>
                             {fillSuggestions.map((suggestion, index) => (
                                 <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
