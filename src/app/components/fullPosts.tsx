@@ -529,7 +529,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
               </Dialog>
           </div>
           <div className='flex sm:hidden flex-col py-8'>
-          {popularFeedQuery.isFetching || yourFeedQuery.isFetching ? <span className="loader"></span> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
+            {popularFeedQuery.isLoading || yourFeedQuery.isLoading || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
               <InfiniteScroll className='w-full flex flex-col bg-transparent' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                   { posts.map((post, index) => (
                     <div key={index}>
@@ -560,7 +560,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                     )
                   )}
               </InfiniteScroll>
-              )}
+            )}
           </div>
         </div>
         <div className="md:flex hidden gap-2 items-center flex-col w-fit">
