@@ -206,7 +206,6 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
       setPostFile((prevFiles) => [...prevFiles, ...filesArray]);
     }
   };
-
   
   // async funkcija koja se poziva kada se klikne na gumb 'Send'
   const sendPost = async () => {
@@ -270,6 +269,10 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
       }
   }
 
+  useEffect(() => {
+    handleFeedState(postsState);
+  }, [postsState])
+
   const handleFeedState = (feedState: string) => {
     const currentFeed = localStorage.getItem('feed');
     if(currentFeed === 'Popular' && feedState === 'Popular') {
@@ -277,9 +280,11 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
     } else if (currentFeed === 'Popular' && feedState === 'Your Feed') {
       localStorage.setItem('feed', 'Your Feed');
       setCurrentPage(0);
+      setPosts([]);
     } else if (currentFeed === 'Your Feed' && feedState === 'Popular') {
       localStorage.setItem('feed', 'Popular');
       setCurrentPage(0);
+      setPosts([]);
     } else if (currentFeed === 'Your Feed' && feedState === 'Your Feed') {
       return;
     }
@@ -432,6 +437,9 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
     setRandomNmbs(newRandomNmbs);
   }, []);
 
+  const [getComments, setGetComments] = useState(false);
+
+
 
   return (
     <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full 2xl:py-12 py-0">
@@ -550,7 +558,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                             }
                           </div>
                       ): null}
-                      <EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
+                      <EachPost key={index} post={post} getComments={getComments} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
                     </div>
                     )
                   )}
@@ -638,7 +646,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                                 </div>
                               </div>
                             ): null}
-                            <EachPost key={index} post={post} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
+                            <EachPost key={index} post={post} getComments={getComments} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
                           </div>
                           )
                         )}

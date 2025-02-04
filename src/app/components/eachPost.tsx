@@ -16,8 +16,9 @@ import { useRouter } from 'next/navigation';
 import ResizableTextarea from './ResizableTextarea';
 import _ from 'lodash';
 import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
+import { useQuery } from '@tanstack/react-query';
 
-const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refreshPosts}: {post: Post, handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string, updatedContent: string, updatedFiles: string[]) => void, refreshPosts: () => void})=> {
+const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, updatePost, refreshPosts}: {post: Post, getComments: boolean, handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string, updatedContent: string, updatedFiles: string[]) => void, refreshPosts: () => void})=> {
   
   // DATUM POSTA
 
@@ -67,6 +68,9 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
 
   const router = useRouter();
     
+  useEffect(() => {
+    refreshPosts();
+  }, [post.userReacted]);
 
   const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
     const { naturalWidth, naturalHeight } = event.currentTarget;
@@ -132,9 +136,7 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
     }
   }, [post.user.userId, post]);  
 
-  useEffect(() => {
-    refreshPosts();
-  }, [post.userReacted]);
+  const getCommentsQuery = useQuery({queryKey: ["commentsQuery"], queryFn: () => handleComments(), enabled: getComments})
 
   const handleComments = async () => {
     try {
@@ -142,12 +144,14 @@ const EachPost = ({post, handleLike, handleDislike, deletePost, updatePost, refr
 
       if(res.status === 200) {
         setComments(res.data);
+        return res.data;
       }
 
     } catch (err) {
       console.error("Error fetching comments:", err);
     }
   };
+
 
   const handleUpdate = async () => {
     setUpdatedContent(post.content);
@@ -225,8 +229,6 @@ const handleReaction = async (reaction: number) => {
     console.error("Error handling reaction:", err);
   }
 };
-
-
 
   return (
     <div className="mt-2 md:max-w-[800px] w-auto h-fit flex flex-col gap-2 text-white px-1 pt-2 overflow-hidden border-t-[1px] border-[#515151]">

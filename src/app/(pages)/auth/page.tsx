@@ -51,7 +51,6 @@ const Auth = () => {
 
   // async funkcija koja se poziva kada se klikne gumb 'Sign in'.
   const handleSignIn = async () => {
-    
     setError(null);
     
     // stavljamo loading state na true

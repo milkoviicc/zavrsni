@@ -39,7 +39,9 @@ export interface Profile {
     lastName: string | null,
     pictureUrl : string,
     followers: number,
-    following: number
+    following: number,
+    description: string | null,
+    occupation: string | null
 }
 
 // klasa Post
