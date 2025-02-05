@@ -35,7 +35,7 @@ import PostSkeleton from "./components/PostSkeleton";
 export default function Home() {
 
   // funckije iz AuthProvider.tsx-a
-  const {isAuthenticated, fullyRegistered, defaultPicture, ignoreDefaultPic, setIgnoreDefaultPic, addDetails, addImage } = useAuth();
+  const {user, isAuthenticated, fullyRegistered, defaultPicture, ignoreDefaultPic, setIgnoreDefaultPic, addDetails, addImage } = useAuth();
 
   // stateovi
   const [firstName, setFirstName] = useState('');
@@ -51,7 +51,7 @@ export default function Home() {
   const [ignoreDefaultPicture, setIgnoreDefaultPicture] = useState(false);
 
 
-  const user: User = JSON.parse(localStorage.getItem('user') || '{}');
+
 
   const getPopularUsers = async () => {
     try {
@@ -69,7 +69,7 @@ export default function Home() {
 
   const getFriends = async () => {
     try {
-      const res = await axios.get<Friendship[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${user.userId}`);
+      const res = await axios.get<Friendship[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${user?.userId}`);
 
       const resData = res.data.filter((profile) => profile.user.firstName != null);
 
