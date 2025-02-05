@@ -157,8 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         formData.append('image', selectedImage);
 
         // šaljem axios put request na API, primam nazad response tipa 'Profile', a prenosim username, firstName i lastName
-        const res = await axios.put<User>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile-picture', formData, {headers: {
-          'Content-Type': 'multipart/form-data'}});
+        const res = await axios.put<User>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile-picture', formData, {headers: {'Content-Type': 'multipart/form-data'}});
 
         if(res.status === 200) {
             // ukoliko sve postoji, spremam id, username, ime i prezime u varijablu updatedProfile tipa 'Profile'

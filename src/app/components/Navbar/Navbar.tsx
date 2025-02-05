@@ -27,7 +27,7 @@ const Navbar = memo(() => {
 
     // prosljedjuje mi se user state i funkcija logout iz AuthProvider.tsx
 
-    const {user, logout} = useAuth()
+    const { logout} = useAuth()
 
     // nextJs router za mjenjanje path-a
     const router = useRouter();
@@ -43,12 +43,19 @@ const Navbar = memo(() => {
     const searchInputRef = useRef<HTMLInputElement | null>(null);
     const [searchOpen, setSearchOpen] = useState(false);
 
+    const user = localStorage.getItem('user');
+    const [userData, setUserData] = useState<User>();
+
 
     useEffect(() => {
-        if (user && user.firstName && user.lastName) {
-            const firstLetter = user.firstName.slice(0, 1);
-            const secondLetter = user.lastName.slice(0, 1);
-            setShortUsername(firstLetter + secondLetter);
+        if (user) {
+            const userData: User = JSON.parse(user);
+            if(userData.firstName && userData.lastName) {
+                const firstLetter = userData.firstName.slice(0, 1);
+                const secondLetter = userData.lastName.slice(0, 1);
+                setShortUsername(firstLetter + secondLetter);
+                setUserData(userData);
+            }
         }
     }, [user]); 
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -154,7 +161,7 @@ const Navbar = memo(() => {
                                             <CommandItem className="text-[#AFAFAF] text-base" onSelect={(currentValue) => {
                                                 setPopoverOpen(false);
                                                 router.push('/my-profile');
-                                            }}><Avatar><AvatarImage src={`${user?.pictureUrl}`} className="w-[45px] h-[45px] aspect-square rounded-full object-cover" style={{borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback></Avatar> My profile</CommandItem>
+                                            }}><Avatar><AvatarImage src={`${userData?.pictureUrl}`} className="w-[45px] h-[45px] aspect-square rounded-full object-cover" style={{borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback></Avatar> My profile</CommandItem>
                                             <CommandItem className="text-[#AFAFAF] text-lg" onSelect={(currentValue) => {
                                                 setPopoverOpen(false);
                                                 router.push('/people');
@@ -174,7 +181,7 @@ const Navbar = memo(() => {
                     <div className="hidden md:flex justify-end items-center">
                         <button className="hover:cursor-pointer flex" onClick={() => router.push(`/my-profile`)}>
                             <Avatar className="w-[30px] h-[30px]">
-                                <AvatarImage src={`${user?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                                <AvatarImage src={`${userData?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
                             </Avatar> 
                         </button>
                     </div>
@@ -211,7 +218,7 @@ const Navbar = memo(() => {
                     <Button asChild variant="link" onClick={logout} className="hover:cursor-pointer text-[#AFAFAF]"><FontAwesomeIcon icon={faRightFromBracket} className="text-sm -mt-1 font-thin sm:size-4 md:size-6"/></Button>
                     <button className="hover:cursor-pointer flex gap-2" onClick={() => router.push(`/my-profile`)}>
                         <Avatar className="mr-6 xl:w-[45px] xl:h-[45px] 2xl:w-[60px] 2xl:h-[60px]">
-                            <AvatarImage src={`${user?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                            <AvatarImage src={`${userData?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
                         </Avatar> 
                     </button>
                 </div>

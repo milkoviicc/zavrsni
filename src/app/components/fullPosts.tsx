@@ -188,6 +188,15 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
       setPostFile((prevFiles) => [...prevFiles, ...filesArray]);
     }
   };
+
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error)=> reject(error);
+    });
+  }
   
   // async funkcija koja se poziva kada se klikne na gumb 'Send'
   const sendPost = async () => {
@@ -205,9 +214,10 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
       postFile.forEach((file) => {
         formData.append(`Files`, file);
       });
+      
 
       // šalje se axios post request na API i prenosi se vrijednost content statea, tj. uneseni tekst posta
-      const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/add-post`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/add-post`, formData, {headers: { 'Content-Type': 'multipart/form-data'}});
 
       // ukoliko je res.status jednak 200 novi post je dodan i vrijednost content statea se ponovno stavlja na empty string tj. ''
       if(res.status === 200) {
@@ -375,14 +385,11 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
 
   const updatePost = async (postId: string, updatedContent: string, updatedFiles: string[]) => {
       try {
-
           const formData = new FormData();
           formData.append('Content', updatedContent);
 
-          const files = await convertUrlsToFiles(updatedFiles);
-
           // If there are files, append them to FormData
-          files.forEach((file) => {
+          updatedFiles.forEach((file) => {
             formData.append(`Files`, file);
           });
 
@@ -470,7 +477,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                     <div className="flex flex-col w-full">
                       <div className='flex justify-between items-center w-full'>
                         <textarea value={`What's on your mind, ${user.firstName}`} readOnly onClick={() => setPostDialogOpen(true)} className="resize-none truncate whitespace-nowrap font-Roboto font-normal scrollbar-none h-[20px] md:min-w-[310px] w-full md:w-full pr-2 text-sm text-[#fff] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
-                        <input type="file" id="file-input" accept="image/*, video/*" className="hidden" onChange={handlePostFile} multiple/>
+                        <input type="file" id="file-input" accept="image/*, video/*, .webp" className="hidden" onChange={handlePostFile} multiple/>
                         <div className="flex justify-between">
                           <div>
                             <label htmlFor="file-input" className="hover:cursor-pointer text-[#CCCCCC] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" /></label>
@@ -495,7 +502,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                                     <ResizableTextarea onChange={(e) => setContent(e.target.value)} value={content} placeholder={`What's on your mind, ${user.firstName}`} className="font-Roboto font-normal leading-5 scrollbar-none w-full max-h-[100px] lg:max-h-[150px] text-sm lg:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                                     <div className='flex justify-end gap-4 items-center'>
                                         <div className='flex h-full justify-center items-center'>
-                                          <input type="file" id="file-input" disabled className="hidden" onChange={handlePostFile} multiple/>
+                                          <input type="file" id="file-input" accept="image/*, video/*, .webp"  disabled className="hidden" onChange={handlePostFile} multiple/>
                                           <div className='flex w-full h-full items-center'>
                                             <label htmlFor="file-input" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" className='pt-[3px]'/></label>
                                           </div>
@@ -568,7 +575,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                         <ResizableTextarea onChange={(e) => setContent(e.target.value)} value={content} placeholder={`What's on your mind, ${user.firstName}`} className="font-Roboto font-normal leading-5 scrollbar-none w-[500px] max-h-[100px] lg:max-h-[150px] text-sm md:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                         <div className='flex justify-end gap-4 items-center'>
                             <div className='flex h-full justify-center items-center'>
-                              <input type="file" id="file-input-pc" className="hidden" onChange={handlePostFile} multiple/>
+                              <input type="file" id="file-input-pc" accept="image/*, video/*, .webp" className="hidden" onChange={handlePostFile} multiple/>
                               <div className='flex w-full h-full items-center'>
                                 <label htmlFor="file-input-pc" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" className='pt-[3px]'/></label>
                               </div>
