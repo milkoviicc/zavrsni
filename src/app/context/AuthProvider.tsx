@@ -147,8 +147,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const user = localStorage.getItem('user');
       const token = localStorage.getItem('token');
       const feed = localStorage.getItem('feed');
+      const role = localStorage.getItem('role');
 
-      if (user && token && feed) {
+      if (user && token && feed && role) {
         // spremam korisnikove podatke u varijablu 'userData'
         const userData: User = JSON.parse(user);
 
@@ -173,6 +174,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             localStorage.setItem('token', token);
 
             localStorage.setItem('feed', feed);
+
+            localStorage.setItem('role', role);
 
             // spremam u 'user' state korisnika sa svim novim podatcima
             setUser(updatedProfile);

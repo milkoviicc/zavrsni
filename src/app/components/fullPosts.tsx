@@ -470,7 +470,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                     <div className="flex flex-col w-full">
                       <div className='flex justify-between items-center w-full'>
                         <textarea value={`What's on your mind, ${user.firstName}`} readOnly onClick={() => setPostDialogOpen(true)} className="resize-none truncate whitespace-nowrap font-Roboto font-normal scrollbar-none h-[20px] md:min-w-[310px] w-full md:w-full pr-2 text-sm text-[#fff] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
-                        <input type="file" id="file-input" className="hidden" onChange={handlePostFile} multiple/>
+                        <input type="file" id="file-input" accept="image/*, video/*" className="hidden" onChange={handlePostFile} multiple/>
                         <div className="flex justify-between">
                           <div>
                             <label htmlFor="file-input" className="hover:cursor-pointer text-[#CCCCCC] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" /></label>
@@ -608,7 +608,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
             </div>
             <div className='w-full lg:min-w-[832px] flex flex-col justify-center items-center mt-10'>
                 {popularFeedQuery.isFetching || yourFeedQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
-                    <InfiniteScroll className='w-full flex flex-col bg-transparent px-8 sm:px-4' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
+                    <InfiniteScroll className='w-full flex flex-col bg-transparent px-8 sm:px-4 2k:min-w-[832px]' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
                         {posts.map((post, index) => (
                           <div key={index}>
                             {randomNmbs?.includes(index) && suggestionsQuery.data?.length !== 0 ? (
