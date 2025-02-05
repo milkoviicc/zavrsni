@@ -24,6 +24,7 @@ import { useRouter } from 'next/navigation';
 import { CircleFadingPlus } from "lucide-react";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PostSkeleton from './PostSkeleton';
+import { useToast } from '@/hooks/use-toast';
 
 
 
@@ -43,7 +44,6 @@ const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => 
   const [randomNmbs, setRandomNmbs] = useState<number[]>();
   const [postsState, setPostsState] = useState('');
   const [postPopoverOpen, setPostPopoverOpen] = useState(false);
-  const [finishedPosting, setFinishedPosting] = useState(false);
   const [suggestionsChecked, setSuggestionsChecked] = useState(false);
   const [fillSuggestions, setFillSuggestions] = useState<User[]>([]);
   const [cacheBuster, setCacheBuster] = useState(Date.now());
@@ -195,11 +195,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
       if(content !== '' || postFile.length !== 0) {
         setContent('');
         setPostFile([]);
-        setFinishedPosting(true);
-        setTimeout(() => {
-          setFinishedPosting(false);
-          setPostDialogOpen(false);
-        }, 1000);
+        setPostDialogOpen(false);
       }
 
       const formData = new FormData();
@@ -360,7 +356,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
   const convertUrlsToFiles = async (urls: string[]): Promise<File[]> => {
     const filePromises = urls.map(async (url) => {
       // Fetch the file from the URL (which is a Blob URL)
-      const response = await fetch(url);
+      const response = await fetch(url, {method: 'GET', mode: 'cors'});
       const blob = await response.blob();
   
       // Optionally, you can define a name or use the original file name if available
@@ -435,6 +431,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
   }, [popularFeedQuery.data, yourFeedQuery.data]);
 
 
+  const {toast} = useToast();
 
   return (
     <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full 2xl:py-12 py-0">
@@ -503,12 +500,11 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                                             <label htmlFor="file-input" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" className='pt-[3px]'/></label>
                                           </div>
                                         </div>
-                                        <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
+                                        <button onClick={() => {sendPost(); toast({description: "Post successfully posted!", duration: 1000})}} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
                                     </div>
                                   </div>
                               </div>
                           </div>
-                          {finishedPosting ? <h1 className='font-Roboto text-[#EFEFEF] pb-4'>Post successfully posted!</h1> : null}
                       </div>
                       <div className="flex w-full h-full sm:ml-4">
                         <div className={`grid gap-2 ${postFile.length <= 2 ? "grid-cols-3" : ''} ${postFile.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>
@@ -577,12 +573,11 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                                 <label htmlFor="file-input-pc" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" className='pt-[3px]'/></label>
                               </div>
                             </div>
-                            <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
+                            <button onClick={() => {sendPost(); toast({description: "Post successfully posted!", duration: 1000})}} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
                         </div>
                       </div>
                   </div>
               </div>
-              {finishedPosting ? <h1 className='font-Roboto text-[#EFEFEF] pb-4'>Post successfully posted!</h1> : null}
           </div>
           <div className="flex w-full h-full ml-4">
             <div className={`grid gap-2 ${postFile.length <= 2 ? "grid-cols-3" : ''} ${postFile.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>

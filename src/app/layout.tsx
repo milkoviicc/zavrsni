@@ -10,6 +10,7 @@ import { Theme }  from '@radix-ui/themes';
 
 import {motion, AnimatePresence} from 'framer-motion';
 import QueryProvider from "./components/QueryProvider";
+import { Toaster } from "../components/ui/toaster";
 
 /*
 export const metadata: Metadata = {
@@ -31,9 +32,8 @@ export default function RootLayout({
           <AuthProvider>
               <Theme>
                 <ClientLayout>
-
-                    {children}
-
+                  <Toaster />
+                  {children}
                 </ClientLayout>
               </Theme>
             </AuthProvider>
