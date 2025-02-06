@@ -224,6 +224,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
         const newPost: Post = res.data;
         setPosts((prev) => [newPost, ...prev]);
         queryClient.invalidateQueries({queryKey: [postsState === "Popular" ? "popularFeed" : "yourFeed"]});
+        toast({description: "Post successfully posted!", duration: 1000});
       }
     } catch(err) {
         // ukoliko je došlo do greške, ispisuje se u konzoli
@@ -381,26 +382,44 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
     return await Promise.all(filePromises);
   };
 
-
-
   const updatePost = async (postId: string, updatedContent: string, updatedFiles: string[]) => {
       try {
-          const formData = new FormData();
-          formData.append('Content', updatedContent);
 
-          // If there are files, append them to FormData
-          updatedFiles.forEach((file) => {
-            formData.append(`Files`, file);
+          const processFiles = async () => {
+            const filePromises = updatedFiles.map(async (image, index) => {
+              const response = await fetch(image);
+              const blob = await response.blob();
+              return new File([blob], `image${index}.jpg`, { type: blob.type });
+            });
+          
+            // Wait for all files to be processed and then save to processedFiles
+            const processedFiles = await Promise.all(filePromises);
+          
+            // Append each file to formData
+            const formData = new FormData();
+            processedFiles.forEach((file) => {
+              formData.append("Files", file);
+            });
+              
+            formData.append('Content', updatedContent);
+          
+            return formData;
+          };
+
+          processFiles().then(async (formData) => {
+            const res = await axios.put<Post>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/update-post/${postId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+          
+            if(res.status === 200) {
+              toast({description: "Post successfully updated!", duration: 1000});
+            }
           });
-
-          const res = await axios.put<Post>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/update-post/${postId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 
           const updatedPost = posts.find((post) => post.postId === postId);
 
           if(!updatedPost) return null;
 
           updatedPost.content = updatedContent;
-          updatedPost.fileUrls= updatedFiles;
+          updatedPost.fileUrls = updatedFiles;
       } catch(err) {
         console.error(err);
       }
@@ -507,7 +526,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                                             <label htmlFor="file-input" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" className='pt-[3px]'/></label>
                                           </div>
                                         </div>
-                                        <button onClick={() => {sendPost(); toast({description: "Post successfully posted!", duration: 1000})}} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
+                                        <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
                                     </div>
                                   </div>
                               </div>
@@ -580,7 +599,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                                 <label htmlFor="file-input-pc" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" className='pt-[3px]'/></label>
                               </div>
                             </div>
-                            <button onClick={() => {sendPost(); toast({description: "Post successfully posted!", duration: 1000})}} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
+                            <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
                         </div>
                       </div>
                   </div>

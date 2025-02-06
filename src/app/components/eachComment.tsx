@@ -10,6 +10,11 @@ import ResizableTextarea from './ResizableTextarea'
 import EachReply from './eachReply'
 import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
 import { useAuth } from '../context/AuthProvider';
+import { Popover } from "@radix-ui/react-popover"
+import { Command, CommandGroup, CommandItem, CommandList } from '@/src/components/ui/command';
+import { EllipsisIcon, Pencil, Trash2 } from 'lucide-react';
+import { PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
+import { useToast } from '@/hooks/use-toast';
 
 const EachComment = ({post, comment, refreshComments, updateComment}: {post: Post, comment: Comment, refreshComments: () => void, updateComment: (commentId: string, newContent: string) => void})=> {
 
@@ -50,6 +55,8 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
     const [replyFinished, setReplyFinished] = useState(false);
     const [isUpdateCommentDialogOpen, setIsUpdateCommentDialogOpen] = useState(false);
     const [isCommentReplyDialogOpen, setIsCommentReplyDialogOpen] = useState(false);
+
+    const {toast} = useToast();
 
     const user = localStorage.getItem('user');
     const router = useRouter();
@@ -148,6 +155,21 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
           console.error('Could not delete post: ', err);
       }
     } 
+
+    const deleteReply = async (replyId: string) => {
+      try {
+        // šaljem axios delete request na API sa id-em posta i spremam response u varijablu 'res'
+        const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/comments/delete/${replyId}`);
+        
+        // ako je res.status jednak 200 znači da je post obrisan i onda mjenjam reactionTrigger state kako bi se postovi re-renderali na stranici.
+        if(res.status === 200) {
+          refreshComments();
+        }
+    } catch(err) {
+        // ukoliko dođe do greške ispisat će se u konzoli
+        console.error('Could not delete post: ', err);
+    }
+    }
   
     const handleUpdate = () => {
       setUpdatedContent(comment.content);
@@ -155,11 +177,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
 
     const update = async () => {
       updateComment(comment.commentId, updatedContent);
-      setFinishedUpdating(true);
-      setTimeout(() => {
-        setFinishedUpdating(false);
-        setIsUpdateCommentDialogOpen(false);
-      }, 1000);
+      setIsUpdateCommentDialogOpen(false);
     }
 
     const handleReply = async (replyContent: string) => {
@@ -168,15 +186,11 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
           if(res.status === 200) {
             const newReply: Reply = res.data;
             setCommentReplies((prev) => [...prev, newReply]);
+            toast({description: "Reply successfully posted."});
           }
-          setReplyFinished(true);
-          setTimeout(() => {
-            setReplyFinished(false);
-            setReplyContent('');
-            setIsCommentReplyDialogOpen(false);
-            refreshComments();
-          }, 1000)
-          
+          setReplyContent('');
+          setIsCommentReplyDialogOpen(false);
+          refreshComments();
       } catch(err) {
         console.error(err);
       }
@@ -298,6 +312,8 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
       }
     };
 
+    const [popoverOpen, setPopoverOpen] = useState(false);
+
     if(!user) return null;
     // spremam podatke korisnika iz localstoragea u varijablu userData za daljnje provjere. 
     const userData: User = JSON.parse(user);
@@ -319,53 +335,69 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
                 </p>
               </div>
               <div>
-              {showUpdate && (
-                    <Dialog open={isUpdateCommentDialogOpen} onOpenChange={setIsUpdateCommentDialogOpen}>
-                      <DialogTrigger onClick={() => handleUpdate()}><FontAwesomeIcon icon={faPen} className='text-[#C7C7C7]' /></DialogTrigger>
-                      <DialogContent className='h-fit flex flex-col px-2 lg:px-4 text-black overflow-y-auto overflow-x-hidden bg-[#222222] max-w-[90%] lg:max-w-[45%] lg:min-w-fit border-transparent'>
-                        <DialogHeader className='flex flex-row gap-2'>
-                          <button onClick={() => router.push(`/users/${post.user.username}`)}>
-                            <Avatar className='lg:w-[40px] lg:h-[40px] rounded-full'>
-                              <AvatarImage src={`${post.user.pictureUrl} `} className="w-fit h-fit aspect-square rounded-full object-cover" />
-                            </Avatar>
-                          </button>
-                          <div className='flex justify-between w-full pr-8 !mt-0 '>
-                            <div className='flex flex-col'>
-                              <DialogDescription className='text-base text-[#EFEFEF] text-left'><button onClick={() => router.push(`/users/${post.user.username}`)}>{post.user.firstName} {post.user.lastName}</button></DialogDescription>
-                              <DialogTitle className='text-sm font-[500] text-[#888888] text-left'><button onClick={() => router.push(`/users/${post.user.username}`)}>@ {post.user.username}</button></DialogTitle>
-                            </div>
-                            <div>
-                            <p className='text-[#888888] text-opacity-60'>{commentDays >= 1 ? justCommentDate : commentDays <= 0 && commentHours > 0 && commentMinutes <= 60 ? `${commentHours}h ago` : commentDays < 1 && commentHours <= 24 && commentMinutes <= 60 && commentMinutes >= 1 ? `${commentMinutes}m ago` : "Just now"}</p>
-                            </div>
+                {showUpdate && (
+                  <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                      <PopoverTrigger><EllipsisIcon className="text-[#AFAFAF] size-7 mx-2" /></PopoverTrigger>
+                      <PopoverContent className="w-fit px-1 md:px-2 py-2 z-[9999] absolute top-0 -right-4 border-white border rounded-md bg-[#222222]">
+                          <Command>
+                              <CommandList>
+                                  <CommandGroup>
+                                      <CommandItem className="text-[#AFAFAF] text-lg cursor-pointer w-fit" onSelect={(currentValue) => {
+                                          setPopoverOpen(false);
+                                          setIsUpdateCommentDialogOpen(true);
+                                          handleUpdate();
+                                      }}><Pencil className="w-6 h-6"/>Update</CommandItem>
+                                      <CommandItem className="text-[#AFAFAF] text-lg cursor-pointer w-fit" onSelect={(currentValue) => {
+                                          setPopoverOpen(false);
+                                          deleteComment(comment.commentId);
+                                          toast({description: "Comment successfully deleted"})
+                                          }}><Trash2 className="w-6 h-6"/>Delete</CommandItem>
+                                  </CommandGroup>
+                              </CommandList>
+                          </Command>
+                      </PopoverContent>
+                  </Popover>
+                )}
+                {showUpdate && (
+                  <Dialog open={isUpdateCommentDialogOpen} onOpenChange={setIsUpdateCommentDialogOpen}>
+                    <DialogContent className='h-fit flex flex-col px-2 lg:px-4 text-black overflow-y-auto overflow-x-hidden bg-[#222222] max-w-[90%] lg:max-w-[45%] lg:min-w-fit border-transparent'>
+                      <DialogHeader className='flex flex-row gap-2'>
+                        <button onClick={() => router.push(`/users/${post.user.username}`)}>
+                          <Avatar className='lg:w-[40px] lg:h-[40px] rounded-full'>
+                            <AvatarImage src={`${post.user.pictureUrl} `} className="w-fit h-fit aspect-square rounded-full object-cover" />
+                          </Avatar>
+                        </button>
+                        <div className='flex justify-between w-full pr-8 !mt-0 '>
+                          <div className='flex flex-col'>
+                            <DialogDescription className='text-base text-[#EFEFEF] text-left'><button onClick={() => router.push(`/users/${post.user.username}`)}>{post.user.firstName} {post.user.lastName}</button></DialogDescription>
+                            <DialogTitle className='text-sm font-[500] text-[#888888] text-left'><button onClick={() => router.push(`/users/${post.user.username}`)}>@ {post.user.username}</button></DialogTitle>
                           </div>
-                        </DialogHeader>
-                        <div className="flex gap-2 items-center flex-col max-w-full bg- rounded-md shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
-                            <div className="flex flex-row justify-between relative w-full min-h-full items-center gap-4 py-4 px-4">
-                              <div className='w-full h-full flex gap-4'>
-                                  <Avatar className='w-[35px] h-[35px] lg:w-[60px] lg:h-[60px] rounded-full'>
-                                    <AvatarImage src={`${comment.user.pictureUrl} `} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
-                                  </Avatar>
-                                <div className='flex flex-col flex-grow gap-4 pr-4'>  
-                                  <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent} className="font-Roboto font-normal leading-5 scrollbar-none w-full max-h-[100px] lg:max-h-[150px] text-sm lg:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
-                                  <div className='flex justify-end'>
-                                    <button onClick={() => update()} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base">Update comment</button>
-                                  </div>
+                          <div>
+                          <p className='text-[#888888] text-opacity-60'>{commentDays >= 1 ? justCommentDate : commentDays <= 0 && commentHours > 0 && commentMinutes <= 60 ? `${commentHours}h ago` : commentDays < 1 && commentHours <= 24 && commentMinutes <= 60 && commentMinutes >= 1 ? `${commentMinutes}m ago` : "Just now"}</p>
+                          </div>
+                        </div>
+                      </DialogHeader>
+                      <div className="flex gap-2 items-center flex-col max-w-full bg- rounded-md shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
+                          <div className="flex flex-row justify-between relative w-full min-h-full items-center gap-4 py-4 px-4">
+                            <div className='w-full h-full flex gap-4'>
+                                <Avatar className='w-[35px] h-[35px] lg:w-[60px] lg:h-[60px] rounded-full'>
+                                  <AvatarImage src={`${comment.user.pictureUrl} `} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
+                                </Avatar>
+                              <div className='flex flex-col flex-grow gap-4 pr-4'>  
+                                <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent} className="font-Roboto font-normal leading-5 scrollbar-none w-full max-h-[100px] lg:max-h-[150px] text-sm lg:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                                <div className='flex justify-end'>
+                                  <button onClick={() => {update(); toast({description: "Comment successfully updated!", duration: 1000})}} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base">Update comment</button>
                                 </div>
                               </div>
                             </div>
-                            {finishedUpdating ? <h1 className='font-Roboto text-[#EFEFEF] pb-4'>Comment successfully updated!</h1> : null}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  )}
-                {showDelete && (
-                  <button className="text-sm px-2">
-                    <FontAwesomeIcon icon={faTrash} className="text-xl text-[#C7C7C7]" onClick={(() => deleteComment(comment.commentId))}/>
-                  </button>
+                          </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 )}
               </div>
             </div>
-            <p className='max-w-full break-all pr-4 ml-4 py-1 list-item font-Roboto text-[#EFEFEF] text-sm lg:text-base'>{comment.content}</p>
+            <p className='max-w-full break-words pr-4 ml-4 py-1 list-item font-Roboto text-[#EFEFEF] text-sm lg:text-base'>{comment.content}</p>
             <div className='flex gap-1 items-center'>
               <button onClick={() => handleCommentLike(comment.commentId)}><svg width="25" height="25" viewBox="0 0 5 5" fill={`${comment.userReacted === 1  ? '#319357' : '#C7C7C7'}`} xmlns="http://www.w3.org/2000/svg"><path d="M0.876018 3.89022C0.876018 3.84194 0.859084 3.80016 0.825216 3.76488C0.791348 3.7296 0.751242 3.71197 0.704896 3.71197C0.656768 3.71197 0.616215 3.7296 0.583238 3.76488C0.550262 3.80016 0.533773 3.84194 0.533773 3.89022C0.533773 3.94035 0.550262 3.98259 0.583238 4.01694C0.616215 4.0513 0.656768 4.06847 0.704896 4.06847C0.751242 4.06847 0.791348 4.0513 0.825216 4.01694C0.859084 3.98259 0.876018 3.94035 0.876018 3.89022ZM1.30382 2.4642V4.24672C1.30382 4.295 1.28689 4.33678 1.25302 4.37206C1.21915 4.40734 1.17905 4.42498 1.1327 4.42498H0.362651C0.316305 4.42498 0.276198 4.40734 0.24233 4.37206C0.208462 4.33678 0.191528 4.295 0.191528 4.24672V2.4642C0.191528 2.41592 0.208462 2.37414 0.24233 2.33886C0.276198 2.30358 0.316305 2.28594 0.362651 2.28594H1.1327C1.17905 2.28594 1.21915 2.30358 1.25302 2.33886C1.28689 2.37414 1.30382 2.41592 1.30382 2.4642ZM4.46959 2.4642C4.46959 2.62388 4.42057 2.76221 4.32253 2.87919C4.34927 2.96089 4.36264 3.03145 4.36264 3.09087C4.36799 3.23198 4.32966 3.35917 4.24767 3.47244C4.27797 3.57642 4.27797 3.68504 4.24767 3.79831C4.22093 3.90414 4.1728 3.99141 4.10328 4.06011C4.11932 4.26808 4.07565 4.43612 3.97227 4.56424C3.85818 4.70535 3.68261 4.77777 3.44553 4.78148H3.10061C2.98296 4.78148 2.85462 4.76709 2.71559 4.73831C2.57655 4.70953 2.46826 4.68261 2.39072 4.65754C2.31318 4.63247 2.20578 4.5958 2.06853 4.54752C1.84928 4.46768 1.70846 4.42683 1.64607 4.42498C1.59972 4.42312 1.55962 4.40501 1.52575 4.37066C1.49188 4.33631 1.47495 4.295 1.47495 4.24672V2.46141C1.47495 2.41499 1.49099 2.37461 1.52308 2.34026C1.55516 2.3059 1.59349 2.28687 1.63805 2.28316C1.68083 2.27945 1.74856 2.22467 1.84126 2.11883C1.93395 2.01299 2.02397 1.90066 2.11131 1.78182C2.23252 1.62028 2.32254 1.50887 2.38136 1.4476C2.41345 1.41418 2.44108 1.36961 2.46425 1.31391C2.48742 1.25821 2.50302 1.21318 2.51104 1.17883C2.51906 1.14448 2.53109 1.08831 2.54714 1.01032C2.55961 0.937909 2.57076 0.881276 2.58056 0.840427C2.59036 0.799577 2.60774 0.751301 2.6327 0.695597C2.65765 0.639893 2.68796 0.593473 2.72361 0.556337C2.75747 0.521058 2.79758 0.503418 2.84393 0.503418C2.92592 0.503418 2.99945 0.513166 3.06451 0.532663C3.12958 0.552159 3.18305 0.576297 3.22494 0.605078C3.26683 0.633858 3.30248 0.671458 3.33189 0.717878C3.36131 0.764298 3.3827 0.806076 3.39606 0.843212C3.40943 0.880348 3.42013 0.926768 3.42815 0.982472C3.43617 1.03818 3.44063 1.07995 3.44152 1.10781C3.44241 1.13566 3.44286 1.17187 3.44286 1.21643C3.44286 1.28699 3.43439 1.35755 3.41745 1.4281C3.40052 1.49866 3.38359 1.55437 3.36665 1.59522C3.34972 1.63606 3.32521 1.68806 3.29312 1.75119C3.28778 1.76233 3.27886 1.77904 3.26639 1.80132C3.25391 1.8236 3.2441 1.84403 3.23697 1.86259C3.22984 1.88116 3.22271 1.90344 3.21558 1.92944H3.95622C4.09526 1.92944 4.21558 1.98236 4.31718 2.0882C4.41879 2.19403 4.46959 2.31937 4.46959 2.4642Z"/></svg></button>
               <p className={`${comment.userReacted === 1 ? 'text-[#319357]' : 'text-[#C7C7C7]'}`}>{comment.likes}</p>
@@ -417,7 +449,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
             <svg viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg" className='sm:px-2 sm:my-3 sm:w-[80px] sm:h-[55px] w-[55px] h-[25px] px-1 my-8'><path d="M11.0746 7.87313L9.84327 7.16222V8.58405L11.0746 7.87313ZM3.12687 7.99627H9.9664V7.75H3.12687V7.99627ZM0.876866 0V5.74627H1.12313V0H0.876866ZM3.12687 7.75C2.02024 7.75 1.12313 6.8529 1.12313 5.74627H0.876866C0.876866 6.98891 1.88423 7.99627 3.12687 7.99627V7.75Z" fill="#CACACA"/></svg>
               <div className='flex flex-col w-full'>
                 {commentReplies.map((reply, index) => (
-                    <EachReply key={index} reply={reply} like={handleReplyLike} dislike={handleReplyDislike} deleteReply={deleteComment} updateReply={updateComment} />
+                    <EachReply key={index} reply={reply} like={handleReplyLike} dislike={handleReplyDislike} deleteReply={deleteReply} updateReply={updateComment} />
                 ))}
               </div>
           </div>

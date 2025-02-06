@@ -6,12 +6,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'Bahnschrift';
-  src: url("/_next/static/media/bahnschrift.1ae566dd.ttf") format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 
 .hidden {
   display: none;
@@ -24,6 +18,10 @@ body {
   width: 100vw;
   background-color: #fff;
   overflow-x: hidden;
+}
+
+html body[data-scroll-locked] {
+  overflow-y: scroll !important;
 }
 
 .slide-in {

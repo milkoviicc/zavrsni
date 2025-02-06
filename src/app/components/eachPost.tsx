@@ -3,7 +3,7 @@
 import React, {useState, useEffect, useRef} from 'react'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpLong, faDownLong, faPen, faTrash, faArrowUp, faPaperclip, faN } from '@fortawesome/free-solid-svg-icons';
+import { faUpLong, faDownLong, faPen, faTrash, faArrowUp, faPaperclip, faN, faImage } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { Comment, Post, User } from '../types/types';
 import PostComment from './PostComment';
@@ -20,7 +20,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthProvider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover';
 import { Command, CommandGroup, CommandItem, CommandList } from '@/src/components/ui/command';
-import { Ellipsis, EllipsisIcon, Pencil, Settings, Trash2 } from 'lucide-react';
+import { CircleFadingPlus, Ellipsis, EllipsisIcon, Pencil, Settings, Trash2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, updatePost, refreshPosts}: {post: Post, getComments: boolean, handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string, updatedContent: string, updatedFiles: string[]) => void, refreshPosts: () => void})=> {
   
@@ -67,6 +68,7 @@ const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, upd
   const [reactionTrigger, setReactionTrigger] = useState(false);
   const [finishedUpdating, setFinishedUpdating] = useState(false);
   const [isUpdatePostDialogOpen, setIsUpdatePostDialogOpen] = useState(false);
+  const {toast} = useToast();
 
   const role = localStorage.getItem('role');
 
@@ -110,7 +112,6 @@ const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, upd
       `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/comments/update/${commentId}`,
       { content: newContent }, 
     );
-
       const updatedComment = comments.find((comment) => comment.commentId === commentId);
       if(!updatedComment) return null;
 
@@ -142,7 +143,7 @@ const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, upd
     }
   }, [post.user.userId, post]);  
 
-  const getCommentsQuery = useQuery({queryKey: ["commentsQuery"], queryFn: () => handleComments(), enabled: getComments})
+  const getCommentsQuery = useQuery({queryKey: ["commentsQuery"], queryFn: () => handleComments(), enabled: getComments && !comments});
 
   const handleComments = async () => {
     try {
@@ -170,12 +171,8 @@ const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, upd
   }
 
   const update = async () => {
-    updatePost(post.postId, updatedContent, previousFiles);
-    setFinishedUpdating(true);
-    setTimeout(() => {
-      setFinishedUpdating(false);
-      setIsUpdatePostDialogOpen(false);
-    }, 1000);
+    updatePost(post.postId, updatedContent, post.fileUrls);
+    setIsUpdatePostDialogOpen(false);
   }
 
 
@@ -279,6 +276,7 @@ const handleReaction = async (reaction: number) => {
                               <CommandItem className="text-[#AFAFAF] text-lg cursor-pointer w-fit" onSelect={(currentValue) => {
                                   setPopoverOpen(false);
                                   deletePost(post.postId);
+                                  toast({description: "Post successfully deleted."});
                               }}><Trash2 className="w-6 h-6"/>Delete</CommandItem>
                             </CommandGroup>
                           </CommandList>
@@ -288,7 +286,7 @@ const handleReaction = async (reaction: number) => {
                   )}
                   {showUpdate && (
                     <Dialog open={isUpdatePostDialogOpen} onOpenChange={setIsUpdatePostDialogOpen}>
-                      <DialogContent className='h-fit flex flex-col px-2 lg:px-4 text-black overflow-y-auto overflow-x-hidden bg-[#222222] max-w-[90%] sm:max-w-[55%] lg:max-w-[45%] lg:min-w-fit border-transparent'>
+                      <DialogContent className='h-fit flex flex-col px-2 lg:px-4 text-black overflow-y-auto overflow-x-hidden bg-[#222222] max-w-[90%] sm:max-w-[90%] xl:max-w-[45%] lg:min-w-fit border-transparent'>
                         <DialogHeader className='flex flex-row gap-2'>
                           <button onClick={() => router.push(`/users/${post.user.username}`)}>
                             <Avatar className='lg:w-[40px] lg:h-[40px] rounded-full'>
@@ -312,25 +310,32 @@ const handleReaction = async (reaction: number) => {
                                   <AvatarImage src={`${post.user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
                                 </Avatar>
                                 <div className="flex flex-col flex-grow relative max-h-fit ml-4 lg:max-h-fit ">
-                                    <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent} className="font-Roboto font-normal leading-5 scrollbar-none lg:max-w-[80%] max-h-[100px] lg:max-h-[150px] text-lg text-white outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
-                                    <input type="file" id="new-file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
-                                    <div className="flex justify-between">
-                                      <div>
-                                        <label htmlFor="new-file-input" className="hover:cursor-pointer w-fit text-[#CCCCCC] font-Roboto">Add file <FontAwesomeIcon icon={faPaperclip} className="text-sm"/></label>
-                                        <span className="block bg-[#CCCCCC] w-[75px] h-[1px] -ml-[3px]"></span>
-                                      </div>
-                                      <div className='flex items-center justify-end w-fit h-full'>
-                                        <button onClick={() => update()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem] text-sm lg:text-base">Update post</button>
+                                  <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent} className="font-Roboto font-normal leading-5 scrollbar-none lg:max-w-[80%] max-h-[100px] lg:max-h-[150px] text-lg text-white outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                                  <input type="file" id="new-file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
+                                  <div className="flex justify-between">
+                                    <div>
+                                      <label htmlFor="new-file-input" className="hover:cursor-pointer w-fit text-[#CCCCCC] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x"/></label>
+                                    </div>
+                                    <div className='flex items-center justify-end w-fit h-full'>
+                                      <button onClick={() => update()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem] text-sm lg:text-base">Update post</button>
+                                    </div>
+                                  </div>
+                                  <div className="flex w-full h-full mt-4 -ml-4">
+                                    <div className={`grid gap-2 ${previousFiles.length <= 2 ? "grid-cols-3" : ''} ${previousFiles.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>
+                                      {previousFiles ? previousFiles.map((file, index) => (
+                                        <div key={index} className='w-full relative flex justify-center sm:px-2'>
+                                          <Image key={index} src={file} width={100} height={100} alt="a" className="py-2 rounded-xl h-[150px] w-full"/>
+                                          <button className="absolute text-white top-2 right-4" onClick={() => setPreviousFiles(previousFiles.filter((_, postIndex) => postIndex != index))}>X</button>
+                                        </div>
+                                      )) : null}
+                                      <div className='w-full flex justify-center items-center'>
+                                        {previousFiles.length === 0 ? null : <label htmlFor='new-file-input' className="hover:cursor-pointer text-[#646464] font-Roboto"><CircleFadingPlus className='text-[#646464] size-14' /></label>}
                                       </div>
                                     </div>
-                                    <div className="flex items-start">
-                                        {previousFiles ? previousFiles.map((file, index) => (<Image key={index} src={file} width={100} height={64} alt="aaaaaaa" className="py-2"/>)) : null}
-                                        {previousFiles.length > 0 ? <button className="w-fit px-2" onClick={() => setPreviousFiles([])}>X</button> : null}
-                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                            {finishedUpdating ? <h1 className='font-Roboto text-[#EFEFEF] pb-4'>Post successfully updated!</h1> : null}
                         </div>
                       </DialogContent>
                     </Dialog>

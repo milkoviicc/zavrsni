@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Post, User } from '../types/types';
 import { EnhancedButton } from '@/src/components/ui/enhancedButton';
 import { Comment } from '../types/types';
+import { useToast } from '@/hooks/use-toast';
 
 const PostComment = ({post, refreshPosts, refreshComments, setComments}: {post: Post, refreshPosts: () => void, refreshComments: () => void, setComments: React.Dispatch<React.SetStateAction<Comment[]>>}) => {
 
@@ -12,6 +13,8 @@ const PostComment = ({post, refreshPosts, refreshComments, setComments}: {post: 
   const [commentTrigger, setCommentTrigger] = useState(false);
 
   const user: User = JSON.parse(localStorage.getItem('user') || '{}');
+
+  const { toast } = useToast();
 
   if(!user) {
     return false;
@@ -24,8 +27,9 @@ const PostComment = ({post, refreshPosts, refreshComments, setComments}: {post: 
       if(res.status === 200) {
         setContent('');
         const newComment: Comment = res.data;
-        setComments((prev) => [...prev, newComment]);
+        setComments((prev) => [newComment, ...prev]);
         post.commentCount++;
+        toast({description: "Comment successfully posted."})
       }
     } catch(err) {
       console.error(err);
