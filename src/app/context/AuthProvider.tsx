@@ -228,6 +228,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('user', JSON.stringify(newUser.user));
 
         localStorage.setItem('feed', 'Popular');
+        localStorage.setItem('role', 'user');
 
         // postavljam isLoggedIn state na true kako bi se znalo da je korisnik prijavljen
         setIsLoggedIn(true);
