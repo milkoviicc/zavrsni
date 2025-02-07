@@ -46,7 +46,6 @@ const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => 
   const [postPopoverOpen, setPostPopoverOpen] = useState(false);
   const [suggestionsChecked, setSuggestionsChecked] = useState(false);
   const [fillSuggestions, setFillSuggestions] = useState<User[]>([]);
-  const [cacheBuster, setCacheBuster] = useState(Date.now());
   const [postDialogOpen, setPostDialogOpen] = useState(false);  
   const [postsPage, setPostsPage] = useState(0);
 
@@ -189,14 +188,6 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
     }
   };
 
-  const convertToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error)=> reject(error);
-    });
-  }
   
   // async funkcija koja se poziva kada se klikne na gumb 'Send'
   const sendPost = async () => {
@@ -491,7 +482,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
               <div className="flex flex-col w-[85%] relative mt-6 py-2 px-4 shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636] rounded-full">
                   <div className='w-full flex justify-between items-center gap-2' onClick={() => setPostDialogOpen(true)}>
                     <Avatar className='w-[32px] h-[32px] rounded-full'>
-                        <AvatarImage src={`${user?.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
+                        <AvatarImage src={`${user?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
                     </Avatar>
                     <div className="flex flex-col w-full">
                       <div className='flex justify-between items-center w-full'>
@@ -515,7 +506,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                           <div className="flex flex-col justify-between relative w-full min-h-fit items-center gap-4 pt-4 px-4">
                               <div className='w-full h-full flex gap-4 pb-2'>
                                   <Avatar className='w-[45px] h-[45px] lg:w-[60px] lg:h-[60px] rounded-full'>
-                                      <AvatarImage src={`${user.pictureUrl}?${cacheBuster}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
+                                      <AvatarImage src={`${user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
                                   </Avatar>
                                   <div className='flex flex-col flex-grow gap-4'>  
                                     <ResizableTextarea onChange={(e) => setContent(e.target.value)} value={content} placeholder={`What's on your mind, ${user.firstName}`} className="font-Roboto font-normal leading-5 scrollbar-none w-full max-h-[100px] lg:max-h-[150px] text-sm lg:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>

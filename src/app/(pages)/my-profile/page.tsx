@@ -3,14 +3,21 @@
 import React, { useEffect, useState } from 'react'
 
 import { useAuth } from '@/src/app/context/AuthProvider'
-import { User } from '@/src/app/types/types';
+import { Friendship, Profile, User } from '@/src/app/types/types';
 import axios from 'axios';
 import { usePathname, useRouter } from 'next/navigation';
 import { Avatar, Flex } from '@radix-ui/themes';
 import Image from 'next/image';
 import { profile } from 'console';
+import ProfileUserComponent from '../../components/ProfileUserComponent';
+import { useQuery } from '@tanstack/react-query';
+import PreviousMap_ from 'postcss/lib/previous-map';
+import UserSkeleton from '../../components/UserSkeleton';
+import UserComponent from '../../components/userComponent';
+import FullPosts from '../../components/fullPosts';
+import ProfilePosts from '../../components/ProfilePosts';
 
-const Profile = () => {
+const MyProfile = () => {
   const {addImage, user, deleteAccount} = useAuth();
   const router = useRouter();
   const [editable, setEditable] = useState(false);
@@ -20,6 +27,35 @@ const Profile = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [profilePicture, setProfilePicture] = useState('');
   const [loading, setLoading] = useState(false);
+  const [friendsList, setFriendsList] = useState<Profile[]>([]);
+
+  const getFriends = async () => {
+    try {
+      const res = await axios.get<Friendship[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${user?.userId}`);
+
+      const resData = res.data.filter((profile) => profile.user.firstName != null);
+
+      if(res.status === 200) {
+        resData.map((user) => {
+          setFriendsList((prev) => [...prev, user.user]);
+        })
+        return resData;
+      }
+    } catch(err) {
+      console.error(err);
+      return [];
+    }
+  };
+
+  const getFriendsQuery = useQuery({queryKey: ["getFriends"], queryFn: () => getFriends()});
+  const [isRendering, setIsRendering] = useState(false);
+
+  useEffect(() => {
+    if (getFriendsQuery.data) {
+      const timeout = setTimeout(() => setIsRendering(false), 500);
+      return () => clearTimeout(timeout);
+    }
+  }, [getFriendsQuery.data]);
 
   useEffect(() => {
     if (user) {
@@ -85,49 +121,25 @@ const Profile = () => {
 
 
   return (
-    <div className='h-full flex flex-col gap-8 justify-center items-center'>
-      <div className='flex w-fit h-fit gap-4'>
-        <div>
-          <p>First name:</p>
-          <input type="text" value={firstName} readOnly={!editable} className={`${editable ? 'bg-white' : 'bg-gray-500'} px-1 `} onChange={(e) => setFirstName(e.target.value)}/>
+    <div className='h-full flex flex-col gap-8 mt-[80px] py-0 sm:py-6 md:py-16 bg-[#222222]'>
+      <div className='flex'>
+        <ProfileUserComponent />
+        <div className='flex-grow'>
+          <h1 className='text-[#EDEDED] text-center font-Roboto text-3xl 2xl:translate-y-[40px]'>Your posts</h1>
+          <ProfilePosts />
         </div>
-        <div>
-          <p>Last name:</p>
-          <input type="text" value={lastName} readOnly={!editable} className={`${editable ? 'bg-white' : 'bg-gray-500'} px-1 `} onChange={(e) => setLastName(e.target.value)}/>
+        <div className="xl:flex hidden flex-col fixed 3k:right-80 2k:right-64 2xl:right-24 xl:right-0 gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[-20px] 2xl:translate-x-0 2k:translate-x-[-40px] xl:translate-y-0 2xl:translate-y-[40px]">
+            <h1 className="font-Roboto text-xl xl:text-2xl 2k:text-3xl pb-4 px-4 text-[#EFEFEF] font-normal">Your Friends</h1>
+            <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
+            <div className='group w-full h-full lg:max-h-[400px] xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] flex flex-col gap-2 bg-transparent px-4 overflow-y-hidden hover:overflow-y-scroll scrollbar '>
+              {getFriendsQuery.isLoading || isRendering ? <UserSkeleton /> : getFriendsQuery.data?.map((user, index) => <UserComponent user={user.user} key={index} handleRoute={null}/>)}
+            </div>
+            <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
         </div>
-        <div>
-          <p>Username:</p>
-          <input type="text" value={username} readOnly={!editable} className={`${editable ? 'bg-white' : 'bg-gray-500'} px-1 `} onChange={(e) => setUsername(e.target.value)}/>
-        </div>
-        <button className='bg-blue-500 px-12 rounded-full' onClick={() => setEditable((prev) => !prev)}>Edit</button>
-        <button className='bg-blue-500 px-12 rounded-full' onClick={editProfileDetails}>Change</button>
       </div>
-      <div>
-      <label htmlFor="file-input" className='w-2'>
-        {selectedImage != null  ? (
-        <img
-          src={`${profilePicture}`}// This ensures no caching
-          alt="Profile"
-          style={{ borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040' }}
-          className="w-[60px] h-[60px] object-cover"
-        />
-      ) : (
-        <img
-          src={`${profilePicture}?${cacheBuster}`} // This ensures no caching
-          alt="Profile"
-          style={{ borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040' }}
-          className="w-[60px] h-[60px] object-cover"
-        />
-      )}
-      </label>
-
-      <input id="file-input" type="file" accept="image/*" className='hidden' onChange={handleImageChange} />
-        <button onClick={handleSubmitImage}>Change image</button>
-      </div>
-      <button onClick={() => deleteAccount()}>Delete account</button>
     </div>
     
   )
 }
 
-export default Profile
+export default MyProfile;
