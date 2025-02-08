@@ -13,10 +13,10 @@
 
 
 body {
-  font-family: 'Bahnschrift', sans-serif;
+  font-family: 'Roboto', sans-serif;
   height: 100vh;
   width: 100vw;
-  background-color: #fff;
+  background-color: #222222;
   overflow-x: hidden;
 }
 

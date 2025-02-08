@@ -99,10 +99,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // spremam korisnikove podatke u varijablu 'userData'
         const userData: User = JSON.parse(user);
 
+        const capitalFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+        const capitalLastName = lastName.charAt(0).toUpperCase() + lastName.slice(1);
+
         // šaljem axios put request na API, primam nazad response tipa 'Profile', a prenosim username, firstName i lastName
         const res = await axios.put<User>(
           `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile`,
-          { username: userData.username, firstName, lastName, description, occupation}
+          { username: userData.username, firstName: capitalFirstName, lastName: capitalLastName, description, occupation}
         );
 
         // provjeravam postoji li token, korisnikov id, ime i prezime

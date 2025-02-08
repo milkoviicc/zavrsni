@@ -91,13 +91,15 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
   return (
     <div className='flex py-4'>
         <div className='flex items-center w-full'>
-            <Avatar className='w-[40px] h-[40px] rounded-full'>
-                <AvatarImage src={`${reply.userProfile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.3758866786956787px 3.3758866786956787px 0px rgba(0,0,0,0.25)'}}/>
-            </Avatar>
+            <button onClick={() => router.push(`/users/${reply.userProfile.username}`)}>
+                <Avatar className='w-[40px] h-[40px] rounded-full'>
+                    <AvatarImage src={`${reply.userProfile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.3758866786956787px 3.3758866786956787px 0px rgba(0,0,0,0.25)'}}/>
+                </Avatar>
+            </button>
             <div className='flex flex-col w-full ml-2 sm:ml-4'>
                 <div className='flex justify-between mr-2'>
                     <div className='flex gap-2 items-center'>
-                        <h1 className="text-sm lg:text-base font-Roboto text-[#EFEFEF]">{reply.userProfile.firstName} {reply.userProfile.lastName}</h1>
+                        <button className="text-sm lg:text-base font-Roboto text-[#EFEFEF]" onClick={() => router.push(`/users/${reply.userProfile.username}`)}>{reply.userProfile.firstName} {reply.userProfile.lastName}</button>
                         <p className="text-xs lg:text-sm text-[#888888]">
                             {replyDays >= 1 ? justReplyDate : replyDays <= 0 && replyHours > 0 && replyMinutes <= 60 ? `${replyHours}h ago` : replyDays < 1 && replyHours <= 24 && replyMinutes <= 60 && replyMinutes >= 1 ? `${replyMinutes}m ago` : "Just now"}
                         </p>
@@ -149,7 +151,7 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
                                         <div className="flex flex-row justify-between relative w-full min-h-full items-center gap-4 py-4 px-4">
                                             <div className='w-full h-full flex gap-4'>
                                                 <Avatar className='w-[35px] h-[35px] lg:w-[60px] lg:h-[60px] rounded-full'>
-                                                    <AvatarImage src={`${userData.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
+                                                    <AvatarImage src={`${reply.userProfile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
                                                 </Avatar>
                                                 <div className='flex flex-col flex-grow gap-4 pr-4'>  
                                                 <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent} className="font-Roboto font-normal leading-5 scrollbar-none w-full max-h-[100px] lg:max-h-[150px] text-sm lg:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>

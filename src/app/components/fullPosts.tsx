@@ -78,6 +78,7 @@ const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => 
       if(page === 0) {
         setPosts([]);
       }
+      console.log('desavam');
       const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/popular-feed?page=${page}`);
       if (res.status === 200) {
         if (page === 0) {
@@ -258,10 +259,12 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
       localStorage.setItem('feed', 'Your Feed');
       setCurrentPage(0);
       setPosts([]);
+      setHasMore(true);
     } else if (currentFeed === 'Your Feed' && feedState === 'Popular') {
       localStorage.setItem('feed', 'Popular');
       setCurrentPage(0);
       setPosts([]);
+      setHasMore(true);
     } else if (currentFeed === 'Your Feed' && feedState === 'Your Feed') {
       return;
     }
@@ -541,7 +544,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
           </div>
           <div className='flex sm:hidden flex-col py-8'>
             {popularFeedQuery.isFetching || yourFeedQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
-              <InfiniteScroll className='w-full flex flex-col bg-transparent' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
+              <InfiniteScroll className='w-full flex flex-col bg-transparent' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
                   { posts.map((post, index) => (
                     <div key={index}>
                       {randomNmbs?.includes(index) && suggestionsQuery.data?.length !== 0 ? (
@@ -623,11 +626,11 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
               </div>
             
             </div>
-            <div className='w-full lg:min-w-[832px] flex flex-col justify-center items-center mt-10'>
+            <div className='w-full lg:min-w-[832px] flex flex-col justify-center mt-10'>
                 {popularFeedQuery.isFetching || yourFeedQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
-                    <InfiniteScroll className='w-full flex flex-col bg-transparent px-8 sm:px-4 2k:min-w-[832px]' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>} scrollThreshold={1}>
+                    <InfiniteScroll className='w-full flex flex-col items-center bg-transparent px-8 sm:px-4 2k:min-w-[832px]' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
                         {posts.map((post, index) => (
-                          <div key={index}>
+                          <div key={index} className='max-w-[832px] w-full'>
                             {randomNmbs?.includes(index) && suggestionsQuery.data?.length !== 0 ? (
                               <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-[#515151]'>
                                 <p className='text-[#8A8A8A]'>You might like these</p>

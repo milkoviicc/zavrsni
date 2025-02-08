@@ -320,16 +320,17 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
 
   return (
     <div className='py-2 flex-col'>
-
       <div className='flex flex-col'>
         <div className='flex'>
-          <Avatar className='w-[40px] h-[40px] rounded-full'>
-            <AvatarImage src={`${comment.user.pictureUrl} `} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.3758866786956787px 3.3758866786956787px 0px rgba(0,0,0,0.25)'}} />
-          </Avatar>
+          <button onClick={() => router.push(`/users/${comment.user.username}`)}>
+            <Avatar className='w-[40px] h-[40px] rounded-full'>
+              <AvatarImage src={`${comment.user.pictureUrl} `} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.3758866786956787px 3.3758866786956787px 0px rgba(0,0,0,0.25)'}} />
+            </Avatar>
+          </button>
           <div className='flex-col w-full ml-2 sm:ml-4'>
             <div className='flex justify-between mr-2'>
               <div className='flex gap-2 items-center'>
-                <h1 className="text-sm lg:text-base font-Roboto text-[#EFEFEF] text-left">{comment.user.firstName} {comment.user.lastName}</h1>
+                <button className="text-sm lg:text-base font-Roboto text-[#EFEFEF] text-left" onClick={() => router.push(`/users/${comment.user.username}`)}>{comment.user.firstName} {comment.user.lastName}</button>
                 <p className="text-xs lg:text-sm text-[#888888]">
                   {commentDays >= 1 ? justCommentDate : commentDays <= 0 && commentHours > 0 && commentMinutes <= 60 ? `${commentHours}h ago` : commentDays < 1 && commentHours <= 24 && commentMinutes <= 60 && commentMinutes >= 1 ? `${commentMinutes}m ago` : "Just now"}
                 </p>

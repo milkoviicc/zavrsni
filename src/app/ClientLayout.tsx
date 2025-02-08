@@ -44,7 +44,7 @@ export default function ClientLayout({
   return (
         <div className="min-h-screen flex flex-grow">
           {!isAuthRoute && <Navbar />}
-          <main className="flex-grow overflow-x-hidden">
+          <main className="flex-grow overflow-x-hidden overflow-y-hidden">
               {children}  
               {!isAuthRoute && <Footer />}
           </main>

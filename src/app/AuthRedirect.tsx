@@ -12,18 +12,13 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
 
   const isAuthRoute = pathname === '/auth';
-  const isProfileRoute = pathname === '/profile' || pathname === '/people';
 
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/auth'); // Preusmjerava na login page ako korisnik nije prijavljen
       window.location.reload();
     }
-
-    if(pathname === `/users/${user?.username}`) {
-      router.push('/my-profile');
-    }
-  }, [isAuthenticated, router, isAuthRoute, isProfileRoute, fullyRegistered, pathname, user?.username]);
+  }, [isAuthenticated, router, isAuthRoute, fullyRegistered, pathname, user?.username]);
 
   return (
     <>

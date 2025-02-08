@@ -1,183 +1,159 @@
-'use client';
-import { Friendship, FriendshipStatus, Profile, User } from '@/src/app/types/types';
-import { Avatar, Flex } from '@radix-ui/themes';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { usePathname, useRouter } from 'next/navigation'
-import { Router } from 'next/router';
+/* eslint-disable @next/next/no-img-element */
+'use client'
 import React, { useEffect, useState } from 'react'
 
+import { useAuth } from '@/src/app/context/AuthProvider'
+import { Friendship, Profile, User } from '@/src/app/types/types';
+import axios from 'axios';
+import { usePathname, useRouter } from 'next/navigation';
+import { Avatar, Flex } from '@radix-ui/themes';
+import Image from 'next/image';
+import { profile } from 'console';
+import ProfileUserComponent from '../../../components/ProfileUserComponent';
+import { useQuery } from '@tanstack/react-query';
+import PreviousMap_ from 'postcss/lib/previous-map';
+import UserSkeleton from '../../../components/UserSkeleton';
+import UserComponent from '../../../components/userComponent';
+import FullPosts from '../../../components/fullPosts';
+import ProfilePosts from '../../../components/ProfilePosts';
+
 const UserProfile = () => {
+  const {addImage, deleteAccount} = useAuth();
+  const router = useRouter();
+  const [editable, setEditable] = useState(false);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [profilePicture, setProfilePicture] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [friendsList, setFriendsList] = useState<Profile[]>([]);
+  const [myProfile, setMyProfile] = useState(false);
+  const [user, setUser] = useState<Profile>();
+  const loggedUser = localStorage.getItem('user');
+  const pathname = usePathname();
 
-    const path = usePathname();
-
-    const router = useRouter();
-
-    const [user, setUser] = useState<Profile | null>();
-    const [loggedUser, setLoggedUser] = useState<User | null>(null);
-    const [friendStatus, setFriendStatus] = useState(0);
-    const [loading, setLoading] = useState(false);
-    const [followStatus, setFollowStatus] = useState(false);
-    const [notFound, setNotFound] = useState(false);
-
-    const userName = path.slice(7, 100);
-
-    useEffect(() => {
-        const user = localStorage.getItem('user');
-        if(user) {
-            const userData: User = JSON.parse(user);
-            setLoggedUser(userData);
-        }
-    }, []);
-    
-    const getUser = async (userName: string) => {
-        try {
-            const res = await axios.get<Profile>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/username/${userName}`);
-            setUser(res.data);
-            return res.data;
-        } catch (err) {
-            console.error('Failed to fetch user profile:', err);
-        }
-    };
-
-    const getStatus = async () => {
-        try {
-            const res = await axios.get<FriendshipStatus>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/friendship-status/${user?.userId}`)
-            setFollowStatus(res.data.isFollowed);
-            setFriendStatus(res.data.friendshipStatus);
-            return res.data;
-        } catch(err) {
-            console.error('Failed to fetch user status:', err);
-        }
+  // KAD UDJEM TREBA MI LOGGEDUSER I PATHUSER, AKO JE LOGGEDUSER ISTI KO PATHUSER STAVI DA JE MOJ PROFIL AKO NIJE ONDA OSTAVI FALSE
+   useEffect(() => {
+    if(loggedUser) {
+      const loggedUserData = JSON.parse(loggedUser);
+      if(pathname === `/users/${loggedUserData?.username}`) {
+        setMyProfile(true);
+      }
     }
+  }, [loggedUser, pathname]);
 
+  const getUserData = async () => {
+    try {
 
-    const getUserQuery = useQuery({queryKey: ["userQuery", userName], queryFn:() => getUser(userName)});
-    const getUserStatus = useQuery({queryKey: ["userStatus", userName], queryFn:() => getStatus(), enabled: user !== undefined});
+      const getUserByUsername = pathname.replace('/users', '');
+      const res = await axios.get<Profile>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/username/${getUserByUsername}`);
 
-    useEffect(() => {
-        if (getUserQuery.error) {
-            setNotFound(true);
-        }
-        if (getUserQuery.isLoading) {
-            setLoading(true);
-        }
-    }, [getUserQuery.error, getUserQuery.isLoading]);
-
-    // Send friend request
-    const sendFriendRequest = async () => {
-        if (!user) return;
-
-        setFriendStatus(1);
-        try {
-            const res = await axios.post(
-                `https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/send/${user.userId}`
-            );
-
-        } catch (err) {
-            console.error('Failed to send friend request:', err);
-        }
-    };
-
-    const acceptRequest = async () => {
-
-        setFriendStatus(3);
-        try {
-            const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/accept/${user?.userId}`);
-
-            if(res.status === 200) {
-            }
-        } catch(err) {
-            console.error(err);
-        }
+      if(res.status === 200) {
+        setUser(res.data);
+        return res.data;
+      }
+    } catch(err) {
+      console.error(err);
     }
+  }
 
-    const declineRequest = async () => {
-        setFriendStatus(0);
-        try {
-            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/decline/${user?.userId}`);
-        } catch(err) {
-            console.error(err);
-        }
+  const getUserQuery = useQuery({queryKey: ["getUser"], queryFn: () => getUserData()});
+
+  const getFriends = async () => {
+    try {
+      const res = await axios.get<Friendship[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${user?.userId}`);
+
+      const resData = res.data.filter((profile) => profile.user.firstName != null);
+
+      if(res.status === 200) {
+        resData.map((user) => {
+          setFriendsList((prev) => [...prev, user.user]);
+        })
+        return resData;
+      }
+    } catch(err) {
+      console.error(err);
+      return [];
     }
+  };
 
-    const unFriend = async () => {
-        setFriendStatus(0);
-        try {
-            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/delete/${user?.userId}`);
-        } catch(err) {
-            console.error(err);
-        }
+  const getFriendsQuery = useQuery({queryKey: ["getFriends"], queryFn: () => getFriends(), enabled: user !== undefined});
+  const [isRendering, setIsRendering] = useState(false);
+
+  useEffect(() => {
+    if (getFriendsQuery.data) {
+      const timeout = setTimeout(() => setIsRendering(false), 500);
+      return () => clearTimeout(timeout);
     }
-    
-
-    const follow = async () => {
-        setFollowStatus(true);
-        try {
-            const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/add-follow/${user?.userId}`);
-
-            if(res.status === 200) {
-                setUser((prevUserData) => prevUserData  ? {...prevUserData, followers: prevUserData.followers + 1} : prevUserData);
-            }
-            
-        } catch(err) {
-            console.error(err);
-        }
+    if(getUserQuery.data) {
+      const timeout = setTimeout(() => setIsRendering(false), 500);
+      return () => clearTimeout(timeout);
     }
+  }, [getFriendsQuery.data, getUserQuery.data]);
 
-    const unfollow = async () => {
-        setFollowStatus(false);
-        try {
+  const editProfileDetails = async () => {
+    try {
+      const res = await axios.put('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile', {username, firstName, lastName});
 
-            const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/unfollow/${user?.userId}`);
-            
-            if(res.status === 200) {
+      if(res.status === 200) {
+        const updatedUser: User = res.data;
 
-                setUser((prevUserData) => prevUserData  ? {...prevUserData, followers: prevUserData.followers - 1} : prevUserData);
-            }
-        } catch(err) {
-            console.error(err);
-        }
+        localStorage.removeItem('user');
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        window.location.reload();
+      }
+    } catch(err) {
+      console.error(err);
     }
+  }
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const file = event.target.files[0];
+      setSelectedImage(file);
+
+      // Generate a temporary image URL for preview
+      const imageUrl = URL.createObjectURL(file);
+
+      // Set the profile picture to the temporary URL for preview
+      setProfilePicture(imageUrl);
+    }
+  };
+
+  const handleSubmitImage = async () => {
+    if (selectedImage) {
+      setLoading(true);
+      await addImage(selectedImage);
+      // After image is uploaded and state is updated, set the new profile picture URL
+      setProfilePicture(user?.pictureUrl || ''); // Update the image in local state
+    }
+  };
+
+  if(!user) {
+    return null;
+  }
 
   return (
-    <div className='h-full flex flex-col gap-8 justify-center items-center'>
-        {getUserQuery.isFetching ? <span className="loader"></span> : getUserQuery.error || !getUserQuery.data ? <h1>User not found!</h1> : (
-            <div>
-                <h1>{getUserQuery.data.username}</h1>
-                <Flex gap="2">
-                    <Avatar src={`${getUserQuery.data.pictureUrl}`} style={{ width: '60px', height: '60px', borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} fallback="A" />
-                </Flex>
-                
-                {getUserStatus.isLoading ? 'Loading...'
-                : friendStatus === 1 ? <h1>Friend request sent</h1>
-                : friendStatus === 2 ? (
-                    <div className='flex gap-2'>
-                        <button onClick={acceptRequest}>Accept</button>
-                        <button onClick={declineRequest}>Decline</button>
-                    </div>
-                )
-                : friendStatus === 3 ? (
-                    <div>
-                        <button onClick={unFriend}>Unfriend</button> 
-                    </div>
-                )
-                : <button onClick={() => sendFriendRequest()}>Add friend</button>}
-                { followStatus ? (
-                    <div>
-                        <button onClick={() => unfollow()}>Unfollow</button>
-                    </div>
-                ) : (
-                    <div>
-                        <button onClick={() => follow()}>Follow</button>
-                    </div>
-                )}
-                <h1>Followers: {getUserQuery.data.followers}</h1>
-                <h1>Following: {getUserQuery.data.following}</h1>
-            </div>
-        )}
+    <div className='flex-col mt-[35px] sm:mt-[80px] xl:mt-[60px] min-h-[786px] 2k:min-h-[1200px] bg-[#222222]'>
+      <div className='flex-col shadow-[0px_0.1px_15px_0px_rgba(0_0_0_0.26)] min-h-[850px] py-0 sm:py-6 md:py-16'>
+        <div className='flex w-screen justify-between 2xl:px-16 xl:px-14 lg:px-4 gap-4'>
+          <ProfileUserComponent pathUser={user}/>
+          <div className='flex-grow w-screen'>
+            <ProfilePosts pathUser={user} />
+          </div>
+          <div className="xl:flex hidden flex-col fixed 3k:right-80 2k:right-64 2xl:right-24 xl:right-0 gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[-20px] 2xl:translate-x-0 2k:translate-x-[-40px] xl:translate-y-0 2xl:translate-y-[40px]">
+              <h1 className="font-Roboto text-xl xl:text-2xl 2k:text-3xl pb-4 px-4 text-[#EFEFEF] font-normal">{myProfile ? 'Your Friends' : 'Their Friends'}</h1>
+              <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
+              <div className='group w-full h-full lg:max-h-[400px] xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] flex flex-col gap-2 bg-transparent px-4 overflow-y-hidden hover:overflow-y-scroll scrollbar'>
+                {getFriendsQuery.isLoading || isRendering ? <UserSkeleton /> : getFriendsQuery.data?.map((user, index) => <UserComponent user={user.user} key={index} handleRoute={null}/>)}
+              </div>
+              <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
 
-export default UserProfile
+export default UserProfile;

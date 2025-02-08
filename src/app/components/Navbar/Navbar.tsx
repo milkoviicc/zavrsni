@@ -160,7 +160,7 @@ const Navbar = memo(() => {
                                         <CommandGroup  className="px-0">
                                             <CommandItem className="text-[#AFAFAF] text-base" onSelect={(currentValue) => {
                                                 setPopoverOpen(false);
-                                                router.push('/my-profile');
+                                                router.push(`/users/${userData?.username}`);
                                             }}><Avatar><AvatarImage src={`${userData?.pictureUrl}`} className="w-[45px] h-[45px] aspect-square rounded-full object-cover" style={{borderRadius: '50%', boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback></Avatar> My profile</CommandItem>
                                             <CommandItem className="text-[#AFAFAF] text-lg" onSelect={(currentValue) => {
                                                 setPopoverOpen(false);
@@ -179,7 +179,7 @@ const Navbar = memo(() => {
                 </div>
                 <div className="flex py-1 w-auto max-w-[100%] justify-between">
                     <div className="hidden md:flex justify-end items-center">
-                        <button className="hover:cursor-pointer flex" onClick={() => router.push(`/my-profile`)}>
+                        <button className="hover:cursor-pointer flex" onClick={() => router.push(`/users/${userData?.username}`)}>
                             <Avatar className="w-[30px] h-[30px]">
                                 <AvatarImage src={`${userData?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
                             </Avatar> 
@@ -216,7 +216,7 @@ const Navbar = memo(() => {
                 </div>
                 <div className="w-[33%] flex justify-end gap-1 items-center">
                     <Button asChild variant="link" onClick={logout} className="hover:cursor-pointer text-[#AFAFAF]"><FontAwesomeIcon icon={faRightFromBracket} className="text-sm -mt-1 font-thin sm:size-4 md:size-6"/></Button>
-                    <button className="hover:cursor-pointer flex gap-2" onClick={() => router.push(`/my-profile`)}>
+                    <button className="hover:cursor-pointer flex gap-2" onClick={() => router.push(`/users/${userData?.username}`)}>
                         <Avatar className="mr-6 xl:w-[45px] xl:h-[45px] 2xl:w-[60px] 2xl:h-[60px]">
                             <AvatarImage src={`${userData?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{ boxShadow: '0px 6px 6px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
                         </Avatar> 

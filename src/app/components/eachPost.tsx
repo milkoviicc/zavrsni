@@ -235,7 +235,7 @@ const handleReaction = async (reaction: number) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   return (
-    <div className="mt-2 md:max-w-[800px] w-auto h-fit flex flex-col gap-2 text-white px-1 pt-2 overflow-hidden border-t-[1px] border-[#515151]">
+    <div className="mt-2 md:max-w-[832px] w-auto h-fit flex flex-col gap-2 text-white px-1 pt-2 overflow-hidden border-t-[1px] border-[#515151]">
       <div className="flex gap-2 flex-1">
         <div className='flex flex-col w-full'>
           <div className='sm:py-2 sm:px-4 py-1 px-1 flex'>
