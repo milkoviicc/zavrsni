@@ -105,7 +105,7 @@ const UserProfile = () => {
 
   const {toast} = useToast();
   
-  const editProfile = async (username: string, fullName: string, occupation: string | null, description: string | null) => {
+  const editProfile = async (username: string, fullName: string, description: string | null, occupation: string | null) => {
     try {
       const { firstName, lastName } = splitFullName(fullName);
 
