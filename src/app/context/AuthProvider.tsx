@@ -36,15 +36,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // ukoliko token i korisnik postoje ulazi u {} i izvršava se dalje
     if (token && storedUser && feed) {
-      if(isTokenExpired(token)) {
-        localStorage.clear();
-        router.push('/auth');
-        setUser(null);
-        setProfile(null);
-        setIsLoggedIn(false);
-        window.location.reload();
-        return;
-      }
 
       // spremam korisnikove podatke u varijablu 'userData'
       const userData = JSON.parse(storedUser);
@@ -64,26 +55,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // postavljam loading state na false nakon provjere
     setLoading(false); 
   }, [isLoggedIn, router]);
-
-
-  const isTokenExpired = (token: string) => {
-    if (!token) return true;
-  
-    try {
-      const decodedToken = jwtDecode<{ exp?: number }>(token); // TypeScript type with optional `exp`
-      const currentTime = Date.now() / 1000;
-
-      // Check if `exp` exists and compare; if not, treat it as expired
-      if (decodedToken.exp === undefined) {
-        return true;
-      }
-
-      return decodedToken.exp < currentTime;
-    } catch (error) {
-      console.error('Error decoding token: ', error);
-      return true;
-    }
-  };
 
 
   // async funkcija koja prima ime i prezime varijable, oba tipa string, nakon unošenja punog imena i prezimena na stranici.
