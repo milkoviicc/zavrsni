@@ -10,12 +10,13 @@ import { Avatar, Flex } from '@radix-ui/themes';
 import Image from 'next/image';
 import { profile } from 'console';
 import ProfileUserComponent from '../../../components/ProfileUserComponent';
-import { useQuery } from '@tanstack/react-query';
+import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import PreviousMap_ from 'postcss/lib/previous-map';
 import UserSkeleton from '../../../components/UserSkeleton';
 import UserComponent from '../../../components/userComponent';
 import FullPosts from '../../../components/fullPosts';
 import ProfilePosts from '../../../components/ProfilePosts';
+import { useToast } from '@/hooks/use-toast';
 
 const UserProfile = () => {
   const {addImage, deleteAccount} = useAuth();
@@ -32,6 +33,7 @@ const UserProfile = () => {
   const [user, setUser] = useState<Profile>();
   const loggedUser = localStorage.getItem('user');
   const pathname = usePathname();
+  const queryClient = useQueryClient();
 
   // KAD UDJEM TREBA MI LOGGEDUSER I PATHUSER, AKO JE LOGGEDUSER ISTI KO PATHUSER STAVI DA JE MOJ PROFIL AKO NIJE ONDA OSTAVI FALSE
    useEffect(() => {
@@ -92,17 +94,36 @@ const UserProfile = () => {
     }
   }, [getFriendsQuery.data, getUserQuery.data]);
 
-  const editProfileDetails = async () => {
+
+  function splitFullName(fullName: string): {firstName: string; lastName: string} {
+    const [firstName, ...lastNameParts] = fullName.split(' ');
+    const [firstNamePart, ...lastNamePart] = fullName.split(' ');
+    const lastName = lastNamePart.join(' ');
+
+    return {firstName, lastName};
+  }
+
+  const {toast} = useToast();
+  
+  const editProfile = async (username: string, fullName: string, occupation: string | null, description: string | null) => {
     try {
-      const res = await axios.put('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile', {username, firstName, lastName});
+      const { firstName, lastName } = splitFullName(fullName);
+
+      const res = await axios.put('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/update-profile', {username, firstName, lastName, description, occupation});
 
       if(res.status === 200) {
         const updatedUser: User = res.data;
-
+        queryClient.invalidateQueries({queryKey: ["getUser"]});
         localStorage.removeItem('user');
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        window.location.reload();
+        toast({description: "Profile details successfully updated!", duration: 1000});
+        if(user?.username === updatedUser.username) {
+          return;
+        } else {
+          router.push(`/users/${username}`);
+        }
       }
+
     } catch(err) {
       console.error(err);
     }
@@ -138,7 +159,7 @@ const UserProfile = () => {
     <div className='flex-col mt-[35px] sm:mt-[80px] xl:mt-[60px] min-h-[786px] 2k:min-h-[1200px] bg-[#222222]'>
       <div className='flex-col shadow-[0px_0.1px_15px_0px_rgba(0_0_0_0.26)] min-h-[850px] py-0 sm:py-6 md:py-16'>
         <div className='flex w-screen justify-between 2xl:px-16 xl:px-14 lg:px-4 gap-4'>
-          <ProfileUserComponent pathUser={user}/>
+          <ProfileUserComponent pathUser={user} editProfile={editProfile}/>
           <div className='flex-grow w-screen'>
             <ProfilePosts pathUser={user} />
           </div>

@@ -1,14 +1,29 @@
-import { usePathname } from 'next/navigation';
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { Profile, User } from '../types/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
-import { Pencil } from 'lucide-react';
+import { Pencil, Router } from 'lucide-react';
+import axios from 'axios';
 
-const ProfileUserComponent = ({pathUser}: {pathUser: Profile}) => {
+const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editProfile: (username: string, fullName: string, description: string | null, occupation: string | null) => void}) => {
 
-  const [myProfile, setMyProfile] = useState(false);
   const user = localStorage.getItem('user');
+  const [myProfile, setMyProfile] = useState(false);
   const [shortUsername, setShortUsername] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
+  const [description, setDescription] = useState<string | null>('');
+  const [occupation, setOccupation] = useState<string | null>('');
+  const [allowSaving, setAllowSaving] = useState(false);
+  const [editableName, setEditableName] = useState(false);
+  const [editableUsername, setEditableUsername] = useState(false);
+  const [editableDescription, setEditableDescription] = useState(false);
+  const [editableOccupation, setEditableOccupation] = useState(false);
+
+  const router = useRouter();
+  
   useEffect(() => {
     if(user) {
       const userData: User = JSON.parse(user);
@@ -23,13 +38,32 @@ const ProfileUserComponent = ({pathUser}: {pathUser: Profile}) => {
           const firstLetter = pathUser.firstName.slice(0, 1);
           const secondLetter = pathUser.lastName.slice(0, 1);
           setShortUsername(firstLetter + secondLetter);
+          setFullName(`${pathUser.firstName} ${pathUser.lastName}`);
+          setLastName(pathUser.lastName);
+          setUsername(pathUser.username);
+          if(pathUser.description) {
+            setDescription(pathUser.description);
+          } else {
+            setDescription(null);
+          }
+
+          if(pathUser.occupation) {
+            setOccupation(pathUser.occupation);
+          } else {
+            setOccupation(null);
+          }
+          
       }
   }, [pathUser]);
 
-  const [editableName, setEditableName] = useState(false);
-  const [editableUsername, setEditableUsername] = useState(false);
-  const [editableDescription, setEditableDescription] = useState(false);
-  const [editableOccupation, setEditableOccupation] = useState(false);
+  const handleEditProfile = () => {
+    editProfile(username, fullName, description, occupation);
+    setAllowSaving(false);
+    setEditableName(false);
+    setEditableUsername(false);
+    setEditableDescription(false);
+    setEditableOccupation(false);
+  }
   
 
   if(myProfile) {
@@ -65,33 +99,33 @@ const ProfileUserComponent = ({pathUser}: {pathUser: Profile}) => {
                 <div className='flex flex-col items-start'>
                   <label htmlFor="profileName" className='text-[#7B7B7B] font-extralight text-sm'>Name</label>
                   <div className='flex items-center relative w-full'>
-                    {editableName ? (<input type="text" id="profileName" placeholder={`${pathUser.firstName} ${pathUser.lastName}`} className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] px-2 py-1 rounded-md outline-none'/>) : <input type="text" id="profileName" placeholder={`${pathUser.firstName} ${pathUser.lastName}`} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] px-2 py-1 rounded-md outline-none'/>}
-                    <label htmlFor="profileName" className='absolute right-1'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableName((prev) => !prev)}/></label>
+                    {editableName ? (<input type="text" id="profileName" value={fullName} onChange={(e) => {`${pathUser.firstName} ${pathUser.lastName}` === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setFullName(e.target.value)}} className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] px-2 py-1 rounded-md outline-none'/>) : <input type="text" id="profileName" value={fullName} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] px-2 py-1 rounded-md outline-none cursor-not-allowed'/>}
+                    <label htmlFor="profileName" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableName((prev) => !prev)}/></label>
                   </div>
                 </div>
                 <div className='flex flex-col items-start'>
                   <label htmlFor="username" className='text-[#7B7B7B] font-extralight text-sm'>Username</label>
                   <div className='flex items-center relative w-full'>
-                    {editableUsername ? (<input type="text" id="username" placeholder={`${pathUser.username}`} className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] px-2 py-1 rounded-md outline-none'/>) : <input type="text" id="username" placeholder={`${pathUser.username}`} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] px-2 py-1 rounded-md outline-none'/>}
-                    <label htmlFor="username" className='absolute right-1'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableUsername((prev) => !prev)}/></label>
+                    {editableUsername ? (<input type="text" id="username" value={username} onChange={(e) => {pathUser.username === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setUsername(e.target.value)}} className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] px-2 py-1 rounded-md outline-none'/>) : <input type="text" id="username" value={username} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] px-2 py-1 rounded-md outline-none cursor-not-allowed'/>}
+                    <label htmlFor="username" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableUsername((prev) => !prev)}/></label>
                   </div>
                 </div>
                 <div className='flex flex-col items-start'>
                   <label htmlFor="description" className='text-[#7B7B7B] font-extralight text-sm'>Description</label>
                   <div className='flex items-center relative w-full'>
-                    {editableDescription ? <textarea id="description" placeholder={`${pathUser.description}`} rows={4} maxLength={100} className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none'/>: <textarea id="description" placeholder={`${pathUser.description}`} rows={4} maxLength={100} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none'/>}
-                    <label htmlFor="description" className='absolute right-1'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableDescription((prev) => !prev)}/></label>
+                    {editableDescription ? <textarea id="description" value={description ? `${description}` : 'Set a description'} onChange={(e) => {pathUser.description === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setDescription(e.target.value)}} rows={4} maxLength={100} className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none'/>: <textarea id="description" value={description ? `${description}` : 'Set a description'} rows={4} maxLength={100} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none cursor-not-allowed'/>}
+                    <label htmlFor="description" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableDescription((prev) => !prev)}/></label>
                   </div>
                 </div>
                 <div className='flex flex-col items-start'>
                   <label htmlFor="occupation" className='text-[#7B7B7B] font-extralight text-sm'>Occupation</label>
                   <div className='flex items-center relative w-full'>
-                    {editableOccupation ? <input type="text" id="occupation" placeholder={`${pathUser.occupation}`} className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] px-2 py-1 rounded-md outline-none'/> : <input type="text" id="occupation" placeholder={`${pathUser.occupation}`} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] px-2 py-1 rounded-md outline-none'/>}
-                    <label htmlFor="occupation" className='absolute right-1'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableOccupation((prev) => !prev)}/></label>
+                    {editableOccupation ? <input type="text" id="occupation" value={occupation ? `${occupation}` : 'Set an occupation'} onChange={(e) => {pathUser.occupation === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setOccupation(e.target.value)}} className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] px-2 py-1 rounded-md outline-none'/> : <input type="text" id="occupation" value={occupation ? `${occupation}` : 'Set an occupation'} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-sm bg-[#363636] px-2 py-1 rounded-md outline-none cursor-not-allowed'/>}
+                    <label htmlFor="occupation" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableOccupation((prev) => !prev)}/></label>
                   </div>
                 </div>
                 <div className='flex justify-center py-2'>
-                  <button className='text-[#7D7D7D] font-light rounded-full bg-[#2C2C2C] w-fit px-4 py-1 shadow-[0_2px_3px_0_rgba(0,0,0,0.3)]'>Save changes</button>
+                  {allowSaving ? <button className='text-[#7D7D7D] font-light rounded-full bg-[#363636] w-fit px-4 py-1 shadow-[0_2px_3px_0_rgba(0,0,0,0.3)] cursor-pointer' onClick={() =>  handleEditProfile()}>Save changes</button> :<button className='text-[#7D7D7D] font-light rounded-full bg-[#2C2C2C] w-fit px-4 py-1 shadow-[0_2px_3px_0_rgba(0,0,0,0.3)] cursor-not-allowed'>Save changes</button>}
                 </div>
               </div>
             </div>
