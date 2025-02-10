@@ -320,6 +320,7 @@ const handleReaction = async (reaction: number) => {
                                       <button onClick={() => update()} className="rounded-full w-[100px] bg-[#5D5E5D] text-white mr-4 py-[0.30rem] text-sm lg:text-base">Update post</button>
                                     </div>
                                   </div>
+                                  {previousFiles.length === 0 ? null : (
                                   <div className="flex w-full h-full mt-4 -ml-4">
                                     <div className={`grid gap-2 ${previousFiles.length <= 2 ? "grid-cols-3" : ''} ${previousFiles.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>
                                       {previousFiles ? previousFiles.map((file, index) => (
@@ -333,6 +334,7 @@ const handleReaction = async (reaction: number) => {
                                       </div>
                                     </div>
                                   </div>
+                                  )}
                                 </div>
                               </div>
                             </div>

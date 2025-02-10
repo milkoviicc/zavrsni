@@ -113,14 +113,14 @@ const UserProfile = () => {
 
       if(res.status === 200) {
         const updatedUser: User = res.data;
-        queryClient.invalidateQueries({queryKey: ["getUser"]});
         localStorage.removeItem('user');
         localStorage.setItem('user', JSON.stringify(updatedUser));
         toast({description: "Profile details successfully updated!", duration: 1000});
         if(user?.username === updatedUser.username) {
+          queryClient.invalidateQueries({queryKey: ["getUser"]});
           return;
         } else {
-          router.push(`/users/${username}`);
+          router.push(`/users/${updatedUser.username}`);
         }
       }
 

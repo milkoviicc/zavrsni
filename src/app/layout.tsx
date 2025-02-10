@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-'use client';
 import "./globals.css";
 import { AuthProvider, useAuth } from "./context/AuthProvider";
 import ClientLayout from './ClientLayout'
@@ -12,12 +11,12 @@ import {motion, AnimatePresence} from 'framer-motion';
 import QueryProvider from "./components/QueryProvider";
 import { Toaster } from "../components/ui/toaster";
 
-/*
+
 export const metadata: Metadata = {
-  title: "Društvena mreža",
+  title: "SNET | Connect with people",
   description: "Društvena mreža u nextjs-u.",
 };
-*/
+
 
 export default function RootLayout({
   children,

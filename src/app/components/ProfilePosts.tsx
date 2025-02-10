@@ -291,15 +291,15 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
                           <AvatarImage src={`${pathUser.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
                       </Avatar>
                       <div className="flex flex-col w-full">
-                      <div className='flex justify-between items-center w-full'>
-                          <textarea value={`What's on your mind, ${pathUser.firstName}`} readOnly onClick={() => setPostDialogOpen(true)} className="resize-none truncate whitespace-nowrap font-Roboto font-normal scrollbar-none h-[20px] md:min-w-[310px] w-full md:w-full pr-2 text-sm text-[#fff] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
-                          <input type="file" id="file-input" accept="image/*, video/*, .webp" className="hidden" onChange={handlePostFile} multiple/>
-                          <div className="flex justify-between">
-                          <div>
-                              <label htmlFor="file-input" className="hover:cursor-pointer text-[#CCCCCC] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" /></label>
-                          </div>
-                          </div>
-                      </div>
+                        <div className='flex justify-between items-center w-full'>
+                            <textarea value={`What's on your mind, ${pathUser.firstName}`} readOnly onClick={() => setPostDialogOpen(true)} className="resize-none truncate whitespace-nowrap font-Roboto font-normal scrollbar-none h-[20px] md:min-w-[310px] w-full md:w-full pr-2 text-sm text-[#fff] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                            <input type="file" id="file-input" accept="image/*, video/*, .webp" className="hidden" onChange={handlePostFile} multiple/>
+                            <div className="flex justify-between">
+                            <div>
+                                <label htmlFor="file-input" className="hover:cursor-pointer text-[#CCCCCC] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" /></label>
+                            </div>
+                            </div>
+                        </div>
                       </div>
                   </div>
               </div>
@@ -346,6 +346,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
                 </Dialog>
             </div>
           ) : null}
+          <h1 className='text-[#EDEDED] text-center font-Roboto text-3xl pt-8'>{myProfile ? 'Your posts' : 'Their posts'}</h1>
           <div className='flex sm:hidden flex-col py-8'>
             {getPostsQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
               <InfiniteScroll className='w-full flex flex-col bg-transparent' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
