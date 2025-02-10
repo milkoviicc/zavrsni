@@ -157,8 +157,14 @@ const UserProfile = () => {
 
   return (
     <div className='flex-col mt-[35px] sm:mt-[80px] xl:mt-[60px] min-h-[786px] 2k:min-h-[1200px] bg-[#222222]'>
-      <div className='flex-col shadow-[0px_0.1px_15px_0px_rgba(0_0_0_0.26)] min-h-[850px] py-0 sm:py-6 md:py-16'>
-        <div className='flex w-screen justify-between 2xl:px-16 xl:px-14 lg:px-4 gap-4'>
+      <div className='flex-col shadow-[0px_0.1px_15px_0px_rgba(0_0_0_0.26)] min-h-[850px] py-0 sm:py-6 md:py-8'>
+        <div className='xl:hidden flex flex-col w-screen'>
+          <ProfileUserComponent pathUser={user} editProfile={editProfile}/>
+            <div className='py-10'>
+              <ProfilePosts pathUser={user} />
+            </div>
+        </div>
+        <div className='xl:flex hidden w-screen justify-between 2xl:px-16 xl:px-14 lg:px-4 gap-4'>
           <ProfileUserComponent pathUser={user} editProfile={editProfile}/>
           <div className='flex-grow w-screen'>
             <ProfilePosts pathUser={user} />
