@@ -27,7 +27,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
     const [content, setContent] = useState('');
     const [postFile, setPostFile] = useState<File[]>([]);
     const [myProfile, setMyProfile] = useState(false);
-    const [isRendering, setIsRendering] = useState(false);
+    const [isRendering, setIsRendering] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const [getComments, setGetComments] = useState(false);
@@ -55,6 +55,9 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
         const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/username/${pathUser?.username}?page=${page}`);
         if (res.status === 200) {
           if (page === 0) {
+            if(res.data.length < 20) {
+              setHasMore(false);
+            }
             setPosts(res.data);
             return res.data;
           } else {
@@ -74,10 +77,17 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
       }
     }
 
+    useEffect(() => {
+      if (posts.length === 0 && currentPage >= 1) {
+          setCurrentPage((prev) => Math.max(prev - 1, 0));
+      }
+    }, [posts, currentPage]);
+
     const getPostsQuery = useQuery({queryKey: ["getPosts"], queryFn: () => getPosts(currentPage), enabled: pathUser !== undefined});
 
     useEffect(() => {
       if (getPostsQuery.data) {
+        setPosts(getPostsQuery.data);
         const timeout = setTimeout(() => setIsRendering(false), 500);
         return () => clearTimeout(timeout);
       }
@@ -126,8 +136,8 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
     };
 
     const fetchMoreData = () => {
-        getPosts(currentPage + 1);
-        setCurrentPage((prevPage) => prevPage + 1);  // Increment page
+      getPosts(currentPage + 1);
+      setCurrentPage((prevPage) => prevPage + 1);  // Increment page
     };
 
     const handleFeedState = () => {
@@ -226,42 +236,41 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
 
     const updatePost = async (postId: string, updatedContent: string, updatedFiles: string[]) => {
         try {
+          const processFiles = async () => {
+          const filePromises = updatedFiles.map(async (image, index) => {
+              const response = await fetch(image);
+              const blob = await response.blob();
+              return new File([blob], `image${index}.jpg`, { type: blob.type });
+          });
+          
+          // Wait for all files to be processed and then save to processedFiles
+          const processedFiles = await Promise.all(filePromises);
+          
+          // Append each file to formData
+          const formData = new FormData();
+          processedFiles.forEach((file) => {
+              formData.append("Files", file);
+          });
+              
+          formData.append('Content', updatedContent);
+          
+          return formData;
+          };
 
-            const processFiles = async () => {
-            const filePromises = updatedFiles.map(async (image, index) => {
-                const response = await fetch(image);
-                const blob = await response.blob();
-                return new File([blob], `image${index}.jpg`, { type: blob.type });
-            });
-            
-            // Wait for all files to be processed and then save to processedFiles
-            const processedFiles = await Promise.all(filePromises);
-            
-            // Append each file to formData
-            const formData = new FormData();
-            processedFiles.forEach((file) => {
-                formData.append("Files", file);
-            });
-                
-            formData.append('Content', updatedContent);
-            
-            return formData;
-            };
+          processFiles().then(async (formData) => {
+          const res = await axios.put<Post>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/update-post/${postId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+          
+          if(res.status === 200) {
+              toast({description: "Post successfully updated!", duration: 1000});
+          }
+          });
 
-            processFiles().then(async (formData) => {
-            const res = await axios.put<Post>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/update-post/${postId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-            
-            if(res.status === 200) {
-                toast({description: "Post successfully updated!", duration: 1000});
-            }
-            });
+          const updatedPost = posts.find((post) => post.postId === postId);
 
-            const updatedPost = posts.find((post) => post.postId === postId);
+          if(!updatedPost) return null;
 
-            if(!updatedPost) return null;
-
-            updatedPost.content = updatedContent;
-            updatedPost.fileUrls = updatedFiles;
+          updatedPost.content = updatedContent;
+          updatedPost.fileUrls = updatedFiles;
         } catch(err) {
         console.error(err);
         }
@@ -394,7 +403,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
           </div>
           <div className='w-full lg:min-w-[832px] flex flex-col justify-center mt-10'>
               {getPostsQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
-                  <InfiniteScroll className='w-full flex flex-col items-center bg-transparent px-8 sm:px-4 2k:min-w-[832px]' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
+                  <InfiniteScroll className='w-full flex flex-col items-center bg-transparent px-8 sm:px-4 2k:min-w-[832px]' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1 className='text-white'>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
                       {posts.map((post, index) => (
                         <div key={index} className='max-w-[832px] w-full'>
                           <EachPost key={index} post={post} getComments={getComments} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
