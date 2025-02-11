@@ -3,7 +3,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { Profile, User } from '../types/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
-import { Ellipsis, EllipsisVertical, Pencil, Router, Trash2, Trash2Icon } from 'lucide-react';
+import { Ellipsis, EllipsisVertical, MousePointerClick, Pencil, Router, Trash2, Trash2Icon } from 'lucide-react';
 import axios from 'axios';
 import { CommandGroup } from 'cmdk';
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover';
@@ -73,10 +73,12 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
   }
 
   const [deleteAccDialogOpen, setDeleteAccDialogOpen] = useState(false);
+
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
   
   if(myProfile) {
     return (
-      <div>
+      <div >
         <div className='xl:hidden pt-8 md:pb-4 flex justify-center px-4 w-screen'>
           <div className='w-fit sm:gap-10'>
             <div className='w-full relative rounded-lg flex flex-col sm:hidden justify-center items-center gap-5 px-2 lg:px-8 py-4 shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)]'>
@@ -106,11 +108,13 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                   <p className='text-center text-[#EDEDED] font-Roboto text-sm w-[55%]'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
                   <p className='text-[#DFDEDE] font-Roboto text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
                   <div className='flex justify-evenly gap-4'>
-                    <div>
-                      <p className='text-[#888888] font-Roboto text-sm'>Followers: {pathUser.followers}</p>
+                    <div className='flex items-center gap-2'>
+                      <p className='text-[#888888] font-Roboto text-sm'>Followers</p>
+                      <span className='text-[#888888] text-lg'>{pathUser.followers}</span>
                     </div>
-                    <div>
-                      <p className='text-[#888888] font-Roboto text-sm'>Following: {pathUser.following}</p>
+                    <div className='flex items-center gap-2'>
+                      <p className='text-[#888888] font-Roboto text-sm'>Following</p>
+                      <span className='text-[#888888] text-lg'>{pathUser.following}</span>
                     </div>
                   </div>
                 </div>
@@ -119,9 +123,9 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
               <div className='flex flex-col justify-center'>
                 <div className='flex flex-col gap-4'>
                   <div className='flex gap-2 justify-center items-center'>
-                    <h1 className='text-center font-Roboto text-[#A0A0A0] text-sm 2xl:text-lg font-semibold'>EDIT PROFILE</h1>
+                    <button className='flex gap-2 bg-[#363636] px-4 py-2 rounded-md text-center font-Roboto text-[#A0A0A0] text-sm 2xl:text-lg font-semibold shadow-[0_2px_3px_0_rgba(0,0,0,0.3)]' onClick={() => setEditProfileOpen((prev) => !prev)}>EDIT PROFILE <MousePointerClick size={20}/></button>
                   </div>
-                  <div className='flex gap-2 w-full'>
+                  <div className={`${editProfileOpen ? 'flex' : 'hidden'} gap-2 w-full`}>
                     <div className='flex flex-col items-start h-fit w-full'>
                       <label htmlFor="profileName" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Name</label>
                       <div className='flex items-center relative w-full'>
@@ -137,7 +141,7 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                       </div>
                     </div>
                   </div>
-                  <div className='flex gap-2 w-full'>
+                  <div className={`${editProfileOpen ? 'flex' : 'hidden'} gap-2 w-full`}>
                     <div className='flex flex-col items-start h-fit w-full'>
                       <label htmlFor="description" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Description</label>
                       <div className='flex items-center relative w-full'>
@@ -186,11 +190,13 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                   <p className='text-left text-[#EDEDED] font-Roboto text-xs 2xl:text-sm max-w-[150px]'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
                   <p className='text-[#DFDEDE] font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
                   <div className='flex justify-evenly gap-4'>
-                    <div>
-                      <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers: {pathUser.followers}</p>
+                    <div className='flex items-center gap-2'>
+                      <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers</p>
+                      <span className='text-[#888888] text-lg'>{pathUser.followers}</span>
                     </div>
-                    <div>
-                      <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following: {pathUser.following}</p>
+                    <div className='flex items-center gap-2'>
+                      <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following</p>
+                      <span className='text-[#888888] text-lg'>{pathUser.following}</span>
                     </div>
                   </div>
                 </div>
@@ -319,9 +325,9 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
             </div>
           </div>
         </div>
-        <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-24 xl:left-0 self-start gap-0 xl:w-[200px] w-[180px] 2xl:w-[245px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
+        <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-12 xl:left-0 self-start gap-0 xl:w-[245px] 2xl:w-[300px] 2k:w-[275px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-2 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
           <Popover>
-            <PopoverTrigger className='absolute top-2 right-2'><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
+            <PopoverTrigger className='absolute top-2 right-2 cursor-pointer'><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
             <PopoverContent className='w-fit'>
               <Command>
                 <CommandList>
@@ -332,7 +338,7 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
               </Command>
             </PopoverContent>
           </Popover>
-          <div className='w-full relative flex flex-col justify-evenly items-center'>
+          <div className='w-full relative flex flex-col justify-evenly items-center mt-2 2xl:mt-4'>
             <div className='flex flex-col py-1 gap-2 w-full'>
               <div className='flex justify-center px-2'>
                 <Avatar className='w-[45px] h-[45px] 2xl:w-[65px] 2xl:h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full'>
@@ -348,11 +354,13 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                 <p className='text-[#DFDEDE] text-center font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
               </div>
               <div className='flex justify-evenly gap-4'>
-                <div>
-                  <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers: {pathUser.followers}</p>
+                <div className='flex items-center gap-2'>
+                  <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers</p>
+                  <span className='text-[#888888] text-lg'>{pathUser.followers}</span>
                 </div>
-                <div>
-                  <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following: {pathUser.following}</p>
+                <div className='flex items-center gap-2'>
+                  <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following</p>
+                  <span className='text-[#888888] text-lg'>{pathUser.following}</span>
                 </div>
               </div>
               <span className="bg-[#515151] h-[1px] w-full"></span>
@@ -412,7 +420,7 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
     )
   } else {
     return (
-      <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-24 xl:left-0 self-start gap-0 xl:w-[200px] w-[180px] 2xl:w-[245px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
+      <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-12 xl:left-0 self-start gap-0 xl:w-[200px] w-[180px] 2xl:w-[245px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
         <div className='w-full flex flex-col justify-center items-center'>
           <div className='flex flex-col py-1 gap-2 w-full'>
             <div className='flex px-2'>

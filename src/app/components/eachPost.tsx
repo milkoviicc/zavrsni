@@ -171,7 +171,7 @@ const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, upd
   }
 
   const update = async () => {
-    updatePost(post.postId, updatedContent, post.fileUrls);
+    updatePost(post.postId, updatedContent, previousFiles);
     setIsUpdatePostDialogOpen(false);
   }
 

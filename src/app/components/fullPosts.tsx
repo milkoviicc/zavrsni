@@ -377,6 +377,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
             });
               
             formData.append('Content', updatedContent);
+            console.log(formData);
           
             return formData;
           };

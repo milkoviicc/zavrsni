@@ -19,6 +19,10 @@ const UserComponent = ({user, handleRoute}: {user: User | undefined, handleRoute
   }
 
   useEffect(() => {
+    router.prefetch(`/users/${user?.username}`);
+  }, [router, user?.username]);
+
+  useEffect(() => {
       if(user && user.firstName && user.lastName) {
           const firstLetter = user.firstName.slice(0, 1);
           const secondLetter = user.lastName.slice(0, 1);
