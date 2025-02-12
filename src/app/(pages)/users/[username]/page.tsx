@@ -80,6 +80,7 @@ const UserProfile = () => {
     }
   };
 
+
   const getFriendsQuery = useQuery({queryKey: ["getFriends"], queryFn: () => getFriends(), enabled: user !== undefined});
   const [isRendering, setIsRendering] = useState(false);
 
@@ -156,15 +157,9 @@ const UserProfile = () => {
   }
 
   return (
-    <div className='flex-col mt-[35px] sm:mt-[80px] xl:mt-[60px] min-h-[786px] 2k:min-h-[1200px] bg-[#222222]'>
-      <div className='flex-col shadow-[0px_0.1px_15px_0px_rgba(0_0_0_0.26)] min-h-[850px] py-0 sm:py-6 md:py-24'>
-        <div className='xl:hidden flex flex-col w-screen'>
-          <ProfileUserComponent pathUser={user} editProfile={editProfile}/>
-            <div className='py-10'>
-              <ProfilePosts pathUser={user} />
-            </div>
-        </div>
-        <div className='xl:flex relative hidden w-screen justify-center 2xl:px-4 xl:px-14 lg:px-4 gap-4'>
+    <div className='flex-col mt-[35px] sm:mt-[80px] xl:mt-[60px] min-h-[799px] 2k:min-h-[1200px] bg-[#222222]'>
+      <div className='flex-col shadow-[0px_0.1px_15px_0px_rgba(0_0_0_0.26)] min-h-[799px] py-0 sm:py-6 xl:pt-24'>
+        <div className='flex flex-col xl:flex-row relative w-screen justify-center 2xl:px-4 xl:px-14 lg:px-4 gap-4'>
           <ProfileUserComponent pathUser={user} editProfile={editProfile}/>
           <div className='flex-grow 2xl:w-screen xl:max-w-[768px] 2xl:max-w-[836px]'>
             <ProfilePosts pathUser={user} />

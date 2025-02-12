@@ -355,7 +355,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
               </Dialog>
             </div>
           ) : null}
-          <h1 className='text-[#EDEDED] text-center font-Roboto text-3xl pt-8'>{myProfile ? 'Your posts' : 'Their posts'}</h1>
+          <h1 className='text-[#EDEDED] text-center font-Roboto text-3xl pt-8 sm:hidden'>{myProfile ? 'Your posts' : 'Their posts'}</h1>
           <div className='flex sm:hidden flex-col py-8'>
             {getPostsQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
               <InfiniteScroll className='w-full flex flex-col bg-transparent' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
@@ -401,17 +401,17 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
                   </div>
                 ))}
                 <div className='w-full flex justify-center items-center'>
-                  {postFile.length === 0 ? <h1 className='text-white'>cc</h1> : <label htmlFor="file-input-pc" className="hover:cursor-pointer text-[#646464] font-Roboto"><CircleFadingPlus className='text-[#646464] size-14' /></label>}
+                  {postFile.length === 0 ? null : <label htmlFor="file-input-pc" className="hover:cursor-pointer text-[#646464] font-Roboto"><CircleFadingPlus className='text-[#646464] size-14' /></label>}
                 </div>
               </div>
             </div>
           </div>
         ) : null}
-        <div className="h-full w-full sm:flex hidden flex-col items-center">
-          <div className={`flex gap-4 ${myProfile ? 'py-6' : 'py-0'} items-center`}>
+        <div className="h-full w-full sm:flex hidden flex-col items-center overflow-x-hidden">
+          <div className={`flex gap-4 ${myProfile ? 'pt-6' : 'py-0'} items-center`}>
             <h1 className='text-[#EDEDED] font-Roboto text-3xl'>{myProfile ? 'Your posts' : 'Their posts'}</h1>
           </div>
-          <div className='w-full lg:min-w-[832px] flex flex-col justify-center mt-10'>
+          <div className='w-full lg:min-w-[832px] flex flex-col justify-center mt-6'>
               {getPostsQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
                   <InfiniteScroll className='w-full flex flex-col items-center bg-transparent px-8 sm:px-4 2k:min-w-[832px]' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1 className='text-white'>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
                       {posts.map((post, index) => (

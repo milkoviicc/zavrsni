@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
-import { Profile, User } from '../types/types';
+import { FriendshipStatus, Profile, User } from '../types/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
 import { Ellipsis, EllipsisVertical, MousePointerClick, Pencil, Router, Trash2, Trash2Icon } from 'lucide-react';
 import axios from 'axios';
@@ -11,6 +11,7 @@ import { Command, CommandItem, CommandList } from '@/src/components/ui/command';
 import { useAuth } from '../context/AuthProvider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog';
 import { Button } from '@/src/components/ui/button';
+import { useQuery } from '@tanstack/react-query';
 
 const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editProfile: (username: string, fullName: string, description: string | null, occupation: string | null) => void}) => {
 
@@ -73,9 +74,67 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
   }
 
   const [deleteAccDialogOpen, setDeleteAccDialogOpen] = useState(false);
-
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   
+  const [isFollowed, setIsFollowed] = useState(false);
+  const [friendshipStatus, setFriendshipStatus] = useState(0);
+
+  const getFriendshipStatus = async () => {
+    try {
+      const res = await axios.get<FriendshipStatus>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/friendship-status/${pathUser.userId}`);
+
+      if(res.status === 200) {
+        setIsFollowed(res.data.isFollowed);
+        setFriendshipStatus(res.data.friendshipStatus);
+        return res.data;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const getFriendshipStatusQuery = useQuery({queryKey: ["getFriendshipStatus"], queryFn: () => getFriendshipStatus(), enabled: !myProfile});
+
+  const handleFollow = async (id: string) => {
+    if(isFollowed) {
+      setIsFollowed(false);
+    } else {
+      setIsFollowed(true);
+    }
+    try {
+        if(isFollowed) {
+            const response = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/unfollow/${id}`);
+        } else {
+            const response = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/follows/add-follow/${id}`);
+        }
+    } catch(err) {
+        console.error(err);
+    }
+  }
+
+  const acceptRequest = async () => {
+
+    setFriendshipStatus(3);
+    try {
+        const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/accept/${pathUser.userId}`);
+
+        if(res.status === 200) {
+        }
+    } catch(err) {
+        console.error(err);
+    }
+}
+
+const declineRequest = async () => {
+    setFriendshipStatus(0);
+    try {
+        const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/decline/${pathUser.userId}`);
+    } catch(err) {
+        console.error(err);
+    }
+}
+
+
   if(myProfile) {
     return (
       <div >
@@ -275,10 +334,12 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                 <p className='text-[#DFDEDE] font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
                 <div className='flex justify-evenly gap-4'>
                   <div>
-                    <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers: {pathUser.followers}</p>
+                    <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers</p>
+                    <span className='text-[#888888] text-lg'>{pathUser.followers}</span>
                   </div>
                   <div>
-                    <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following: {pathUser.following}</p>
+                    <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following</p>
+                    <span className='text-[#888888] text-lg'>{pathUser.following}</span>
                   </div>
                 </div>
               </div>
@@ -373,8 +434,8 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                         <DialogTitle className='text-[#DFDEDE] text-left'>Would you like to delete your account?</DialogTitle>
                       </DialogHeader>
                       <div className='flex gap-4'>
-                        <Button onClick={() => deleteAccount()} className='px-8 bg-green-600 transition-all shadow-[1px_2px_6px_1px_rgba(0,0,0,0.4)] hover:shadow-[1px_2px_6px_1px_rgba(0,0,0,0.5)] hover:opacity-90'>Yes</Button>
-                        <Button variant="destructive" onClick={() => setDeleteAccDialogOpen(false)} className='px-8 transition-all shadow-[1px_2px_6px_1px_rgba(0,0,0,0.4)] hover:shadow-[1px_2px_6px_1px_rgba(0,0,0,0.5)]'>No</Button>
+                        <Button onClick={() => deleteAccount()} className='px-8 bg-[#1565CE] transition-all shadow-[1px_1px_3px_1px_rgba(0,0,0,0.4)] hover:shadow-[1px_2px_5px_1px_rgba(0,0,0,0.5)] hover:opacity-90'>Yes</Button>
+                        <Button variant="destructive" onClick={() => setDeleteAccDialogOpen(false)} className='px-8 transition-all shadow-[1px_1px_3px_1px_rgba(0,0,0,0.4)] hover:shadow-[1px_2px_5px_1px_rgba(0,0,0,0.5)]'>No</Button>
                       </div>
                     </DialogContent>
                   </Dialog>
@@ -437,14 +498,28 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
               <p className='text-[#DFDEDE] text-left font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
             </div>
             <div className='flex justify-evenly gap-4'>
-              <div>
-                <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers: {pathUser.followers}</p>
+              <div className='flex items-center gap-2'>
+              <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers</p>
+              <span className='text-[#888888] text-lg'>{pathUser.followers}</span>
               </div>
-              <div>
-                <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following: {pathUser.following}</p>
+              <div className='flex items-center gap-2'>
+              <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following</p>
+              <span className='text-[#888888] text-lg'>{pathUser.following}</span>
               </div>
             </div>
             <span className="bg-[#515151] h-[1px] w-full"></span>
+          </div>
+          <div className='w-full pt-4'>
+            <p className='text-[#808080] font-Roboto text-sm'>{friendshipStatus === 0 ? null : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
+            {friendshipStatus === 2 ? (
+              <div className='w-full px-4 flex justify-between gap-4 pt-2'>
+                <Button onClick={() => acceptRequest()} className='px-2 sm:px-4 py-0 w-full h-fit rounded-full font-Roboto font-normal text-sm bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90'>Accept</Button>
+                <Button onClick={() => declineRequest()} variant="destructive"  className='px-2 sm:px-4 py-0 w-full h-fit rounded-full font-Roboto font-normal text-sm transition-all shadow-[0px_1px_2px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(202, 60, 60, 0.5)]'>Decline</Button>
+              </div>
+            ): null}
+            <div className='w-full px-4 pt-4'>
+              <button className={`${isFollowed ? 'bg-[#3E3E3E] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] text-xs sm:text-base transition-all`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Followed' : 'Follow'}</button>
+            </div>
           </div>
         </div>
       </div>
