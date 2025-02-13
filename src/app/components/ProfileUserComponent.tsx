@@ -117,22 +117,46 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
     setFriendshipStatus(3);
     try {
         const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/accept/${pathUser.userId}`);
-
-        if(res.status === 200) {
-        }
     } catch(err) {
         console.error(err);
     }
-}
+  }
 
-const declineRequest = async () => {
+  const declineRequest = async () => {
+      setFriendshipStatus(0);
+      try {
+          const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/decline/${pathUser.userId}`);
+      } catch(err) {
+          console.error(err);
+      }
+  }
+
+  const addFriend = async () => {
+    setFriendshipStatus(1);
+    try {
+      const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/send/${pathUser.userId}`);
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  const unfriend = async () => {
     setFriendshipStatus(0);
     try {
-        const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/decline/${pathUser.userId}`);
+      const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/delete/${pathUser.userId}`);
     } catch(err) {
-        console.error(err);
+      console.error(err);
     }
-}
+  }
+
+  const unsendFriendReq = async () => {
+    setFriendshipStatus(0);
+    try {
+      const res = await axios.delete(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/friend-requests/decline/${pathUser.userId}`);
+    } catch(err) {
+      console.error(err);
+    }
+  }
 
 
   if(myProfile) {
@@ -510,16 +534,33 @@ const declineRequest = async () => {
             <span className="bg-[#515151] h-[1px] w-full"></span>
           </div>
           <div className='w-full pt-4'>
-            <p className='text-[#808080] font-Roboto text-sm'>{friendshipStatus === 0 ? null : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
-            {friendshipStatus === 2 ? (
-              <div className='w-full px-4 flex justify-between gap-4 pt-2'>
-                <Button onClick={() => acceptRequest()} className='px-2 sm:px-4 py-0 w-full h-fit rounded-full font-Roboto font-normal text-sm bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90'>Accept</Button>
-                <Button onClick={() => declineRequest()} variant="destructive"  className='px-2 sm:px-4 py-0 w-full h-fit rounded-full font-Roboto font-normal text-sm transition-all shadow-[0px_1px_2px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(202, 60, 60, 0.5)]'>Decline</Button>
+          <p className='text-[#808080] font-Roboto text-sm'>{friendshipStatus === 0 ? 'You are not friends' : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
+            {friendshipStatus === 0 ? (
+              <div className='w-full px-2 flex justify-between gap-4 pt-2'>
+                <button onClick={() => addFriend()} className='px-2 sm:px-4 py-0 w-full rounded-full font-Roboto font-normal text-xs sm:text-base bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Add friend</button>
+                <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] text-xs sm:text-base transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Followed' : 'Follow'}</button>
               </div>
-            ): null}
-            <div className='w-full px-4 pt-4'>
-              <button className={`${isFollowed ? 'bg-[#3E3E3E] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] text-xs sm:text-base transition-all`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Followed' : 'Follow'}</button>
-            </div>
+            ) : friendshipStatus === 1 ? (
+              <div className='w-full px-2 flex justify-between gap-4 pt-2'>
+                <button onClick={() => unsendFriendReq()} className='px-2 sm:px-4 py-0 w-full h-full rounded-full font-Roboto font-normal text-xs sm:text-base bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)] hover:opacity-90 text-[#E3E3E3]'>Unsend</button>
+                <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] text-xs sm:text-base transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Followed' : 'Follow'}</button>
+              </div>
+            ) : friendshipStatus === 2 ? (
+              <div className='w-full px-2 flex flex-col gap-4 pt-2'>
+                <div className='w-full flex justify-between gap-4'>
+                  <button onClick={() => acceptRequest()} className='px-2 sm:px-4 py-0 w-full h-fit rounded-full font-Roboto font-normal text-xs sm:text-base bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Accept</button>
+                  <button onClick={() => declineRequest()} className='px-2 sm:px-4 py-0 w-full h-fit rounded-full font-Roboto font-normal text-xs sm:text-base bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]  hover:opacity-90 text-[#E3E3E3]'>Decline</button>
+                </div>
+                <div>
+                  <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] text-xs sm:text-base transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Followed' : 'Follow'}</button>
+                </div>
+              </div>
+            ) : (
+              <div className='w-full px-2 flex justify-between gap-4 pt-2'>
+                <button onClick={() => unfriend()} className='px-2 sm:px-4 py-0 w-full h-fit rounded-full font-Roboto font-normal text-xs sm:text-base bg-[#CA3C3C] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Unfriend</button>
+                <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] text-xs sm:text-base transition-all hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Followed' : 'Follow'}</button>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -243,6 +243,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
           if (res.status === 200) {
               // Izbacujem obrisani post
               setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
+              queryClient.invalidateQueries({queryKey: [postsState === "Popular" ? "popularFeed" : "yourFeed"]});
           }
       } catch(err) {
           // ukoliko dođe do greške ispisat će se u konzoli

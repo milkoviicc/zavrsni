@@ -160,6 +160,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
             
             // ako je res.status jednak 200 znači da je post obrisan i onda mjenjam reactionTrigger state kako bi se postovi re-renderali na stranici.
             if (res.status === 200) {
+                queryClient.invalidateQueries({queryKey: [getPosts]});
                 // Izbacujem obrisani post
                 setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
             }
