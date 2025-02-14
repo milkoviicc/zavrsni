@@ -12,6 +12,9 @@ import { useAuth } from '../context/AuthProvider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog';
 import { Button } from '@/src/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
+import Suggestion from './suggestion';
+import UserComponent from './userComponent';
+import PreviousMap_ from 'postcss/lib/previous-map';
 
 const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editProfile: (username: string, fullName: string, description: string | null, occupation: string | null) => void}) => {
 
@@ -157,6 +160,36 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
       console.error(err);
     }
   }
+
+  const [popularUsers, setPopularUsers] = useState<Profile[]>([]);
+  const [isRendering, setIsRendering] = useState(true);
+
+  const getPopularUsers = async () => {
+    try {
+      const res = await axios.get<Profile[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/popular?limit=10');
+      if(res.status === 200) {
+        const resData = res.data.filter((profile) => profile.firstName != null);
+        const noPathUser = resData.filter((profile) => profile.userId !== pathUser.userId);
+        if(user) {
+          const userData: User = JSON.parse(user);
+          const noLoggedUser = noPathUser.filter((profile) => profile.userId !== userData.userId).slice(0, 3);
+          setPopularUsers(noLoggedUser);
+          return noLoggedUser;
+        }
+      }
+
+    } catch(err) {
+      console.error(err);
+    }
+  }
+  const getPopularUsersQuery = useQuery({queryKey: ["getPopularUsersQuery"], queryFn: () => getPopularUsers()});
+
+  useEffect(() => {
+    if (getPopularUsersQuery.data) {
+      const timeout = setTimeout(() => setIsRendering(false), 500);
+      return () => clearTimeout(timeout);
+    }
+  }, [getPopularUsersQuery.data]);
 
 
   if(myProfile) {
@@ -534,7 +567,7 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
             <span className="bg-[#515151] h-[1px] w-full"></span>
           </div>
           <div className='w-full pt-4'>
-          <p className='text-[#808080] font-Roboto text-sm'>{friendshipStatus === 0 ? 'You are not friends' : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
+          <p className='text-[#808080] font-Roboto'>{friendshipStatus === 0 ? 'You are not friends' : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
             {friendshipStatus === 0 ? (
               <div className='w-full px-2 flex justify-between gap-4 pt-2'>
                 <button onClick={() => addFriend()} className='px-2 sm:px-4 py-0 w-full rounded-full font-Roboto font-normal text-xs sm:text-base bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Add friend</button>
@@ -561,6 +594,13 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                 <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] text-xs sm:text-base transition-all hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Followed' : 'Follow'}</button>
               </div>
             )}
+          </div>
+          <span className="bg-[#515151] h-[1px] w-full mt-8"></span>
+          <h3 className='font-Roboto text-[#808080] mt-2'>You might know</h3>
+          <div className='flex flex-col px-6 w-full'>
+            {getPopularUsersQuery.data?.map((profile, index) => (
+              <UserComponent key={profile.userId} user={profile} handleRoute={null}/>
+            ))}
           </div>
         </div>
       </div>

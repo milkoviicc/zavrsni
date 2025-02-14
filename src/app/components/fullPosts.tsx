@@ -71,7 +71,7 @@ const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => 
         console.error("Error fetching followed users:", error);
         throw error; // Rethrow error so it can be handled by React Query
     }
-};
+  };
 
   const getPosts = async (page: number) => {
     try {
@@ -532,20 +532,20 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                     <div key={index}>
                       {randomNmbs?.includes(index) && suggestionsQuery.data?.length !== 0 ? (
                         <div className='flex items-center flex-col my-4 py-2 border-t-[1px] border-t-[#515151]'>
-                          <p className='text-[#8A8A8A] text-xs'>You might like these</p>
-                          <div className='grid grid-cols-2 grid-rows-2 gap-2'>
+                          <p className='text-[#8A8A8A] text-sm'>You might like these</p>
+                          <div className='grid grid-cols-1 grid-rows-2 gap-2 w-full px-4 pt-2'>
                             {suggestionsQuery.data?.map((suggestion, index) => (
-                              <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
+                              index <= 1 ? <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/> : null
                             ))}
                             {suggestionsQuery.data?.length !== 4 ? 
                               fillSuggestions.map((suggestion, index) => (
-                                <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
+                                index <= 1 ? <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/> : null
                               )) : null
                             }
                           </div>
                         </div>
                       ) : randomNmbs?.includes(index) && suggestionsQuery.data?.length === 0 ? (
-                        <div className='grid grid-cols-2 grid-rows-2 gap-4 border-t-[1px] border-[#515151]'>
+                        <div className='grid grid-cols-1 grid-rows-2 gap-4 border-t-[1px] border-[#515151]'>
                             {fillSuggestions.map((suggestion, index) => (
                                 <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
                               ))
