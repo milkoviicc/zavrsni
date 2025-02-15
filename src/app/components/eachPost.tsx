@@ -312,7 +312,7 @@ const handleReaction = async (reaction: number) => {
                                 <div className="flex flex-col flex-grow relative max-h-fit ml-4 lg:max-h-fit ">
                                   <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent} className="font-Roboto font-normal leading-5 scrollbar-none lg:max-w-[80%] max-h-[100px] lg:max-h-[150px] text-lg text-white outline-none py-3 rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                                   <input type="file" id="new-file-input" placeholder="a" className="hidden" onChange={handlePostFile} multiple/>
-                                  <div className="flex justify-between">
+                                  <div className="flex justify-between mt-2">
                                     <div>
                                       <label htmlFor="new-file-input" className="hover:cursor-pointer w-fit text-[#CCCCCC] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x"/></label>
                                     </div>
@@ -351,7 +351,7 @@ const handleReaction = async (reaction: number) => {
           </div>
           <div className={`flex flex-col sm:mx-[90px] mx-[5px] mt-2`}>
             {/* Paragraph content */}
-            <p className={`max-w-full break-words pt-1 text-justify text-[#EFEFEF] font-normal font-Roboto`}>{post.content}</p>
+            <p className={`max-w-full break-words pt-1 text-justify text-[#EFEFEF] font-normal font-Roboto`} dangerouslySetInnerHTML={{ __html: post.content.replace(/\r\n/g, '<br />') }} />
 
             {/* Image content */}
             {post.fileUrls?.length > 0 && (
@@ -415,7 +415,7 @@ const handleReaction = async (reaction: number) => {
                   <ScrollArea className="rounded-md py-2 w-[100%]">
                     <div className={`flex flex-col sm:mx-[45px] mx-[5px] mt-2`}>
                       {/* Paragraph content */}
-                      <p className={`max-w-full break-words pt-1 text-justify text-[#EFEFEF] font-normal font-Roboto`}>{post.content}</p>
+                      <p className={`max-w-full break-words pt-1 text-justify text-[#EFEFEF] font-normal font-Roboto`} dangerouslySetInnerHTML={{ __html: post.content.replace(/\r\n/g, '<br />') }} />
 
                       {/* Image content */}
                       {post.fileUrls?.length > 0 && (
