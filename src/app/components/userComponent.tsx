@@ -40,7 +40,7 @@ const UserComponent = ({user, handleRoute}: {user: User | undefined, handleRoute
               <AvatarImage src={`${user?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col h-full items-start justify-center lg:w-[100px] xl:w-[100px] 2xl:max-w-[150px]">
-              <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-base 2k:text-lg xl:max-w-[100px] 2xl:max-w-[150px] truncate whitespace-nowrap" title={`${user?.firstName} ${user?.lastName}`}>{user?.firstName} {user?.lastName}</h1>
+              <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-base 2k:text-lg lg:max-w-[100px] xl:max-w-[100px] 2xl:max-w-[150px] truncate whitespace-nowrap" title={`${user?.firstName} ${user?.lastName}`}>{user?.firstName} {user?.lastName}</h1>
               <p className="text-[#888888] lg:max-w-[100px] xl:max-w-[100px] 2xl:max-w-[150px] text-base 2k:text-lg truncate whitespace-nowrap">@{user?.username}</p>
           </div>    
       </div>
