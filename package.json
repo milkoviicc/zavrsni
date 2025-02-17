@@ -34,6 +34,7 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.454.0",
     "next": "15.0.1",
+    "next-scroll-restorer": "^0.9.9",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-infinite-scroll-component": "^6.1.0",

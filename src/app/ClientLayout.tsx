@@ -25,6 +25,10 @@ export default function ClientLayout({
   const isAuthRoute = pathname === '/auth';
   const [loading, setLoading] = useState(true);
   const {fullyRegistered} = useAuth();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   useEffect(() => {
     if(!isAuthenticated) {

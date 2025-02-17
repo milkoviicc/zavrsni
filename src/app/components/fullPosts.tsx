@@ -484,7 +484,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                   </div>
               </div>
               <Dialog open={postDialogOpen} onOpenChange={setPostDialogOpen}>
-                  <DialogContent className='top-[35%] rounded-3xl h-fit flex flex-col px-2 lg:px-4 text-black overflow-y-auto overflow-x-hidden bg-[#222222] max-w-[90%] lg:max-w-[45%] lg:min-w-fit border-transparent'>
+                  <DialogContent className='top-[35%] rounded-3xl h-fit flex flex-col px-2 lg:px-4 text-black overflow-y-auto overflow-x-hidden bg-[#222222] max-w-[90%] lg:max-w-[45%] lg:min-w-fit border-transparent [&>button]:text-white'>
                     <DialogHeader>
                       <DialogTitle className='text-[#EFEFEF] font-Roboto text-left px-1 font-normal'>Post something</DialogTitle>
                     </DialogHeader>

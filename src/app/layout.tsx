@@ -4,12 +4,13 @@ import { AuthProvider, useAuth } from "./context/AuthProvider";
 import ClientLayout from './ClientLayout'
 import { Metadata } from "next";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Theme }  from '@radix-ui/themes';
 
 import {motion, AnimatePresence} from 'framer-motion';
 import QueryProvider from "./components/QueryProvider";
 import { Toaster } from "../components/ui/toaster";
+import ClientSideScrollRestorer from "../useScrollRestorer";
 
 
 export const metadata: Metadata = {
@@ -39,6 +40,9 @@ export default function RootLayout({
       </QueryProvider>
           
       </body>
+      <Suspense>
+        <ClientSideScrollRestorer/>
+      </Suspense>
     </html>
   );
 }

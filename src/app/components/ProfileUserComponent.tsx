@@ -3,20 +3,22 @@ import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { FriendshipStatus, Profile, User } from '../types/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
-import { Ellipsis, EllipsisVertical, MousePointerClick, Pencil, Router, Trash2, Trash2Icon } from 'lucide-react';
+import { Camera, CameraIcon, Ellipsis, EllipsisVertical, MousePointerClick, Pencil, Router, Trash2, Trash2Icon, Upload } from 'lucide-react';
 import axios from 'axios';
 import { CommandGroup } from 'cmdk';
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover';
 import { Command, CommandItem, CommandList } from '@/src/components/ui/command';
 import { useAuth } from '../context/AuthProvider';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/src/components/ui/dialog';
 import { Button } from '@/src/components/ui/button';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Suggestion from './suggestion';
 import UserComponent from './userComponent';
 import PreviousMap_ from 'postcss/lib/previous-map';
+import { Input } from '@/src/components/ui/input';
+import { Label } from '@/src/components/ui/label';
 
-const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editProfile: (username: string, fullName: string, description: string | null, occupation: string | null) => void}) => {
+const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: Profile, editProfile: (username: string, fullName: string, description: string | null, occupation: string | null) => void, changeImage: (selectedImage: File) => void}) => {
 
   const user = localStorage.getItem('user');
   const [myProfile, setMyProfile] = useState<boolean>();
@@ -38,6 +40,9 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [isFollowed, setIsFollowed] = useState(false);
   const [friendshipStatus, setFriendshipStatus] = useState(0);
+  const [imageChanged, setImageChanged] = useState(false);
+  const [changeImgDialogOpen, setChangeImgDialogOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   const {deleteAccount} = useAuth();
   const router = useRouter();
@@ -45,6 +50,20 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
   const getMutualFriendsQuery = useQuery({queryKey: ["getMutualFriends"], queryFn: () => getMutualFriends(), enabled: !myProfile && user !== undefined});
   const getFriendshipStatusQuery = useQuery({queryKey: ["getFriendshipStatus"], queryFn: () => getFriendshipStatus(), enabled: allowFetchingFriendship});
   const getPopularUsersQuery = useQuery({queryKey: ["getPopularUsersQuery"], queryFn: () => getPopularUsers()});
+
+  useEffect(() => {
+    if(changeImgDialogOpen === false) {
+      setSelectedImage(null);
+    }
+  }, [changeImgDialogOpen]);
+
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+    }
+  };
   
   useEffect(() => {
     if(user) {
@@ -55,7 +74,7 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
         setAllowFetchingFriendship(true);
       }
     }
-  }, [pathUser.username, user]);
+  }, [pathUser.username, user, imageChanged]);
 
   useEffect(() => {
       if(pathUser && pathUser.firstName && pathUser.lastName) {
@@ -206,7 +225,6 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
     }
   }
 
-
   if(myProfile) {
     return (
       <div>
@@ -226,26 +244,28 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                 </PopoverContent>
               </Popover>
               <div className='flex items-center justify-center gap-1'>
-                <Avatar className='w-[65px] h-[65px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                <Avatar className='w-[125px] h-[125px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
                   <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
                 </Avatar>
-                <div className='flex flex-col justify-center px-2'>
-                  <h1 className='text-[#DFDEDE] font-Roboto text-lg min-w-full'>{pathUser.firstName} {pathUser.lastName}</h1>
-                  <p className='text-[#888888] font-Roboto text-sm'>@{pathUser.username}</p>
+                <div className='flex flex-col justify-center px-2 pl-4'>
+                  <h1 className='text-[#DFDEDE] font-Roboto text-2xl min-w-full'>{pathUser.firstName} {pathUser.lastName}</h1>
+                  <p className='text-[#888888] font-Roboto text-xl'>@{pathUser.username}</p>
                 </div>
               </div>
               <div className='flex flex-col'>
-                <div className='flex flex-col items-center px-1 py-2 gap-4'>
-                  <p className='text-center text-[#EDEDED] font-Roboto text-sm w-[55%]'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
-                  <p className='text-[#DFDEDE] font-Roboto text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
-                  <div className='flex justify-evenly gap-4'>
-                    <div className='flex items-center gap-2'>
-                      <p className='text-[#888888] font-Roboto text-sm'>Followers</p>
-                      <span className='text-[#888888] text-lg'>{pathUser.followers}</span>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <p className='text-[#888888] font-Roboto text-sm'>Following</p>
-                      <span className='text-[#888888] text-lg'>{pathUser.following}</span>
+                <div className='flex flex-col items-center px-4 py-2 gap-4'>
+                  <p className='text-center text-[#EDEDED] font-Roboto text-sm'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
+                  <div className='flex w-full justify-evenly items-center gap-4'>
+                    <p className='text-[#888888] font-Roboto text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
+                    <div className='flex gap-4'>
+                      <div className='flex items-center gap-2'>
+                        <p className='text-[#888888] font-Roboto text-xs'>Followers</p>
+                        <span className='text-[#888888] text-lg'>{pathUser.followers}</span>
+                      </div>
+                      <div className='flex items-center gap-2'>
+                        <p className='text-[#888888] font-Roboto text-xs'>Following</p>
+                        <span className='text-[#888888] text-lg'>{pathUser.following}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -474,9 +494,37 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
           <div className='w-full relative flex flex-col justify-evenly items-center mt-2 2xl:mt-4'>
             <div className='flex flex-col py-1 gap-2 w-full'>
               <div className='flex justify-center px-2'>
-                <Avatar className='w-[45px] h-[45px] 2xl:w-[65px] 2xl:h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
-                  <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{shortUsername}</AvatarFallback>
-                </Avatar>
+                <Dialog open={changeImgDialogOpen} onOpenChange={setChangeImgDialogOpen}>
+                  <DialogTrigger>
+                    <Avatar className='relative w-[45px] h-[45px] 2xl:w-[65px] 2xl:h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)] group' onClick={() =>  setChangeImgDialogOpen(true)}>
+                      <span><Camera size={32} className='group-hover:block hidden absolute top-[25%] left-[25%] rounded-full text-white transition-all'/></span>
+                      <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover cursor-pointer hover:opacity-10 transition-all"  /><AvatarFallback>{shortUsername}</AvatarFallback>
+                    </Avatar>
+                  </DialogTrigger>
+                  <DialogContent className='bg-[#252525] border-none rounded-xl max-w-xs sm:max-w-md lg:max-w-lg [&>button]:text-white px-4 py-4'>
+                    <DialogHeader>
+                      <DialogTitle className='font-Roboto font-normal text-[#DFDEDE]'>Change your profile picture.</DialogTitle>
+                    </DialogHeader>
+                      <label htmlFor="picture">
+                        <div className='border-dotted border-whit[#DFDEDE] border-[2px] rounded-lg flex flex-col items-center justify-center px-8 py-8 cursor-pointer gap-2'>
+                          <Upload size={32} className='text-[#DFDEDE]' />
+                          <p className='font-Roboto text-[#DFDEDE] text-xs sm:text-sm text-center'>Drag 'n' drop image here, or click to select an image</p>
+                          <p className='font-Roboto text-[#888888] text-xs text-center'>You can upload only '.jpg', '.png' and '.webp' image formats.</p>
+                        </div>
+                      </label>
+                      <Input id="picture" type="file" className='hidden' onChange={handleImageChange}/>
+                      {selectedImage ? (<h1 className='font-Roboto text-[#DFDEDE] text-center'>Preview image:</h1>) : null}
+                      {selectedImage ? (
+                        <div className='flex gap-4 items-center justify-center'>
+                          <Avatar className='relative w-[45px] h-[45px] 2xl:w-[65px] 2xl:h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]' onClick={() =>  setChangeImgDialogOpen(true)}>
+                            <span><Camera size={32} className='group-hover:block hidden absolute top-[25%] left-[25%] rounded-full text-white'/></span>
+                            <AvatarImage src={URL.createObjectURL(selectedImage)} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
+                          </Avatar>
+                          <Button className='w-fit font-Roboto bg-[#515151] shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]' onClick={() => {selectedImage && changeImage(selectedImage); setChangeImgDialogOpen(false)}}>Submit image</Button>
+                        </div>
+                      ) : null}
+                    </DialogContent>
+                </Dialog>
                 <div className='flex flex-col justify-center items-start px-2'>
                   <h1 className='text-[#DFDEDE] font-Roboto text-sm 2xl:text-base'>{pathUser.firstName} {pathUser.lastName}</h1>
                   <p className='text-[#888888] font-Roboto text-sm 2xl:text-base'>@{pathUser.username}</p>
@@ -501,9 +549,9 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                 <div className='flex gap-2 justify-center items-center'>
                   <h1 className='text-center font-Roboto text-[#A0A0A0] text-sm 2xl:text-lg font-semibold'>EDIT PROFILE</h1>
                   <Dialog open={deleteAccDialogOpen} onOpenChange={setDeleteAccDialogOpen}>
-                    <DialogContent className='bg-[#252525] border-none max-w-xs sm:max-w-md lg:max-w-lg [&>button]:text-white px-4 py-4'>
+                    <DialogContent className='bg-[#252525] border-none rounded-xl max-w-xs sm:max-w-md lg:max-w-lg xl:max-w-2xl [&>button]:text-white px-4 lg:px-8 py-4'>
                       <DialogHeader>
-                        <DialogTitle className='text-[#fff] text-left text-xs sm:text-base md:text-lg font-semibold font-Roboto'>Are you sure you want to delete your account?</DialogTitle>
+                        <DialogTitle className='text-[#fff] text-left text-xs sm:text-base md:text-lg font-semibold font-Roboto sm:text-center'>Are you sure you want to delete your account?</DialogTitle>
                       </DialogHeader>
                       <p className='font-Roboto text-[#A6A6A6] text-center text-xs sm:text-base md:text-lg'>This action is permanent and you will not be able to access your account anymore.</p>
                       <div className='flex justify-center gap-4'>
@@ -637,7 +685,7 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                     const isLastOdd = array.length % 2 !== 0 && index === array.length -1;
                     return (
                       <div key={profile.userId} className={`hover:cursor-pointer flex gap-2 py-2 items-center ${isLastOdd ? "col-span-2 justify-center" : "w-fit"}`} onClick={() => router.push(`/users/${profile.username}`)}>
-                          <Avatar className='w-[35px] h-[35px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
+                          <Avatar className='w-[45px] h-[45px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
                               <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
                           </Avatar>
                           <div className="flex flex-col h-full items-start justify-center w-fit">
@@ -729,7 +777,7 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                         const isLastOdd = array.length % 2 !== 0 && index === array.length -1;
                         return (
                           <div key={profile.userId} className={`hover:cursor-pointer flex gap-2 py-2 items-center ${isLastOdd ? "col-span-2 justify-center" : "w-fit"}`} onClick={() => router.push(`/users/${profile.username}`)}>
-                              <Avatar className='w-[35px] h-[35px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
+                              <Avatar className='w-[45px] h-[45px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
                                   <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
                               </Avatar>
                               <div className="flex flex-col h-full items-start justify-center w-fit">
@@ -807,7 +855,7 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
             <div className='flex flex-col px-6 w-full'>
               {getMutualFriendsQuery?.data?.length !== 0 ? getMutualFriendsQuery.data?.map((profile, index) => (
                 <div key={profile.userId} className="hover:cursor-pointer flex gap-2 py-2 items-center " onClick={() => router.push(`/users/${profile.username}`)}>
-                  <Avatar className='w-[35px] h-[35px] 2xl:w-[45px] 2xl:h-[45px] 2k:w-[55px] 2k:h-[55px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                  <Avatar className='w-[45px] h-[45px] 2xl:w-[45px] 2xl:h-[45px] 2k:w-[55px] 2k:h-[55px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
                       <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col h-full items-start justify-center w-full">
@@ -818,7 +866,7 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
               )) : 
               getPopularUsersQuery.data?.map((profile, index) => (
                 <div key={profile.userId} className="hover:cursor-pointer flex gap-2 py-2 items-center " onClick={() => router.push(`/users/${profile.username}`)}>
-                    <Avatar className='w-[35px] h-[35px] 2xl:w-[45px] 2xl:h-[45px] 2k:w-[55px] 2k:h-[55px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                    <Avatar className='w-[45px] h-[45px] 2xl:w-[45px] 2xl:h-[45px] 2k:w-[55px] 2k:h-[55px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
                         <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col h-full items-start justify-center w-full">
