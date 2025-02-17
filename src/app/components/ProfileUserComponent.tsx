@@ -678,37 +678,40 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                 </div>
               </div>
               <div className='flex flex-col justify-center items-center w-full h-full py-4'>
-                <div className='w-full flex flex-col justify-center items-center'>
-                  <p className='text-[#808080] font-Roboto text-center'>{friendshipStatus === 0 ? 'You are not friends' : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
-                  {friendshipStatus === 0 ? (
-                    <div className='w-full px-2 flex justify-center gap-4 pt-2 text-base'>
-                      <button onClick={() => addFriend()} className='px-4 py-0 w-fit rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Add friend</button>
-                      <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-4 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
-                    </div>
-                  ) : friendshipStatus === 1 ? (
-                    <div className='w-full px-2 flex justify-center gap-4 pt-2'>
-                      <button onClick={() => unsendFriendReq()} className='px-4 py-0 w-fit h-full rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)] hover:opacity-90 text-[#E3E3E3]'>Unsend</button>
-                      <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-4 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
-                    </div>
-                  ) : friendshipStatus === 2 ? (
-                    <div className='w-full px-2 flex flex-col gap-4 pt-2'>
-                      <div className='w-full flex justify-center gap-4'>
-                        <button onClick={() => acceptRequest()} className='px-4 py-0 w-fit h-fit rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Accept</button>
-                        <button onClick={() => declineRequest()} className='px-4 py-0 w-fit h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]  hover:opacity-90 text-[#E3E3E3]'>Decline</button>
+                <div className='w-full flex justify-center items-center py-8 gap-4'>
+                  <div className='flex flex-col'>
+                    <p className='text-[#808080] font-Roboto text-center'>{friendshipStatus === 0 ? 'You are not friends' : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
+                  
+                    {friendshipStatus === 0 ? (
+                      <div className='w-full px-2 flex justify-center gap-4 pt-2 text-base'>
+                        <button onClick={() => addFriend()} className='px-4 py-0 w-fit rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Add friend</button>
                       </div>
-                      <div className='w-full flex justify-center'>
-                        <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-4 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
+                    ) : friendshipStatus === 1 ? (
+                      <div className='w-full px-2 flex justify-center gap-4 pt-2'>
+                        <button onClick={() => unsendFriendReq()} className='px-4 py-0 w-fit h-full rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)] hover:opacity-90 text-[#E3E3E3]'>Unsend</button>
                       </div>
-                    </div>
-                  ) : (
-                    <div className='w-fit px-2 flex justify-center gap-4 pt-2'>
-                      <button onClick={() => unfriend()} className='px-4 py-0 w-fit h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Unfriend</button>
+                    ) : friendshipStatus === 2 ? (
+                      <div className='w-full px-2 flex flex-col gap-4 pt-2'>
+                        <div className='w-full flex justify-center gap-4'>
+                          <button onClick={() => acceptRequest()} className='px-4 py-0 w-fit h-fit rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Accept</button>
+                          <button onClick={() => declineRequest()} className='px-4 py-0 w-fit h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]  hover:opacity-90 text-[#E3E3E3]'>Decline</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className='w-fit px-2 flex justify-center gap-4 pt-2'>
+                        <button onClick={() => unfriend()} className='px-4 py-0 w-fit h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Unfriend</button>
+                      </div>
+                    )}
+                  </div>
+                  <div className='flex flex-col'>
+                    <p className='text-[#808080] font-Roboto text-center'>{isFollowed ? `You are following ${pathUser.firstName}`  : `You are not following ${pathUser.firstName}`}</p>
+                    <div className='pt-2 flex justify-center'>
                       <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-4 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
                     </div>
-                  )}
+                  </div>
                 </div>
                 <div className='w-full h-full py-4'>
-                  <div className='h-full flex flex-col items-center justify-center'>
+                  <div className='h-fit flex flex-col items-center '>
                     <h3 className='font-Roboto text-[#808080] mt-2'>{getMutualFriendsQuery?.data?.length !== 0 ? 'Mutual friends' : 'You might know'}</h3>
                     <div className='grid grid-cols-2 gap-2 px-1 w-full place-items-center'>
                       {getMutualFriendsQuery?.data?.length !== 0 ? getMutualFriendsQuery.data?.map((profile, index) => (

@@ -157,8 +157,10 @@ const UserProfile = () => {
     const updateColumns = () => {
       if(window.innerWidth >= 768) {
         setColumns(4);
-      } else {
+      } else if(window.innerWidth < 768 && window.innerWidth >= 640) {
         setColumns(3);
+      } else {
+        setColumns(2);
       }
     }
 
@@ -183,10 +185,10 @@ const UserProfile = () => {
                   <h1 className='font-Roboto text-[#DFDEDE] text-2xl text-center'>{myProfile ? 'Your friends' : `${user.firstName}'s friends`}</h1>
                   <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
                     {getFriendsQuery.isLoading || isRendering ? <UserSkeleton /> : getFriendsQuery.data?.map((user, index, array) => {
-                      const itemsInLastRow = array.length % columns; // Defaulting to 4 when possible
-                      const isLastOdd = itemsInLastRow !== 0 && index >= array.length - itemsInLastRow;
+                      const itemsInLastRow = array.length % columns || columns; // Defaulting to 4 when possible
+                      const isLastOdd = index >= array.length - itemsInLastRow;
                       return (
-                      <div key={user.user.userId} className={`hover:cursor-pointer flex py-2 gap-2 ${isLastOdd && itemsInLastRow === 1 && getFriendsQuery.data?.length !== 1 ? 'col-span-full justify-center w-full' : 'w-fit'}`} onClick={() => router.push(`/users/${user.user.username}`)}>
+                      <div key={user.user.userId} className={`hover:cursor-pointer flex py-2 gap-2 ${isLastOdd && itemsInLastRow === 1 && array.length !== 1 ? 'col-span-full justify-center w-full' : 'w-fit'}`} onClick={() => router.push(`/users/${user.user.username}`)}>
                         <Avatar className='w-[35px] h-[35px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
                             <AvatarImage src={`${user.user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{user.user.username.slice(0, 1)}</AvatarFallback>
                         </Avatar>
