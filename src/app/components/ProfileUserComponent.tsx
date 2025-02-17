@@ -636,7 +636,7 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                   getPopularUsersQuery.data?.map((profile, index, array) => {
                     const isLastOdd = array.length % 2 !== 0 && index === array.length -1;
                     return (
-                      <div key={profile.userId} className={`hover:cursor-pointer flex gap-2 py-2 items-center ${isLastOdd ? "col-span-2 justify-center" : "w-fit"}`} onClick={() => router.push(`/users/${profile.userId}`)}>
+                      <div key={profile.userId} className={`hover:cursor-pointer flex gap-2 py-2 items-center ${isLastOdd ? "col-span-2 justify-center" : "w-fit"}`} onClick={() => router.push(`/users/${profile.username}`)}>
                           <Avatar className='w-[35px] h-[35px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
                               <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
                           </Avatar>
@@ -725,7 +725,7 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                       getPopularUsersQuery.data?.map((profile, index, array) => {
                         const isLastOdd = array.length % 2 !== 0 && index === array.length -1;
                         return (
-                          <div key={profile.userId} className={`hover:cursor-pointer flex gap-2 py-2 items-center ${isLastOdd ? "col-span-2 justify-center" : "w-fit"}`} onClick={() => router.push(`/users/${profile.userId}`)}>
+                          <div key={profile.userId} className={`hover:cursor-pointer flex gap-2 py-2 items-center ${isLastOdd ? "col-span-2 justify-center" : "w-fit"}`} onClick={() => router.push(`/users/${profile.username}`)}>
                               <Avatar className='w-[35px] h-[35px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
                                   <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
                               </Avatar>
