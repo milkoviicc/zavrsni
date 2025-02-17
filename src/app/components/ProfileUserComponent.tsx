@@ -19,7 +19,7 @@ import PreviousMap_ from 'postcss/lib/previous-map';
 const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editProfile: (username: string, fullName: string, description: string | null, occupation: string | null) => void}) => {
 
   const user = localStorage.getItem('user');
-  const [myProfile, setMyProfile] = useState(false);
+  const [myProfile, setMyProfile] = useState<boolean>();
   const [shortUsername, setShortUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -31,15 +31,28 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
   const [editableUsername, setEditableUsername] = useState(false);
   const [editableDescription, setEditableDescription] = useState(false);
   const [editableOccupation, setEditableOccupation] = useState(false);
-  const {deleteAccount} = useAuth();
+  const [allowFetchingFriendship, setAllowFetchingFriendship] = useState(false);
+  const [popularUsers, setPopularUsers] = useState<Profile[]>([]);
+  const [isRendering, setIsRendering] = useState(true);
+  const [deleteAccDialogOpen, setDeleteAccDialogOpen] = useState(false);
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
+  const [isFollowed, setIsFollowed] = useState(false);
+  const [friendshipStatus, setFriendshipStatus] = useState(0);
 
+  const {deleteAccount} = useAuth();
   const router = useRouter();
+
+  const getMutualFriendsQuery = useQuery({queryKey: ["getMutualFriends"], queryFn: () => getMutualFriends(), enabled: !myProfile && user !== undefined});
+  const getFriendshipStatusQuery = useQuery({queryKey: ["getFriendshipStatus"], queryFn: () => getFriendshipStatus(), enabled: allowFetchingFriendship});
+  const getPopularUsersQuery = useQuery({queryKey: ["getPopularUsersQuery"], queryFn: () => getPopularUsers()});
   
   useEffect(() => {
     if(user) {
       const userData: User = JSON.parse(user);
       if(userData.username === pathUser.username) {
         setMyProfile(true);
+      } else {
+        setAllowFetchingFriendship(true);
       }
     }
   }, [pathUser.username, user]);
@@ -76,12 +89,6 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
     setEditableOccupation(false);
   }
 
-  const [deleteAccDialogOpen, setDeleteAccDialogOpen] = useState(false);
-  const [editProfileOpen, setEditProfileOpen] = useState(false);
-  
-  const [isFollowed, setIsFollowed] = useState(false);
-  const [friendshipStatus, setFriendshipStatus] = useState(0);
-
   const getFriendshipStatus = async () => {
     try {
       const res = await axios.get<FriendshipStatus>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/friendship-status/${pathUser.userId}`);
@@ -96,7 +103,6 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
     }
   }
 
-  const getFriendshipStatusQuery = useQuery({queryKey: ["getFriendshipStatus"], queryFn: () => getFriendshipStatus(), enabled: !myProfile});
 
   const handleFollow = async (id: string) => {
     if(isFollowed) {
@@ -161,9 +167,6 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
     }
   }
 
-  const [popularUsers, setPopularUsers] = useState<Profile[]>([]);
-  const [isRendering, setIsRendering] = useState(true);
-
   const getPopularUsers = async () => {
     try {
       const res = await axios.get<Profile[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/popular?limit=10');
@@ -182,7 +185,6 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
       console.error(err);
     }
   }
-  const getPopularUsersQuery = useQuery({queryKey: ["getPopularUsersQuery"], queryFn: () => getPopularUsers()});
 
   useEffect(() => {
     if (getPopularUsersQuery.data) {
@@ -191,6 +193,19 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
     }
   }, [getPopularUsersQuery.data]);
 
+  const getMutualFriends = async () => {
+    try {
+        const res = await axios.get<User[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/mutual/${pathUser.userId}?limit=3`);
+
+        if(res.status === 200) {
+          return res.data;
+        }
+        return [];
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
 
   if(myProfile) {
     return (
@@ -198,21 +213,21 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
         <div className='xl:hidden pt-8 md:pb-4 flex justify-center px-4 w-screen'>
           <div className='w-fit sm:gap-10'>
             <div className='w-full relative rounded-lg flex flex-col sm:hidden justify-center items-center gap-5 px-2 lg:px-8 py-4 shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)]'>
-            <Popover>
-              <PopoverTrigger className='absolute top-2 right-2 z-50'><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
-              <PopoverContent className='w-fit mr-4'>
-                <Command>
-                  <CommandList>
-                    <CommandGroup>
-                      <CommandItem><button onClick={() => setDeleteAccDialogOpen((prev) => !prev)} className='text-[#DFDEDE] flex gap-2 items-center text-base'><Trash2Icon size={20}/>Delete Your Account</button></CommandItem>
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+              <Popover>
+                <PopoverTrigger className='absolute top-2 right-2 z-50'><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
+                <PopoverContent className='w-fit mr-4'>
+                  <Command>
+                    <CommandList>
+                      <CommandGroup>
+                        <CommandItem><button onClick={() => setDeleteAccDialogOpen((prev) => !prev)} className='text-[#DFDEDE] flex gap-2 items-center text-base'><Trash2Icon size={20}/>Delete Your Account</button></CommandItem>
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <div className='flex items-center justify-center gap-1'>
-                <Avatar className='w-[65px] h-[65px] rounded-full'>
-                  <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                <Avatar className='w-[65px] h-[65px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                  <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
                 </Avatar>
                 <div className='flex flex-col justify-center px-2'>
                   <h1 className='text-[#DFDEDE] font-Roboto text-lg min-w-full'>{pathUser.firstName} {pathUser.lastName}</h1>
@@ -294,8 +309,8 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
               </Popover>
               <div className='flex flex-col'>
                 <div className='flex items-center justify-center gap-1'>
-                  <Avatar className='w-[45px] h-[45px] rounded-full'>
-                    <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                  <Avatar className='w-[45px] h-[45px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                    <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
                   </Avatar>
                   <div className='flex flex-col justify-center px-2'>
                     <h1 className='text-[#DFDEDE] font-Roboto text-xs md:text-sm min-w-full'>{pathUser.firstName} {pathUser.lastName}</h1>
@@ -378,8 +393,8 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                 </PopoverContent>
               </Popover>
               <div className='flex flex-col items-center justify-center px-2 gap-2'>
-                <Avatar className='w-[65px] h-[65px] rounded-full'>
-                  <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                <Avatar className='w-[65px] h-[65px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                  <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{shortUsername}</AvatarFallback>
                 </Avatar>
                 <div className='flex flex-col justify-center items-center'>
                   <h1 className='text-[#DFDEDE] font-Roboto text-[12px] min-w-full'>{pathUser.firstName} {pathUser.lastName}</h1>
@@ -459,8 +474,8 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
           <div className='w-full relative flex flex-col justify-evenly items-center mt-2 2xl:mt-4'>
             <div className='flex flex-col py-1 gap-2 w-full'>
               <div className='flex justify-center px-2'>
-                <Avatar className='w-[45px] h-[45px] 2xl:w-[65px] 2xl:h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full'>
-                  <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                <Avatar className='w-[45px] h-[45px] 2xl:w-[65px] 2xl:h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                  <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{shortUsername}</AvatarFallback>
                 </Avatar>
                 <div className='flex flex-col justify-center items-start px-2'>
                   <h1 className='text-[#DFDEDE] font-Roboto text-sm 2xl:text-base'>{pathUser.firstName} {pathUser.lastName}</h1>
@@ -486,13 +501,14 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                 <div className='flex gap-2 justify-center items-center'>
                   <h1 className='text-center font-Roboto text-[#A0A0A0] text-sm 2xl:text-lg font-semibold'>EDIT PROFILE</h1>
                   <Dialog open={deleteAccDialogOpen} onOpenChange={setDeleteAccDialogOpen}>
-                    <DialogContent className='bg-[#515151] border-none max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg'>
+                    <DialogContent className='bg-[#252525] border-none max-w-xs sm:max-w-md lg:max-w-lg [&>button]:text-white px-4 py-4'>
                       <DialogHeader>
-                        <DialogTitle className='text-[#DFDEDE] text-left'>Would you like to delete your account?</DialogTitle>
+                        <DialogTitle className='text-[#fff] text-left text-xs sm:text-base md:text-lg font-semibold font-Roboto'>Are you sure you want to delete your account?</DialogTitle>
                       </DialogHeader>
-                      <div className='flex gap-4'>
-                        <Button onClick={() => deleteAccount()} className='px-8 bg-[#1565CE] transition-all shadow-[1px_1px_3px_1px_rgba(0,0,0,0.4)] hover:shadow-[1px_2px_5px_1px_rgba(0,0,0,0.5)] hover:opacity-90'>Yes</Button>
-                        <Button variant="destructive" onClick={() => setDeleteAccDialogOpen(false)} className='px-8 transition-all shadow-[1px_1px_3px_1px_rgba(0,0,0,0.4)] hover:shadow-[1px_2px_5px_1px_rgba(0,0,0,0.5)]'>No</Button>
+                      <p className='font-Roboto text-[#A6A6A6] text-center text-xs sm:text-base md:text-lg'>This action is permanent and you will not be able to access your account anymore.</p>
+                      <div className='flex justify-center gap-4'>
+                        <Button onClick={() => setDeleteAccDialogOpen(false)} className='px-2 sm:px-8 rounded-full bg-[#1565CE] transition-all shadow-[0px_3px_5px_0px_rgba(21,101,206,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(21,101,206,0.50)] hover:opacity-90 font-normal font-Roboto text-white'>No, I changed my mind</Button>
+                        <Button variant="destructive" onClick={() => deleteAccount()} className='px-2 sm:px-8 rounded-full transition-all shadow-[0px_3px_5px_0px_rgba(202,60,60,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(202,60,60,0.50)] font-normal font-Roboto text-white'><Trash2 size={10}/> Yes, I'm sure</Button>
                       </div>
                     </DialogContent>
                   </Dialog>
@@ -539,93 +555,105 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
   } else {
     return (
       <div>
-        <div className='xl:hidden flex justify-center w-screen px-4 pt-8'>
-          <div className='flex w-full relative justify-center gap-10 px-8 py-4'>
+        <div className='xl:hidden flex justify-center w-screen pt-8'>
+          <div className='flex w-screen relative justify-center gap-10 px-4 py-4'>
             <div className='w-[396px] sm:hidden flex flex-col justify-center items-center gap-2 px-2 lg:px-8 py-4 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)]'>
               <div className='flex items-center justify-center gap-1'>
-                <Avatar className='w-[65px] h-[65px] relative shrink-0 overflow-x-hidden rounded-full'>
-                  <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                <Avatar className='w-[125px] h-[125px] relative shrink-0 overflow-x-hidden rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                  <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
                 </Avatar>
-                <div className='flex flex-col justify-center'>
-                  <h1 className='text-[#DFDEDE] font-Roboto'>{pathUser.firstName} {pathUser.lastName}</h1>
-                  <p className='text-[#888888] font-Roboto'>@{pathUser.username}</p>
+                <div className='flex flex-col justify-center pl-4'>
+                  <h1 className='text-[#DFDEDE] font-Roboto text-2xl'>{pathUser.firstName} {pathUser.lastName}</h1>
+                  <p className='text-[#888888] font-Roboto text-xl'>@{pathUser.username}</p>
                 </div>
               </div>
               <div className='flex flex-col w-full'>
                 <div className='flex flex-col gap-2 justify-center'>
                   <div className='flex flex-col items-center px-4 py-2 gap-4'>
-                    <p className='text-center text-[#DFDEDE] font-Roboto text-sm w-[55%]'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
-                    <p className='text-[#DFDEDE] text-center font-Roboto text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
+                    <p className='text-center text-[#DFDEDE] font-Roboto text-sm '>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
                   </div>
-                  <div className='flex justify-evenly gap-4'>
-                    <div className='flex items-center gap-2'>
-                    <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers</p>
-                    <span className='text-[#888888] text-lg'>{pathUser.followers}</span>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                    <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following</p>
-                    <span className='text-[#888888] text-lg'>{pathUser.following}</span>
+                  <div className='flex items-center justify-evenly gap-4'>
+                    <p className='text-[#888888] text-center font-Roboto text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
+                    <div className='flex gap-4'>
+                      <div className='flex items-center gap-2'>
+                        <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers</p>
+                        <span className='text-[#888888] text-lg'>{pathUser.followers}</span>
+                      </div>
+                      <div className='flex items-center gap-2'>
+                        <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following</p>
+                        <span className='text-[#888888] text-lg'>{pathUser.following}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
                 <span className='bg-[#515151] h-[1px] w-full mt-2'></span>
               </div>
-              <div className='flex flex-col w-full items-center gap-2'>
-                <p className='text-[#808080] font-Roboto text-center'>{friendshipStatus === 0 ? 'You are not friends' : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
+              <div className='flex w-full items-center gap-2'>
+                <div className='flex flex-col w-full gap-2'>
+                  <p className='text-[#808080] text-xs sm:text-sm font-Roboto text-center'>{friendshipStatus === 0 ? 'You are not friends' : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
                   {friendshipStatus === 0 ? (
-                    <div className='w-full px-2 flex justify-between gap-4 text-sm 2xl:text-base'>
-                      <button onClick={() => addFriend()} className='px-2 py-0 w-full rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Add friend</button>
-                      <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Following' : 'Follow'}</button>
+                    <div className='w-full px-2 flex justify-center gap-4'>
+                      <button onClick={() => addFriend()} className='px-4 py-1 w-fit rounded-full font-Roboto font-normal text-sm bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Add friend</button>
                     </div>
                   ) : friendshipStatus === 1 ? (
-                    <div className='w-full px-2 flex justify-between gap-4'>
-                      <button onClick={() => unsendFriendReq()} className='px-2 py-0 w-full h-full rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)] hover:opacity-90 text-[#E3E3E3]'>Unsend</button>
-                      <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Following' : 'Follow'}</button>
+                    <div className='w-full px-2 flex justify-center gap-4'>
+                      <button onClick={() => unsendFriendReq()} className='px-4 py-1 w-fit h-full rounded-full font-Roboto font-normal text-sm bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)] hover:opacity-90 text-[#E3E3E3]'>Unsend</button>
                     </div>
                   ) : friendshipStatus === 2 ? (
                     <div className='w-full px-2 flex flex-col gap-4'>
                       <div className='w-full flex justify-between gap-4'>
-                        <button onClick={() => acceptRequest()} className='px-2 py-0 w-full h-fit rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Accept</button>
-                        <button onClick={() => declineRequest()} className='px-2 py-0 w-full h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]  hover:opacity-90 text-[#E3E3E3]'>Decline</button>
-                      </div>
-                      <div>
-                        <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Following' : 'Follow'}</button>
+                        <button onClick={() => acceptRequest()} className='px-4 py-1 w-full h-fit rounded-full font-Roboto font-normal text-sm bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Accept</button>
+                        <button onClick={() => declineRequest()} className='px-4 py-1 w-full h-fit rounded-full font-Roboto font-normal text-sm bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]  hover:opacity-90 text-[#E3E3E3]'>Decline</button>
                       </div>
                     </div>
                   ) : (
-                    <div className='w-fit px-2 flex justify-center gap-4 text-sm 2xl:text-base'>
-                      <button onClick={() => unfriend()} className='px-2 py-0 w-full h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Unfriend</button>
-                      <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Following' : 'Follow'}</button>
+                    <div className='w-full px-2 flex justify-center gap-4'>
+                      <button onClick={() => unfriend()} className='px-4 py-1 w-fit h-fit rounded-full font-Roboto font-normal text-sm bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Unfriend</button>
                     </div>
                   )}
-                  <span className='bg-[#515151] h-[1px] w-full mt-2'></span>
+                </div>
+                <div className='w-full flex flex-col justify-center items-center gap-2'>
+                  <p className='font-Roboto text-[#808080] text-xs sm:text-sm'>{isFollowed ? `You are following ` : `You're not following `}{pathUser.firstName}</p>
+                  <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-4 sm:px-4 py-1 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] text-sm transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
+                </div>
+
               </div>
-              <div className='w-full h-full py-2'>
-                <div>
-                  <h3 className='font-Roboto text-[#808080] text-center'>You might know</h3>
-                  <div className='grid grid-cols-2 gap-2 px-1 w-full place-items-center'>
-                    {getPopularUsersQuery.data?.map((profile, index, array) => {
-                      const isLastOdd = array.length % 2 !== 0 && index === array.length -1;
-                      return (
-                        <div key={profile.userId} className={`hover:cursor-pointer flex gap-2 py-2 items-center ${isLastOdd ? "col-span-2 justify-center" : "w-fit"}`} onClick={() => router.push(`/users/${profile.userId}`)}>
-                            <Avatar className='w-[35px] h-[35px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
-                                <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
-                            </Avatar>
-                            <div className="flex flex-col h-full items-start justify-center w-fit">
-                                <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-sm 2xl:text-base 2k:text-lg max-w-[80px] sm:max-w-full truncate whitespace-nowrap" title={`${profile.firstName} ${profile.lastName}`}>{profile.firstName} {profile.lastName}</h1>
-                                <p className="text-[#888888] text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap">@{profile.username}</p>
-                            </div>    
-                        </div>
-                      )})}
-                  </div>
+              <span className='bg-[#515151] h-[1px] w-full mt-2'></span>
+              <div className='w-full h-full py-2 flex flex-col items-center'>
+                <h3 className='font-Roboto text-[#808080] mt-2'>{getMutualFriendsQuery?.data?.length !== 0 ? 'Mutual friends' : 'You might know'}</h3>
+                <div className='grid grid-cols-2 gap-2 px-1 w-full place-items-center'>
+                  {getMutualFriendsQuery?.data?.length !== 0 ? getMutualFriendsQuery.data?.map((profile, index) => (
+                    <div key={profile.userId} className="hover:cursor-pointer flex gap-2 py-2 items-center " onClick={() => router.push(`/users/${profile.username}`)}>
+                      <Avatar className='w-[45px] h-[45px] 2k:w-[55px] 2k:h-[55px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                          <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col h-full items-start justify-center w-full">
+                          <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap" title={`${profile.firstName} ${profile.lastName}`}>{profile.firstName} {profile.lastName}</h1>
+                          <p className="text-[#888888] text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap">@{profile.username}</p>
+                      </div>    
+                    </div>
+                  )) : 
+                  getPopularUsersQuery.data?.map((profile, index, array) => {
+                    const isLastOdd = array.length % 2 !== 0 && index === array.length -1;
+                    return (
+                      <div key={profile.userId} className={`hover:cursor-pointer flex gap-2 py-2 items-center ${isLastOdd ? "col-span-2 justify-center" : "w-fit"}`} onClick={() => router.push(`/users/${profile.userId}`)}>
+                          <Avatar className='w-[35px] h-[35px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
+                              <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col h-full items-start justify-center w-fit">
+                              <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-sm 2xl:text-base 2k:text-lg max-w-[80px] sm:max-w-full truncate whitespace-nowrap" title={`${profile.firstName} ${profile.lastName}`}>{profile.firstName} {profile.lastName}</h1>
+                              <p className="text-[#888888] text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap">@{profile.username}</p>
+                          </div>    
+                      </div>
+                    )})}
                 </div>
               </div>
             </div>
-            <div className='w-[780px] hidden sm:flex justify-center items-center gap-10 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)]'>
+            <div className='sm:w-[570px] md:w-[716px] lg:w-[765px] hidden sm:flex justify-center items-center gap-10 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)]'>
               <div className='flex flex-col gap-4 w-[50%] h-full py-4'>
                 <div className='flex flex-col px-2 gap-2 items-center justify-center'>
-                  <Avatar className='w-[65px] h-[65px] relative shrink-0 overflow-x-hidden rounded-full'>
-                    <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                  <Avatar className='w-[85px] h-[85px] relative shrink-0 overflow-x-hidden rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                    <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{shortUsername}</AvatarFallback>
                   </Avatar>
                   <div className='flex flex-col justify-center items-center'>
                     <h1 className='text-[#DFDEDE] font-Roboto text-xs md:text-sm min-w-full'>{pathUser.firstName} {pathUser.lastName}</h1>
@@ -633,7 +661,7 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                   </div>
                 </div>
                 <div className='flex flex-col px-2 gap-2 justify-center'>
-                  <div className='flex flex-col px-4 py-2 gap-2'>
+                  <div className='flex flex-col px-2 py-2 gap-2'>
                     <p className='text-center text-[#DFDEDE] font-Roboto text-xs 2xl:text-sm'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
                     <p className='text-[#DFDEDE] text-center font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
                   </div>
@@ -649,49 +677,60 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
                   </div>
                 </div>
               </div>
-              <div className='flex flex-col w-full h-full py-4'>
+              <div className='flex flex-col justify-center items-center w-full h-full py-4'>
                 <div className='w-full flex flex-col justify-center items-center'>
                   <p className='text-[#808080] font-Roboto text-center'>{friendshipStatus === 0 ? 'You are not friends' : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
                   {friendshipStatus === 0 ? (
-                    <div className='w-full px-2 flex justify-between gap-4 pt-2 text-sm 2xl:text-base'>
-                      <button onClick={() => addFriend()} className='px-2 py-0 w-full rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Add friend</button>
-                      <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Following' : 'Follow'}</button>
+                    <div className='w-full px-2 flex justify-center gap-4 pt-2 text-base'>
+                      <button onClick={() => addFriend()} className='px-4 py-0 w-fit rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Add friend</button>
+                      <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-4 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
                     </div>
                   ) : friendshipStatus === 1 ? (
-                    <div className='w-full px-2 flex justify-between gap-4 pt-2'>
-                      <button onClick={() => unsendFriendReq()} className='px-2 py-0 w-full h-full rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)] hover:opacity-90 text-[#E3E3E3]'>Unsend</button>
-                      <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Following' : 'Follow'}</button>
+                    <div className='w-full px-2 flex justify-center gap-4 pt-2'>
+                      <button onClick={() => unsendFriendReq()} className='px-4 py-0 w-fit h-full rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)] hover:opacity-90 text-[#E3E3E3]'>Unsend</button>
+                      <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-4 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
                     </div>
                   ) : friendshipStatus === 2 ? (
                     <div className='w-full px-2 flex flex-col gap-4 pt-2'>
-                      <div className='w-full flex justify-between gap-4'>
-                        <button onClick={() => acceptRequest()} className='px-2 py-0 w-full h-fit rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Accept</button>
-                        <button onClick={() => declineRequest()} className='px-2 py-0 w-full h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]  hover:opacity-90 text-[#E3E3E3]'>Decline</button>
+                      <div className='w-full flex justify-center gap-4'>
+                        <button onClick={() => acceptRequest()} className='px-4 py-0 w-fit h-fit rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Accept</button>
+                        <button onClick={() => declineRequest()} className='px-4 py-0 w-fit h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]  hover:opacity-90 text-[#E3E3E3]'>Decline</button>
                       </div>
-                      <div>
-                        <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Following' : 'Follow'}</button>
+                      <div className='w-full flex justify-center'>
+                        <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-4 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
                       </div>
                     </div>
                   ) : (
-                    <div className='w-fit px-2 flex justify-between gap-4 pt-2 text-sm 2xl:text-base'>
-                      <button onClick={() => unfriend()} className='px-2 py-0 w-full h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Unfriend</button>
-                      <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Following' : 'Follow'}</button>
+                    <div className='w-fit px-2 flex justify-center gap-4 pt-2'>
+                      <button onClick={() => unfriend()} className='px-4 py-0 w-fit h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Unfriend</button>
+                      <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-4 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
                     </div>
                   )}
                 </div>
                 <div className='w-full h-full py-4'>
-                  <div className='flex flex-col items-center justify-center'>
-                    <h3 className='font-Roboto text-[#808080] mt-2 text-center'>You might know</h3>
-                    <div className='grid grid-cols-2 gap-2 px-6 w-fit'>
-                    {getPopularUsersQuery.data?.map((profile, index, array) => {
+                  <div className='h-full flex flex-col items-center justify-center'>
+                    <h3 className='font-Roboto text-[#808080] mt-2'>{getMutualFriendsQuery?.data?.length !== 0 ? 'Mutual friends' : 'You might know'}</h3>
+                    <div className='grid grid-cols-2 gap-2 px-1 w-full place-items-center'>
+                      {getMutualFriendsQuery?.data?.length !== 0 ? getMutualFriendsQuery.data?.map((profile, index) => (
+                        <div key={profile.userId} className="hover:cursor-pointer flex gap-2 py-2 items-center " onClick={() => router.push(`/users/${profile.username}`)}>
+                          <Avatar className='w-[45px] h-[45px] 2k:w-[55px] 2k:h-[55px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                              <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col h-full items-start justify-center w-full">
+                              <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap" title={`${profile.firstName} ${profile.lastName}`}>{profile.firstName} {profile.lastName}</h1>
+                              <p className="text-[#888888] text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap">@{profile.username}</p>
+                          </div>    
+                        </div>
+                      )) : 
+                      getPopularUsersQuery.data?.map((profile, index, array) => {
                         const isLastOdd = array.length % 2 !== 0 && index === array.length -1;
                         return (
-                          <div key={profile.userId} className={`hover:cursor-pointer flex gap-2 py-2 items-center ${isLastOdd ? "col-span-2 justify-center" : ""}`} onClick={() => router.push(`/users/${profile.userId}`)}>
+                          <div key={profile.userId} className={`hover:cursor-pointer flex gap-2 py-2 items-center ${isLastOdd ? "col-span-2 justify-center" : "w-fit"}`} onClick={() => router.push(`/users/${profile.userId}`)}>
                               <Avatar className='w-[35px] h-[35px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
                                   <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
                               </Avatar>
                               <div className="flex flex-col h-full items-start justify-center w-fit">
-                                  <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-sm 2xl:text-base 2k:text-lg max-w-[80px] truncate whitespace-nowrap" title={`${profile.firstName} ${profile.lastName}`}>{profile.firstName} {profile.lastName}</h1>
+                                  <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-sm 2xl:text-base 2k:text-lg max-w-[80px] sm:max-w-full truncate whitespace-nowrap" title={`${profile.firstName} ${profile.lastName}`}>{profile.firstName} {profile.lastName}</h1>
                                   <p className="text-[#888888] text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap">@{profile.username}</p>
                               </div>    
                           </div>
@@ -707,8 +746,8 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
           <div className='w-full flex flex-col justify-center items-center'>
             <div className='flex flex-col py-1 gap-2 w-full'>
               <div className='flex px-2'>
-                <Avatar className='w-[45px] h-[45px] 2xl:w-[65px] 2xl:h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full'>
-                  <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{shortUsername}</AvatarFallback>
+                <Avatar className='w-[45px] h-[45px] 2xl:w-[65px] 2xl:h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                  <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{shortUsername}</AvatarFallback>
                 </Avatar>
                 <div className='flex flex-col justify-center items-start px-2'>
                   <h1 className='text-[#DFDEDE] font-Roboto text-sm 2xl:text-base'>{pathUser.firstName} {pathUser.lastName}</h1>
@@ -731,42 +770,53 @@ const ProfileUserComponent = ({pathUser, editProfile}: {pathUser: Profile, editP
               </div>
               <span className="bg-[#515151] h-[1px] w-full"></span>
             </div>
-            <div className='w-full pt-4'>
-            <p className='text-[#808080] font-Roboto'>{friendshipStatus === 0 ? 'You are not friends' : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
+            <div className='w-full pt-2'>
+              <p className='text-[#808080] font-Roboto'>{friendshipStatus === 0 ? 'You are not friends' : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
               {friendshipStatus === 0 ? (
                 <div className='w-full px-2 flex justify-between gap-4 pt-2 text-sm 2xl:text-base'>
                   <button onClick={() => addFriend()} className='px-2 py-0 w-full rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Add friend</button>
-                  <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Following' : 'Follow'}</button>
+                  <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
                 </div>
               ) : friendshipStatus === 1 ? (
                 <div className='w-full px-2 flex justify-between gap-4 pt-2'>
-                  <button onClick={() => unsendFriendReq()} className='px-2 py-0 w-full h-full rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)] hover:opacity-90 text-[#E3E3E3]'>Unsend</button>
-                  <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Following' : 'Follow'}</button>
+                  <button onClick={() => unsendFriendReq()} className='px-2 py-0 w-full h-full rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)] hover:opacity-90 text-[#E3E3E3]'>Unsend</button>
+                  <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
                 </div>
               ) : friendshipStatus === 2 ? (
                 <div className='w-full px-2 flex flex-col gap-4 pt-2'>
                   <div className='w-full flex justify-between gap-4'>
                     <button onClick={() => acceptRequest()} className='px-2 py-0 w-full h-fit rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Accept</button>
-                    <button onClick={() => declineRequest()} className='px-2 py-0 w-full h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]  hover:opacity-90 text-[#E3E3E3]'>Decline</button>
+                    <button onClick={() => declineRequest()} className='px-2 py-0 w-full h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]  hover:opacity-90 text-[#E3E3E3]'>Decline</button>
                   </div>
                   <div>
-                    <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Following' : 'Follow'}</button>
+                    <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all  hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
                   </div>
                 </div>
               ) : (
                 <div className='w-full px-2 flex justify-between gap-4 pt-2 text-sm 2xl:text-base'>
-                  <button onClick={() => unfriend()} className='px-2 py-0 w-full h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Unfriend</button>
-                  <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_1px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_1px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Following' : 'Follow'}</button>
+                  <button onClick={() => unfriend()} className='px-2 py-0 w-full h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Unfriend</button>
+                  <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-2 sm:px-4 w-full h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
                 </div>
               )}
             </div>
-            <span className="bg-[#515151] h-[1px] w-full mt-8"></span>
-            <h3 className='font-Roboto text-[#808080] mt-2'>You might know</h3>
+            <span className="bg-[#515151] h-[1px] w-full mt-4"></span>
+            <h3 className='font-Roboto text-[#808080] mt-2'>{getMutualFriendsQuery?.data?.length !== 0 ? 'Mutual friends' : 'You might know'}</h3>
             <div className='flex flex-col px-6 w-full'>
-              {getPopularUsersQuery.data?.map((profile, index) => (
-                <div key={profile.userId} className="hover:cursor-pointer flex gap-2 py-2 items-center " onClick={() => router.push(`/users/${profile.userId}`)}>
-                    <Avatar className='w-[35px] h-[35px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
-                        <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
+              {getMutualFriendsQuery?.data?.length !== 0 ? getMutualFriendsQuery.data?.map((profile, index) => (
+                <div key={profile.userId} className="hover:cursor-pointer flex gap-2 py-2 items-center " onClick={() => router.push(`/users/${profile.username}`)}>
+                  <Avatar className='w-[35px] h-[35px] 2xl:w-[45px] 2xl:h-[45px] 2k:w-[55px] 2k:h-[55px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                      <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col h-full items-start justify-center w-full">
+                      <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap" title={`${profile.firstName} ${profile.lastName}`}>{profile.firstName} {profile.lastName}</h1>
+                      <p className="text-[#888888] text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap">@{profile.username}</p>
+                  </div>    
+                </div>
+              )) : 
+              getPopularUsersQuery.data?.map((profile, index) => (
+                <div key={profile.userId} className="hover:cursor-pointer flex gap-2 py-2 items-center " onClick={() => router.push(`/users/${profile.username}`)}>
+                    <Avatar className='w-[35px] h-[35px] 2xl:w-[45px] 2xl:h-[45px] 2k:w-[55px] 2k:h-[55px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                        <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col h-full items-start justify-center w-full">
                         <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap" title={`${profile.firstName} ${profile.lastName}`}>{profile.firstName} {profile.lastName}</h1>

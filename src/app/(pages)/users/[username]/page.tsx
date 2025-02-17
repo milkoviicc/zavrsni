@@ -30,10 +30,14 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(false);
   const [friendsList, setFriendsList] = useState<Profile[]>([]);
   const [myProfile, setMyProfile] = useState(false);
+  const [isRendering, setIsRendering] = useState(false);
   const [user, setUser] = useState<Profile>();
   const loggedUser = localStorage.getItem('user');
   const pathname = usePathname();
   const queryClient = useQueryClient();
+
+  const getFriendsQuery = useQuery({queryKey: ["getFriends"], queryFn: () => getFriends(), enabled: user !== undefined});
+  const getUserQuery = useQuery({queryKey: ["getUser"], queryFn: () => getUserData()});
 
   // KAD UDJEM TREBA MI LOGGEDUSER I PATHUSER, AKO JE LOGGEDUSER ISTI KO PATHUSER STAVI DA JE MOJ PROFIL AKO NIJE ONDA OSTAVI FALSE
    useEffect(() => {
@@ -60,8 +64,6 @@ const UserProfile = () => {
     }
   }
 
-  const getUserQuery = useQuery({queryKey: ["getUser"], queryFn: () => getUserData()});
-
   const getFriends = async () => {
     try {
       const res = await axios.get<Friendship[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/friends/${user?.userId}`);
@@ -80,9 +82,6 @@ const UserProfile = () => {
     }
   };
 
-
-  const getFriendsQuery = useQuery({queryKey: ["getFriends"], queryFn: () => getFriends(), enabled: user !== undefined});
-  const [isRendering, setIsRendering] = useState(false);
 
   useEffect(() => {
     if (getFriendsQuery.data) {
@@ -177,40 +176,44 @@ const UserProfile = () => {
       <div className='flex-col shadow-[0px_0.1px_15px_0px_rgba(0_0_0_0.26)] min-h-[829px] h-full pt-0 sm:pt-6 xl:pt-24 2xl:pt-16'>
         <div className='flex flex-col relative w-screen justify-center items-center 2xl:px-4 xl:px-14 lg:px-4 gap-4'>
           <ProfileUserComponent pathUser={user} editProfile={editProfile}/>
-          <div className='w-full'>
-            <div className='flex justify-center px-12'>
-              <div className='xl:hidden group h-full flex flex-col gap-2 bg-transparent px-4 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)]'>
-                <h1 className='font-Roboto text-[#DFDEDE] text-2xl text-center'>Their friends</h1>
-                <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6'>
-                  {getFriendsQuery.isLoading || isRendering ? <UserSkeleton /> : getFriendsQuery.data?.map((user, index, array) => {
-                    const itemsInLastRow = array.length % columns; // Defaulting to 4 when possible
-                    const isLastOdd = itemsInLastRow !== 0 && index >= array.length - itemsInLastRow;
-                    return (
-                    <div key={user.user.userId} className={`hover:cursor-pointer flex gap-2 py-2 items-center ${isLastOdd && itemsInLastRow === 1 ? 'col-span-full justify-center w-full' : ' w-[170px]'}`} onClick={() => router.push(`/users/${user.user.userId}`)}>
-                      <Avatar className='w-[35px] h-[35px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
-                          <AvatarImage src={`${user.user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{user.user.username.slice(0, 1)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col h-full items-start justify-center">
-                          <h1 className={`text-[#EFEFEF] font-[400] font-Roboto text-sm sm:text-base 2k:text-lg truncate whitespace-nowrap ${isLastOdd && itemsInLastRow === 1 ? 'max-w-full' : 'max-w-[85px] sm:max-w-[100px] lg:max-w-full'}`} title={`${user.user.firstName} ${user.user.lastName}`}>{user.user.firstName} {user.user.lastName}</h1>
-                          <p className={`text-[#888888]  text-sm sm:text-base ${isLastOdd && itemsInLastRow === 1 ? 'max-w-full' : 'max-w-[75px] sm:max-w-[100px] lg:max-w-full'} 2k:text-lg truncate whitespace-nowrap`}>@{user.user.username}</p>
-                      </div>    
-                    </div>
-                  )})}
+          {getFriendsQuery.data?.length === 0 ? null : (
+            <div>
+              <div className='flex justify-center w-screen px-4'>
+                <div className={`xl:hidden group max-w-[400px] sm:max-w-[570px] md:max-w-[716px] lg:max-w-[765px] w-full h-full flex flex-col items-center gap-2 bg-transparent px-2 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)] py-4 mb-12`}>
+                  <h1 className='font-Roboto text-[#DFDEDE] text-2xl text-center'>{myProfile ? 'Your friends' : `${user.firstName}'s friends`}</h1>
+                  <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6'>
+                    {getFriendsQuery.isLoading || isRendering ? <UserSkeleton /> : getFriendsQuery.data?.map((user, index, array) => {
+                      const itemsInLastRow = array.length % columns; // Defaulting to 4 when possible
+                      const isLastOdd = itemsInLastRow !== 0 && index >= array.length - itemsInLastRow;
+                      return (
+                      <div key={user.user.userId} className={`hover:cursor-pointer flex gap-2 py-2 items-center ${isLastOdd && itemsInLastRow === 1 && getFriendsQuery.data?.length !== 1 ? 'col-span-full justify-center w-full' : ' w-[170px]'}`} onClick={() => router.push(`/users/${user.user.username}`)}>
+                        <Avatar className='w-[35px] h-[35px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
+                            <AvatarImage src={`${user.user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{user.user.username.slice(0, 1)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col h-full items-start justify-center">
+                            <h1 className={`text-[#EFEFEF] font-[400] font-Roboto text-sm sm:text-base 2k:text-lg truncate whitespace-nowrap ${isLastOdd && itemsInLastRow === 1 ? 'max-w-full' : 'max-w-[85px] sm:max-w-[100px] lg:max-w-full'}`} title={`${user.user.firstName} ${user.user.lastName}`}>{user.user.firstName} {user.user.lastName}</h1>
+                            <p className={`text-[#888888]  text-sm sm:text-base ${isLastOdd && itemsInLastRow === 1 ? 'max-w-full' : 'max-w-[75px] sm:max-w-[100px] lg:max-w-full'} 2k:text-lg truncate whitespace-nowrap`}>@{user.user.username}</p>
+                        </div>    
+                      </div>
+                    )})}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
           <div className='flex-grow w-screen xl:max-w-[768px] 2xl:max-w-[836px]'>
             <ProfilePosts pathUser={user} />
           </div>
-          <div className="xl:flex hidden flex-col fixed top-32 3k:right-80 2k:right-64 2xl:right-12 xl:right-3 gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[-20px] 2xl:translate-x-0 2k:translate-x-[-40px] 2xl:translate-y-[10px]">
-              <h1 className="font-Roboto text-xl xl:text-2xl 2k:text-3xl pb-4 px-4 text-[#EFEFEF] font-normal">{myProfile ? 'Your Friends' : 'Their Friends'}</h1>
-              <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
-              <div className='group w-full h-full lg:max-h-[400px] xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] flex flex-col gap-2 bg-transparent px-4 overflow-y-hidden hover:overflow-y-scroll scrollbar'>
-                {getFriendsQuery.isLoading || isRendering ? <UserSkeleton /> : getFriendsQuery.data?.map((user, index) => <UserComponent user={user.user} key={index} handleRoute={null}/>)}
-              </div>
-              <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
-          </div>
+          {getFriendsQuery.data?.length === 0 ? null : (
+            <div className="xl:flex hidden flex-col fixed top-32 3k:right-80 2k:right-64 2xl:right-12 xl:right-0 gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[-20px] 2xl:translate-x-0 2k:translate-x-[-40px] 2xl:translate-y-[10px]">
+                <h1 className="font-Roboto text-xl xl:text-2xl 2k:text-3xl pb-4 px-4 text-[#EFEFEF] font-normal">{myProfile ? 'Your Friends' : `${user.firstName}'s friends`}</h1>
+                <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
+                <div className='group w-full h-full lg:max-h-[400px] xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] flex flex-col gap-2 bg-transparent px-4 overflow-y-hidden hover:overflow-y-scroll scrollbar'>
+                  {getFriendsQuery.isLoading || isRendering ? <UserSkeleton /> : getFriendsQuery.data?.map((user, index) => <UserComponent user={user.user} key={index} handleRoute={null}/>)}
+                </div>
+                <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
+            </div>
+          )}
         </div>
       </div>
     </div>

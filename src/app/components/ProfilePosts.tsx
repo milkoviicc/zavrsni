@@ -119,7 +119,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
         if(res.status === 200) {
           const newPost: Post = res.data;
           setPosts((prev) => [newPost, ...prev]);
-          queryClient.invalidateQueries({queryKey: [getPosts]});
+          queryClient.invalidateQueries({queryKey: ["getPosts"]});
           toast({description: "Post successfully posted!", duration: 1000});
         }
       } catch(err) {
@@ -160,7 +160,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
             
             // ako je res.status jednak 200 znači da je post obrisan i onda mjenjam reactionTrigger state kako bi se postovi re-renderali na stranici.
             if (res.status === 200) {
-                queryClient.invalidateQueries({queryKey: [getPosts]});
+                queryClient.invalidateQueries({queryKey: ["getPosts"]});
                 // Izbacujem obrisani post
                 setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
             }
@@ -356,7 +356,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
               </Dialog>
             </div>
           ) : null}
-          <h1 className='text-[#EDEDED] text-center font-Roboto text-3xl pt-8 sm:hidden'>{myProfile ? 'Your posts' : 'Their posts'}</h1>
+          <h1 className='text-[#EDEDED] text-center font-Roboto text-3xl pt-8 sm:hidden'>{myProfile ? 'Your posts' : `${pathUser.firstName}'s posts`}</h1>
           <div className='flex sm:hidden flex-col py-8'>
             {getPostsQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
               <InfiniteScroll className='w-full flex flex-col bg-transparent' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
@@ -410,7 +410,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
         ) : null}
         <div className="h-full w-full sm:flex hidden flex-col items-center overflow-x-hidden">
           <div className={`flex gap-4 ${myProfile ? 'pt-6' : 'py-0'} items-center`}>
-            <h1 className='text-[#EDEDED] font-Roboto text-3xl'>{myProfile ? 'Your posts' : 'Their posts'}</h1>
+            <h1 className='text-[#EDEDED] font-Roboto text-3xl'>{myProfile ? 'Your posts' : `${pathUser.firstName}'s posts`}</h1>
           </div>
           <div className='w-full lg:min-w-[832px] flex flex-col justify-center mt-6'>
               {getPostsQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
