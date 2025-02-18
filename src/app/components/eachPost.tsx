@@ -338,7 +338,7 @@ const handleReaction = async (reaction: number) => {
                                     <div className={`grid gap-2 ${previousFiles.length <= 2 ? "grid-cols-3" : ''} ${previousFiles.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>
                                       {previousFiles ? previousFiles.map((file, index) => (
                                         <div key={index} className='w-full relative flex justify-center sm:px-2'>
-                                          <Image key={index} src={file} width={100} height={100} alt="a" className="py-2 rounded-xl h-[150px] w-full"/>
+                                          <Image key={index} src={file} width={100} height={100} alt="a" className="py-2 rounded-xl h-[150px] w-full" unoptimized/>
                                           <button className="absolute text-white top-2 right-4" onClick={() => setPreviousFiles(previousFiles.filter((_, postIndex) => postIndex != index))}>X</button>
                                         </div>
                                       )) : null}
@@ -379,6 +379,7 @@ const handleReaction = async (reaction: number) => {
                     height={0}
                     className="w-full h-auto"
                     onLoad={handleImageLoad}
+                    unoptimized
                   />
                 ) : (
                   // Multiple images or single non-portrait image
@@ -392,6 +393,7 @@ const handleReaction = async (reaction: number) => {
                       height={0}
                       className="w-full h-auto py-2"
                       onLoad={handleImageLoad}
+                      unoptimized
                     />
                   ))
                 )}
@@ -443,6 +445,7 @@ const handleReaction = async (reaction: number) => {
                               height={0}
                               className="w-full h-auto"
                               onLoad={handleImageLoad}
+                              unoptimized
                             />
                           ) : (
                             // Multiple images or single non-portrait image
@@ -456,6 +459,7 @@ const handleReaction = async (reaction: number) => {
                                 height={0}
                                 className="w-full h-auto py-2"
                                 onLoad={handleImageLoad}
+                                unoptimized
                               />
                             ))
                           )}

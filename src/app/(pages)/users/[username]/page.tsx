@@ -181,14 +181,14 @@ const UserProfile = () => {
   }
 
   return (
-    <div className='flex-col mt-[35px] sm:mt-[80px] xl:mt-[35px] min-h-[829px] h-full 2k:min-h-[1200px] bg-[#222222]'>
+    <div className='flex-col mt-[35px] sm:mt-[80px] xl:mt-[35px] min-h-[829px] h-full 2k:min-h-[1150px] bg-[#222222]'>
       <div className='flex-col shadow-[0px_0.1px_15px_0px_rgba(0_0_0_0.26)] min-h-[829px] h-full pt-0 sm:pt-6 xl:pt-24 2xl:pt-16'>
         <div className='flex flex-col relative w-screen justify-center items-center 2xl:px-4 xl:px-14 lg:px-4 gap-4'>
           <ProfileUserComponent pathUser={user} editProfile={editProfile} changeImage={handleChangeImage}/>
           {getFriendsQuery.data?.length === 0 ? null : (
             <div>
               <div className='flex justify-center w-screen px-4'>
-                <div className={`xl:hidden group max-w-[396px] sm:max-w-[570px] md:max-w-[716px] lg:max-w-[765px] w-full h-full flex flex-col items-center gap-2 bg-transparent px-2 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)] py-4 mb-6 lg:mb-10`}>
+                <div className={`xl:hidden group max-w-[350px] sm:max-w-[580px] md:max-w-[716px] lg:max-w-[765px] w-full h-full flex flex-col items-center gap-2 bg-transparent px-2 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)] py-4 mb-6 lg:mb-10`}>
                   <h1 className='font-Roboto text-[#DFDEDE] text-2xl text-center'>{myProfile ? 'Your friends' : `${user.firstName}'s friends`}</h1>
                   <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
                     {getFriendsQuery.isLoading || isRendering ? <UserSkeleton /> : getFriendsQuery.data?.map((user, index, array) => {

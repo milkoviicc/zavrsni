@@ -296,7 +296,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
               </div>
               <div className='flex flex-col'>
                 <div className='flex flex-col items-center px-4 py-2 gap-4'>
-                  <p className='text-center text-[#EDEDED] font-Roboto text-sm'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
+                  <p className='text-center text-[#888888] font-Roboto text-sm'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
                   <div className='flex w-full justify-evenly items-center gap-4'>
                     <p className='text-[#888888] font-Roboto text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
                     <div className='flex gap-4'>
@@ -383,8 +383,8 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                   </div>
                 </div>
                 <div className='flex flex-col justify-center px-1 py-2 gap-4'>
-                  <p className='text-left text-[#EDEDED] font-Roboto text-xs 2xl:text-sm max-w-[150px]'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
-                  <p className='text-[#DFDEDE] font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
+                  <p className='text-left text-[#888888] font-Roboto text-xs 2xl:text-sm max-w-[150px]'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
+                  <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
                   <div className='flex justify-evenly gap-4'>
                     <div className='flex items-center gap-2'>
                       <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers</p>
@@ -470,8 +470,8 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                 </div>
               </div>
               <div className='flex flex-col justify-center px-1 py-2 gap-4'>
-                <p className='text-left text-[#EDEDED] font-Roboto text-xs 2xl:text-sm max-w-[150px]'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
-                <p className='text-[#DFDEDE] font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
+                <p className='text-left text-[#888888] font-Roboto text-xs 2xl:text-sm max-w-[150px]'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
+                <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
                 <div className='flex gap-4'>
                   <div className='w-full flex items-center gap-2'>
                     <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers</p>
@@ -526,7 +526,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
             </div>
           </div>
         </div>
-        <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-12 xl:left-0 self-start gap-0 xl:w-[245px] 2xl:w-[275px] 2k:w-[300px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-2 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
+        <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-12 xl:left-0 self-start gap-0 xl:w-[245px] 2xl:w-[245px] 2k:w-[300px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-2 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
           <Popover open={popoverPcOpen} onOpenChange={setPopoverPcOpen}>
             <PopoverTrigger className='absolute top-2 right-2 cursor-pointer' onClick={() => setPopoverPcOpen(!popoverPcOpen)} asChild><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
             <PopoverContent className='w-fit'>
@@ -541,7 +541,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
           </Popover>
           <div className='w-full relative flex flex-col justify-evenly items-center mt-2 2xl:mt-4'>
             <div className='flex flex-col py-1 gap-2 w-full'>
-              <div className='flex px-2'>
+              <div className='flex px-4'>
                 <Dialog open={changeImgDialogOpen} onOpenChange={setChangeImgDialogOpen}>
                   <DialogTrigger>
                     <Avatar className='relative w-[65px] h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)] group' onClick={() =>  setChangeImgDialogOpen(true)}>
@@ -579,8 +579,8 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                 </div>
               </div>
               <div className='flex flex-col px-4 py-2 gap-4'>
-                <p className='text-left text-[#DFDEDE] font-Roboto text-xs 2xl:text-sm 2k:text-base'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
-                <p className='text-[#DFDEDE] text-left font-Roboto text-xs 2xl:text-sm 2k:text-base'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
+                <p className='text-left text-[#888888] font-Roboto text-xs 2xl:text-sm 2k:text-base'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
+                <p className='text-[#888888] text-left font-Roboto text-xs 2xl:text-sm 2k:text-base'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
               </div>
               <div className='flex justify-evenly gap-4'>
                 <div className='flex items-center gap-2'>
@@ -666,7 +666,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
               <div className='flex flex-col w-full'>
                 <div className='flex flex-col gap-2 justify-center'>
                   <div className='flex flex-col items-center px-4 py-2 gap-4'>
-                    <p className='text-center text-[#DFDEDE] font-Roboto text-sm '>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
+                    <p className='text-center text-[#888888] font-Roboto text-sm '>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
                   </div>
                   <div className='flex items-center justify-evenly gap-4'>
                     <p className='text-[#888888] text-center font-Roboto text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
@@ -758,8 +758,8 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                 </div>
                 <div className='flex flex-col px-2 gap-2 justify-center'>
                   <div className='flex flex-col px-2 py-2 gap-2'>
-                    <p className='text-center text-[#DFDEDE] font-Roboto text-xs 2xl:text-sm'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
-                    <p className='text-[#DFDEDE] text-center font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
+                    <p className='text-center text-[#888888] font-Roboto text-xs 2xl:text-sm'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
+                    <p className='text-[#888888] text-center font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
                   </div>
                   <div className='flex justify-evenly gap-4'>
                     <div className='flex items-center gap-2'>
@@ -844,7 +844,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
         <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-12 xl:left-0 self-start gap-0 xl:w-[225px] w-[180px] 2xl:w-[245px] 2k:w-[300px] lg:h-[400px] xl:h-[520px] 2xl:h-[600px] 2k:h-[800px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
           <div className='w-full flex flex-col justify-center items-center'>
             <div className='flex flex-col py-1 gap-2 w-full'>
-              <div className='flex px-2'>
+              <div className='flex px-4'>
                 <Avatar className='w-[45px] h-[45px] 2xl:w-[65px] 2xl:h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
                   <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{shortUsername}</AvatarFallback>
                 </Avatar>
@@ -854,8 +854,8 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                 </div>
               </div>
               <div className='flex flex-col px-4 py-2 gap-4'>
-                <p className='text-left text-[#DFDEDE] font-Roboto text-xs 2xl:text-sm 2k:text-base'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
-                <p className='text-[#DFDEDE] text-left font-Roboto text-xs 2xl:text-sm 2k:text-base'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
+                <p className='text-left text-[#888888] font-Roboto text-xs 2xl:text-sm 2k:text-base'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
+                <p className='text-[#888888] text-left font-Roboto text-xs 2xl:text-sm 2k:text-base'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
               </div>
               <div className='flex justify-evenly gap-4'>
                 <div className='flex items-center gap-2'>
