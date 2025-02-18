@@ -188,7 +188,7 @@ const UserProfile = () => {
           {getFriendsQuery.data?.length === 0 ? null : (
             <div>
               <div className='flex justify-center w-screen px-4'>
-                <div className={`xl:hidden group max-w-[350px] sm:max-w-[585px] md:max-w-[716px] lg:max-w-[765px] w-full h-full flex flex-col items-center gap-2 bg-transparent px-2 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)] py-4 mb-6 lg:mb-10`}>
+                <div className={`xl:hidden group max-w-[396px] sm:max-w-[570px] md:max-w-[716px] lg:max-w-[765px] w-full h-full flex flex-col items-center gap-2 bg-transparent px-2 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)] py-4 mb-6 lg:mb-10`}>
                   <h1 className='font-Roboto text-[#DFDEDE] text-2xl text-center'>{myProfile ? 'Your friends' : `${user.firstName}'s friends`}</h1>
                   <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
                     {getFriendsQuery.isLoading || isRendering ? <UserSkeleton /> : getFriendsQuery.data?.map((user, index, array) => {
@@ -214,7 +214,7 @@ const UserProfile = () => {
             <ProfilePosts pathUser={user} />
           </div>
           {getFriendsQuery.data?.length === 0 ? null : (
-            <div className="xl:flex hidden flex-col fixed top-32 3k:right-80 2k:right-64 2xl:right-12 xl:right-0 gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[-20px] 2xl:translate-x-0 2k:translate-x-[-40px] 2xl:translate-y-[10px]">
+            <div className="xl:flex hidden flex-col fixed top-32 3k:right-80 2k:right-64 2xl:right-12 xl:right-0 gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[300px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[-20px] 2xl:translate-x-0 2k:translate-x-[-40px] 2xl:translate-y-[10px]">
                 <h1 className="font-Roboto text-xl xl:text-2xl 2k:text-3xl pb-4 px-4 text-[#EFEFEF] font-normal">{myProfile ? 'Your Friends' : `${user.firstName}'s friends`}</h1>
                 <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
                 <div className='group w-full h-full lg:max-h-[400px] xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] flex flex-col gap-2 bg-transparent px-4 overflow-y-hidden hover:overflow-y-scroll scrollbar'>

@@ -50,9 +50,6 @@ export default function Home() {
   const [friendsList, setFriendsList] = useState<Friendship[]>([]);
   const [ignoreDefaultPicture, setIgnoreDefaultPicture] = useState(false);
 
-
-
-
   const getPopularUsers = async () => {
     try {
       const res = await axios.get<Profile[]>('https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/popular?limit=10');

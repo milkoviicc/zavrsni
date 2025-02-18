@@ -1,3 +1,4 @@
+'use client';
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
@@ -43,13 +44,35 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
   const [imageChanged, setImageChanged] = useState(false);
   const [changeImgDialogOpen, setChangeImgDialogOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [popoverTabletOpen, setPopoverTabletOpen] = useState(false);
+  const [popoverLaptopOpen, setPopoverLaptopOpen] = useState(false);
+  const [popoverPcOpen, setPopoverPcOpen] = useState(false);
 
+  
   const {deleteAccount} = useAuth();
   const router = useRouter();
-
+  
   const getMutualFriendsQuery = useQuery({queryKey: ["getMutualFriends"], queryFn: () => getMutualFriends(), enabled: !myProfile && user !== undefined});
   const getFriendshipStatusQuery = useQuery({queryKey: ["getFriendshipStatus"], queryFn: () => getFriendshipStatus(), enabled: allowFetchingFriendship});
   const getPopularUsersQuery = useQuery({queryKey: ["getPopularUsersQuery"], queryFn: () => getPopularUsers()});
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      setPopoverOpen(false);
+      setPopoverTabletOpen(false);
+      setPopoverLaptopOpen(false);
+      setPopoverPcOpen(false);
+    };
+
+    if (popoverOpen || popoverTabletOpen || popoverLaptopOpen || popoverPcOpen) {
+      requestAnimationFrame(() => {
+        window.addEventListener("scroll", handleScroll, { passive: true });
+      });
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+
+  }, [popoverOpen, popoverTabletOpen, popoverLaptopOpen, popoverPcOpen]);
 
   useEffect(() => {
     if(changeImgDialogOpen === false) {
@@ -126,8 +149,10 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
   const handleFollow = async (id: string) => {
     if(isFollowed) {
       setIsFollowed(false);
+      pathUser.followers--;
     } else {
       setIsFollowed(true);
+      pathUser.followers++;
     }
     try {
         if(isFollowed) {
@@ -245,8 +270,8 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
         <div className='xl:hidden pt-8 md:pb-4 flex justify-center px-4 w-screen'>
           <div className='w-fit sm:gap-10'>
             <div className='w-full relative rounded-lg flex flex-col sm:hidden justify-center items-center gap-5 px-2 lg:px-8 py-4 shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)]'>
-              <Popover>
-                <PopoverTrigger className='absolute top-2 right-2 z-50'><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
+              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                <PopoverTrigger className='absolute top-2 right-2 z-50 cursor-pointer' onClick={() => setPopoverOpen(!popoverOpen)} asChild><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
                 <PopoverContent className='w-fit mr-4'>
                   <Command>
                     <CommandList>
@@ -259,8 +284,9 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
               </Popover>
               <div className='flex items-center justify-center gap-1'>
                 <button onClick={() => setChangeImgDialogOpen((prev) => !prev)}>
-                  <Avatar className='w-[125px] h-[125px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                  <Avatar className='w-[125px] h-[125px] rounded-full overflow-visible shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
                     <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
+                    <span><Camera size={24} className='block absolute bottom-[5px] right-[5px] rounded-full text-white transition-all'/></span>
                   </Avatar>
                 </button>
                 <div className='flex flex-col justify-center px-2 pl-4'>
@@ -312,7 +338,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                     <div className='flex flex-col items-start h-fit w-full'>
                       <label htmlFor="description" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Description</label>
                       <div className='flex items-center relative w-full'>
-                        {editableDescription ? <textarea id="description" value={description !== null ? description : ''} onChange={(e) => {pathUser.description === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setDescription(e.target.value)}} rows={4} maxLength={100} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none'/>: <textarea id="description" value={description ? `${description}` : 'Set a description'} rows={4} maxLength={100} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none cursor-not-allowed'/>}
+                        {editableDescription ? <textarea id="description" value={description !== null ? description : ''} onChange={(e) => {pathUser.description === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setDescription(e.target.value)}} rows={4} maxLength={200} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none'/>: <textarea id="description" value={description ? `${description}` : 'Set a description'} rows={4} maxLength={200} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none cursor-not-allowed'/>}
                         <label htmlFor="description" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableDescription((prev) => !prev)}/></label>
                       </div>
                     </div>
@@ -331,8 +357,8 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
               </div>
             </div>
             <div className='w-full relative rounded-lg hidden sm:flex md:hidden justify-center gap-10 px-2 lg:px-8 py-4 shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)]'>
-              <Popover>
-                <PopoverTrigger className='absolute top-2 right-2 z-50'><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
+              <Popover open={popoverTabletOpen} onOpenChange={setPopoverTabletOpen}>
+                <PopoverTrigger className='absolute top-2 right-2 z-50 cursor-pointer' onClick={() => setPopoverTabletOpen(!popoverTabletOpen)} asChild><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
                 <PopoverContent className='w-fit mr-4'>
                   <Command>
                     <CommandList>
@@ -346,8 +372,9 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
               <div className='flex flex-col'>
                 <div className='flex items-center justify-center gap-1'>
                   <button onClick={() => setChangeImgDialogOpen((prev) => !prev)}>
-                    <Avatar className='w-[45px] h-[45px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                    <Avatar className='w-[45px] h-[45px] rounded-full overflow-visible shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
                       <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
+                      <span><Camera size={16} className='block absolute bottom-0 right-0 rounded-full text-white transition-all'/></span>
                     </Avatar>
                   </button>
                   <div className='flex flex-col justify-center px-2'>
@@ -396,7 +423,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                       <div className='flex flex-col items-start h-fit w-full'>
                         <label htmlFor="description" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Description</label>
                         <div className='flex items-center relative w-full'>
-                          {editableDescription ? <textarea id="description" value={description !== null ? description : ''} onChange={(e) => {pathUser.description === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setDescription(e.target.value)}} rows={4} maxLength={100} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none'/>: <textarea id="description" value={description ? `${description}` : 'Set a description'} rows={4} maxLength={100} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none cursor-not-allowed'/>}
+                          {editableDescription ? <textarea id="description" value={description !== null ? description : ''} onChange={(e) => {pathUser.description === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setDescription(e.target.value)}} rows={4} maxLength={200} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none'/>: <textarea id="description" value={description ? `${description}` : 'Set a description'} rows={4} maxLength={200} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none cursor-not-allowed'/>}
                           <label htmlFor="description" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableDescription((prev) => !prev)}/></label>
                         </div>
                       </div>
@@ -418,8 +445,8 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
               </div>
             </div>
             <div className='w-full relative rounded-lg hidden md:flex justify-center gap-10 px-2 lg:px-8 py-4 shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)]'>
-              <Popover>
-                <PopoverTrigger className='absolute top-2 right-2 z-50'><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
+              <Popover open={popoverLaptopOpen} onOpenChange={setPopoverLaptopOpen}>
+                <PopoverTrigger className='absolute top-2 right-2 z-50 cursor-pointer' onClick={() => setPopoverLaptopOpen(!popoverLaptopOpen)}><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
                 <PopoverContent className='w-fit mr-4'>
                   <Command>
                     <CommandList>
@@ -431,9 +458,12 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                 </PopoverContent>
               </Popover>
               <div className='flex flex-col items-center justify-center px-2 gap-2'>
-                <Avatar className='w-[65px] h-[65px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
-                  <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{shortUsername}</AvatarFallback>
-                </Avatar>
+                <button onClick={(prev) => setChangeImgDialogOpen(true)}>
+                  <Avatar className='w-[65px] h-[65px] rounded-full overflow-visible shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                    <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{shortUsername}</AvatarFallback>
+                    <span><Camera size={24} className='block absolute bottom-0 right-0 rounded-full text-white transition-all'/></span>
+                  </Avatar>
+                </button>
                 <div className='flex flex-col justify-center items-center'>
                   <h1 className='text-[#DFDEDE] font-Roboto text-[12px] min-w-full'>{pathUser.firstName} {pathUser.lastName}</h1>
                   <p className='text-[#888888] font-Roboto text-xs md:text-sm'>@{pathUser.username}</p>
@@ -467,7 +497,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                     <div className='flex flex-col items-start h-fit'>
                       <label htmlFor="description" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Description</label>
                       <div className='flex items-center relative w-full'>
-                        {editableDescription ? <textarea id="description" value={description !== null ? description : ''} onChange={(e) => {pathUser.description === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setDescription(e.target.value)}} rows={4} maxLength={100} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none'/>: <textarea id="description" value={description ? `${description}` : 'Set a description'} rows={4} maxLength={100} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none cursor-not-allowed'/>}
+                        {editableDescription ? <textarea id="description" value={description !== null ? description : ''} onChange={(e) => {pathUser.description === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setDescription(e.target.value)}} rows={4} maxLength={200} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none'/>: <textarea id="description" value={description ? `${description}` : 'Set a description'} rows={4} maxLength={200} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none cursor-not-allowed'/>}
                         <label htmlFor="description" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableDescription((prev) => !prev)}/></label>
                       </div>
                     </div>
@@ -497,8 +527,8 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
           </div>
         </div>
         <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-12 xl:left-0 self-start gap-0 xl:w-[245px] 2xl:w-[300px] 2k:w-[275px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-2 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
-          <Popover>
-            <PopoverTrigger className='absolute top-2 right-2 cursor-pointer'><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
+          <Popover open={popoverPcOpen} onOpenChange={setPopoverPcOpen}>
+            <PopoverTrigger className='absolute top-2 right-2 cursor-pointer' onClick={() => setPopoverPcOpen(!popoverPcOpen)} asChild><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
             <PopoverContent className='w-fit'>
               <Command>
                 <CommandList>
@@ -544,13 +574,13 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                     </DialogContent>
                 </Dialog>
                 <div className='flex flex-col justify-center items-start px-2'>
-                  <h1 className='text-[#DFDEDE] font-Roboto text-sm 2xl:text-base'>{pathUser.firstName} {pathUser.lastName}</h1>
-                  <p className='text-[#888888] font-Roboto text-sm 2xl:text-base'>@{pathUser.username}</p>
+                  <h1 className='text-[#DFDEDE] font-Roboto text-sm 2xl:text-base 2k:text-lg'>{pathUser.firstName} {pathUser.lastName}</h1>
+                  <p className='text-[#888888] font-Roboto text-sm 2xl:text-base 2k:text-lg'>@{pathUser.username}</p>
                 </div>
               </div>
               <div className='flex flex-col px-4 py-2 gap-4'>
-                <p className='text-center text-[#DFDEDE] font-Roboto text-xs 2xl:text-sm px-3'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
-                <p className='text-[#DFDEDE] text-center font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
+                <p className='text-left text-[#DFDEDE] font-Roboto text-xs 2xl:text-sm 2k:text-base px-3'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
+                <p className='text-[#DFDEDE] text-left font-Roboto text-xs 2xl:text-sm 2k:text-base'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
               </div>
               <div className='flex justify-evenly gap-4'>
                 <div className='flex items-center gap-2'>
@@ -597,7 +627,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                   <div className='flex flex-col items-start'>
                     <label htmlFor="description" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Description</label>
                     <div className='flex items-center relative w-full'>
-                      {editableDescription ? <textarea id="description" value={description !== null ? description : ''} onChange={(e) => {pathUser.description === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setDescription(e.target.value)}} rows={4} maxLength={100} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none'/>: <textarea id="description" value={description ? `${description}` : 'Set a description'} rows={4} maxLength={100} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none cursor-not-allowed'/>}
+                      {editableDescription ? <textarea id="description" value={description !== null ? description : ''} onChange={(e) => {pathUser.description === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setDescription(e.target.value)}} rows={4} maxLength={200} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none'/>: <textarea id="description" value={description ? `${description}` : 'Set a description'} rows={4} maxLength={200} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none cursor-not-allowed'/>}
                       <label htmlFor="description" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableDescription((prev) => !prev)}/></label>
                     </div>
                   </div>
@@ -811,7 +841,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
             </div>
           </div>
         </div>
-        <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-12 xl:left-0 self-start gap-0 xl:w-[225px] w-[180px] 2xl:w-[245px] 2k:w-[275px] lg:h-[400px] xl:h-[520px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
+        <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-12 xl:left-0 self-start gap-0 xl:w-[225px] w-[180px] 2xl:w-[245px] 2k:w-[300px] lg:h-[400px] xl:h-[520px] 2xl:h-[600px] 2k:h-[800px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
           <div className='w-full flex flex-col justify-center items-center'>
             <div className='flex flex-col py-1 gap-2 w-full'>
               <div className='flex px-2'>
@@ -819,13 +849,13 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                   <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{shortUsername}</AvatarFallback>
                 </Avatar>
                 <div className='flex flex-col justify-center items-start px-2'>
-                  <h1 className='text-[#DFDEDE] font-Roboto text-sm 2xl:text-base'>{pathUser.firstName} {pathUser.lastName}</h1>
-                  <p className='text-[#888888] font-Roboto text-sm 2xl:text-base'>@{pathUser.username}</p>
+                  <h1 className='text-[#DFDEDE] font-Roboto text-sm 2xl:text-base 2k:text-lg'>{pathUser.firstName} {pathUser.lastName}</h1>
+                  <p className='text-[#888888] font-Roboto text-sm 2xl:text-base 2k:text-lg'>@{pathUser.username}</p>
                 </div>
               </div>
               <div className='flex flex-col px-4 py-2 gap-4'>
-                <p className='text-left text-[#DFDEDE] font-Roboto text-xs 2xl:text-sm'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
-                <p className='text-[#DFDEDE] text-left font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
+                <p className='text-left text-[#DFDEDE] font-Roboto text-xs 2xl:text-sm 2k:text-base'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
+                <p className='text-[#DFDEDE] text-left font-Roboto text-xs 2xl:text-sm 2k:text-base'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
               </div>
               <div className='flex justify-evenly gap-4'>
                 <div className='flex items-center gap-2'>

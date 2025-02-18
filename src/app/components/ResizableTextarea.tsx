@@ -1,3 +1,4 @@
+'use client';
 // components/ResizableTextarea.tsx
 import React, { useEffect, useRef } from "react";
 
