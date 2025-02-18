@@ -439,91 +439,91 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
   return (
     <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full 2xl:py-12 py-0">
         <div className='flex flex-col md:hidden text-white w-full justify-center'>
-          <div className="flex items-center w-full flex-col">
-                <div className='w-full sm:hidden flex items-center justify-center px-2 pt-12'>
-                  <Popover open={postPopoverOpen} onOpenChange={setPostPopoverOpen}>
-                    <PopoverTrigger asChild className='bg-[#222222] text-[#AFAFAF] w-fit'>
-                      <Button role="combobox" aria-expanded={postPopoverOpen} className="py-0 px-0 w-fit justify-start bg-[#222222] focus:bg-[#222222] text-[#AFAFAF] border-none shadow-none text-lg">{postsState} {!postPopoverOpen ? <ChevronDown className='ml-2 h-4 w-4 shrink-0 opacity-50' /> : <ChevronUp className='ml-2 h-4 w-4 shrink-0 opacity-50'/>}</Button>
-                    </PopoverTrigger>
-                    <PopoverContent className='w-fit'>
-                      <Command>
-                        <CommandList>
-                          <CommandGroup className='bg-[#222222]'>
-                            <CommandItem onSelect={(currentValue) => {
-                                setPostsState(currentValue === 'Popular' ? 'Popular' : currentValue);
-                                setPostPopoverOpen(false);
-                                handleFeedState(currentValue);
-                            }} className='text-[#AFAFAF] text-lg cursor-pointer'>Popular</CommandItem>
-                            <CommandItem onSelect={(currentValue) => {
-                                setPostsState(currentValue === 'Your Feed' ? 'Your Feed' : currentValue);
-                                setPostPopoverOpen(false);
-                                handleFeedState(currentValue);
-                            }} className=' text-[#AFAFAF] text-lg cursor-pointer'>Your Feed</CommandItem>
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              <div className="flex flex-col w-[85%] relative mt-6 py-2 px-4 shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636] rounded-full">
-                <div className='w-full flex justify-between items-center gap-2' onClick={() => setPostDialogOpen(true)}>
-                  <Avatar className='w-[32px] h-[32px] rounded-full'>
-                      <AvatarImage src={`${user?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
-                  </Avatar>
-                  <div className="flex flex-col w-full">
-                    <div className='flex justify-between items-center w-full'>
-                      <textarea value={`What's on your mind, ${user.firstName}`} readOnly onClick={() => setPostDialogOpen(true)} className="resize-none truncate whitespace-nowrap font-Roboto font-normal scrollbar-none h-[20px] md:min-w-[310px] w-full md:w-full pr-2 text-sm text-[#fff] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
-                      <input type="file" id="file-input" accept="image/*, video/*, .webp" className="hidden" onChange={handlePostFile} multiple/>
-                      <div className="flex justify-between">
-                        <div>
-                          <label htmlFor="file-input" className="hover:cursor-pointer text-[#CCCCCC] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" /></label>
-                        </div>
+          <div className="flex items-center w-full flex-col py-4">
+            <div className="flex flex-col w-[85%] relative mt-6 py-2 px-4 shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636] rounded-full">
+              <div className='w-full flex justify-between items-center gap-2' onClick={() => setPostDialogOpen(true)}>
+                <Avatar className='w-[45px] h-[45px] rounded-full'>
+                    <AvatarImage src={`${user?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
+                </Avatar>
+                <div className="flex flex-col w-full px-2">
+                  <div className='flex justify-between items-center w-full'>
+                    <textarea value={`What's on your mind, ${user.firstName}`} readOnly onClick={() => setPostDialogOpen(true)} className="resize-none truncate whitespace-nowrap font-Roboto font-normal scrollbar-none h-[20px] md:min-w-[310px] w-full md:w-full pr-2 text-sm text-[#fff] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                    <input type="file" id="file-input" accept="image/*, video/*, .webp" className="hidden" onChange={handlePostFile} multiple/>
+                    <div className="flex justify-between">
+                      <div>
+                        <label htmlFor="file-input" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" /></label>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <Dialog open={postDialogOpen} onOpenChange={setPostDialogOpen}>
-                  <DialogContent className='top-[35%] rounded-3xl h-fit flex flex-col px-2 lg:px-4 text-black overflow-y-auto overflow-x-hidden bg-[#222222] max-w-[90%] lg:max-w-[45%] lg:min-w-fit border-transparent [&>button]:text-white'>
-                    <DialogHeader>
-                      <DialogTitle className='text-[#EFEFEF] font-Roboto text-left px-1 font-normal'>Post something</DialogTitle>
-                    </DialogHeader>
-                      <div className="flex gap-2 items-center flex-col max-w-full rounded-3xl shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
-                          <div className="flex flex-col justify-between relative w-full min-h-fit items-center gap-4 pt-4 px-4">
-                              <div className='w-full h-full flex gap-4 pb-2'>
-                                  <Avatar className='w-[45px] h-[45px] lg:w-[60px] lg:h-[60px] rounded-full'>
-                                      <AvatarImage src={`${user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
-                                  </Avatar>
-                                  <div className='flex flex-col flex-grow gap-4'>  
-                                    <ResizableTextarea onChange={(e) => setContent(e.target.value)} value={content} placeholder={`What's on your mind, ${user.firstName}`} className="font-Roboto font-normal leading-5 scrollbar-none w-full max-h-[100px] lg:max-h-[150px] text-sm lg:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
-                                    <div className='flex justify-end gap-4 items-center'>
-                                        <div className='flex h-full justify-center items-center'>
-                                          <input type="file" id="file-input" accept="image/*, video/*, .webp"  disabled className="hidden" onChange={handlePostFile} multiple/>
-                                          <div className='flex w-full h-full items-center'>
-                                            <label htmlFor="file-input" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" className='pt-[3px]'/></label>
-                                          </div>
+            </div>
+            <Dialog open={postDialogOpen} onOpenChange={setPostDialogOpen}>
+                <DialogContent className='top-[35%] rounded-3xl h-fit flex flex-col px-2 lg:px-4 text-black overflow-y-auto overflow-x-hidden bg-[#222222] max-w-[90%] lg:max-w-[45%] lg:min-w-fit border-transparent [&>button]:text-white'>
+                  <DialogHeader>
+                    <DialogTitle className='text-[#EFEFEF] font-Roboto text-left px-1 font-normal'>Post something</DialogTitle>
+                  </DialogHeader>
+                    <div className="flex gap-2 items-center flex-col max-w-full rounded-3xl shadow-[1px_1px_2px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636]">
+                        <div className="flex flex-col justify-between relative w-full min-h-fit items-center gap-4 pt-4 px-4">
+                            <div className='w-full h-full flex gap-4 pb-2'>
+                                <Avatar className='w-[45px] h-[45px] lg:w-[60px] lg:h-[60px] rounded-full'>
+                                    <AvatarImage src={`${user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}}/>
+                                </Avatar>
+                                <div className='flex flex-col flex-grow gap-4'>  
+                                  <ResizableTextarea onChange={(e) => setContent(e.target.value)} value={content} placeholder={`What's on your mind, ${user.firstName}`} className="font-Roboto font-normal leading-5 scrollbar-none w-full max-h-[100px] lg:max-h-[150px] text-sm lg:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                                  <div className='flex justify-end gap-4 items-center'>
+                                      <div className='flex h-full justify-center items-center'>
+                                        <input type="file" id="file-input" accept="image/*, video/*, .webp"  disabled className="hidden" onChange={handlePostFile} multiple/>
+                                        <div className='flex w-full h-full items-center'>
+                                          <label htmlFor="file-input" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" className='pt-[3px]'/></label>
                                         </div>
-                                        <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
-                                    </div>
+                                      </div>
+                                      <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
                                   </div>
-                              </div>
-                          </div>
-                      </div>
-                      <div className="flex w-full h-full sm:ml-4">
-                        <div className={`grid gap-2 ${postFile.length <= 2 ? "grid-cols-3" : ''} ${postFile.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>
-                          {postFile ? postFile.map((file, index) => (
-                            <div key={index} className='w-full relative flex justify-center sm:px-2'>
-                              <Image key={index} src={URL.createObjectURL(file)} width={100} height={100} alt="a" className="py-2 opacity-80] rounded-xl h-[150px] w-full"/>
-                              <button className="absolute text-white top-2 right-4" onClick={() => setPostFile(postFile.filter((_, postIndex) => postIndex != index))}>X</button>
+                                </div>
                             </div>
-                          )) : null}
-                          <div className='w-full flex justify-center items-center'>
-                            {postFile.length === 0 ? null : <label htmlFor="file-input" className="hover:cursor-pointer text-[#646464] font-Roboto"><CircleFadingPlus className='text-[#646464] size-14' /></label>}
+                        </div>
+                    </div>
+                    <div className="flex w-full h-full sm:ml-4">
+                      <div className={`grid gap-2 ${postFile.length <= 2 ? "grid-cols-3" : ''} ${postFile.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>
+                        {postFile ? postFile.map((file, index) => (
+                          <div key={index} className='w-full relative flex justify-center sm:px-2'>
+                            <Image key={index} src={URL.createObjectURL(file)} width={100} height={100} alt="a" className="py-2 opacity-80] rounded-xl h-[150px] w-full"/>
+                            <button className="absolute text-white top-2 right-4" onClick={() => setPostFile(postFile.filter((_, postIndex) => postIndex != index))}>X</button>
                           </div>
+                        )) : null}
+                        <div className='w-full flex justify-center items-center'>
+                          {postFile.length === 0 ? null : <label htmlFor="file-input" className="hover:cursor-pointer text-[#646464] font-Roboto"><CircleFadingPlus className='text-[#646464] size-14' /></label>}
                         </div>
                       </div>
-                  </DialogContent>
-              </Dialog>
+                    </div>
+                </DialogContent>
+            </Dialog>
+          </div>
+          <div className='w-full sm:hidden flex items-center justify-center px-2 pt-2'>
+            <Popover open={postPopoverOpen} onOpenChange={setPostPopoverOpen}>
+              <PopoverTrigger asChild className='bg-[#222222] text-[#AFAFAF] w-fit'>
+                <Button role="combobox" aria-expanded={postPopoverOpen} className="py-0 px-0 w-fit justify-start bg-[#222222] focus:bg-[#222222] text-[#AFAFAF] border-none shadow-none text-lg">{postsState} {!postPopoverOpen ? <ChevronDown className='ml-2 h-4 w-4 shrink-0 opacity-50' /> : <ChevronUp className='ml-2 h-4 w-4 shrink-0 opacity-50'/>}</Button>
+              </PopoverTrigger>
+              <PopoverContent className='w-fit'>
+                <Command>
+                  <CommandList>
+                    <CommandGroup className='bg-[#222222]'>
+                      <CommandItem onSelect={(currentValue) => {
+                          setPostsState(currentValue === 'Popular' ? 'Popular' : currentValue);
+                          setPostPopoverOpen(false);
+                          handleFeedState(currentValue);
+                      }} className='text-[#AFAFAF] text-lg cursor-pointer'>Popular</CommandItem>
+                      <CommandItem onSelect={(currentValue) => {
+                          setPostsState(currentValue === 'Your Feed' ? 'Your Feed' : currentValue);
+                          setPostPopoverOpen(false);
+                          handleFeedState(currentValue);
+                      }} className=' text-[#AFAFAF] text-lg cursor-pointer'>Your Feed</CommandItem>
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
           <div className='flex sm:hidden flex-col py-8'>
             {popularFeedQuery.isFetching || yourFeedQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (

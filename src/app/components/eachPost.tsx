@@ -235,19 +235,17 @@ const handleReaction = async (reaction: number) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   useEffect(() => {
-      const handleScroll = () => {
-        setPopoverOpen(false);
+    const handleScroll = () => {
+      setPopoverOpen(false);
+    };
 
-      };
-  
-      if (popoverOpen) {
-        requestAnimationFrame(() => {
-          window.addEventListener("scroll", handleScroll, { passive: true });
-        });
-        return () => window.removeEventListener("scroll", handleScroll);
-      }
-  
-    }, [popoverOpen]);
+    if (popoverOpen) {
+      requestAnimationFrame(() => {
+        window.addEventListener("scroll", handleScroll, { passive: true });
+      });
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [popoverOpen]);
 
   return (
     <div className="mt-2 md:max-w-[832px] w-auto h-fit flex flex-col gap-2 text-white px-1 pt-2 overflow-hidden border-t-[1px] border-[#515151]">

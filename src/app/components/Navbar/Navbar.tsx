@@ -122,6 +122,20 @@ const Navbar = memo(() => {
         setReceivedItems([]);
     }
 
+    useEffect(() => {
+        const handleScroll = () => {
+          setPopoverOpen(false);
+          setPcPopoverOpen(false);
+        };
+    
+        if (popoverOpen || pcPopoverOpen) {
+          requestAnimationFrame(() => {
+            window.addEventListener("scroll", handleScroll, { passive: true });
+          });
+          return () => window.removeEventListener("scroll", handleScroll);
+        }
+      }, [popoverOpen, pcPopoverOpen]);
+
     // ukoliko je user state null vraća se null (kao da navbar ne postoji uopće)
     if(!user) return null;
 
