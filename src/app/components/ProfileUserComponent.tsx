@@ -225,6 +225,20 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
     }
   }
 
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const files = e.dataTransfer.files;
+    if(files && files.length > 0) {
+      setSelectedImage(files[0]);
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
   if(myProfile) {
     return (
       <div>
@@ -244,9 +258,11 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                 </PopoverContent>
               </Popover>
               <div className='flex items-center justify-center gap-1'>
-                <Avatar className='w-[125px] h-[125px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
-                  <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
-                </Avatar>
+                <button onClick={() => setChangeImgDialogOpen((prev) => !prev)}>
+                  <Avatar className='w-[125px] h-[125px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                    <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
+                  </Avatar>
+                </button>
                 <div className='flex flex-col justify-center px-2 pl-4'>
                   <h1 className='text-[#DFDEDE] font-Roboto text-2xl min-w-full'>{pathUser.firstName} {pathUser.lastName}</h1>
                   <p className='text-[#888888] font-Roboto text-xl'>@{pathUser.username}</p>
@@ -329,9 +345,11 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
               </Popover>
               <div className='flex flex-col'>
                 <div className='flex items-center justify-center gap-1'>
-                  <Avatar className='w-[45px] h-[45px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
-                    <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
-                  </Avatar>
+                  <button onClick={() => setChangeImgDialogOpen((prev) => !prev)}>
+                    <Avatar className='w-[45px] h-[45px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+                      <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
+                    </Avatar>
+                  </button>
                   <div className='flex flex-col justify-center px-2'>
                     <h1 className='text-[#DFDEDE] font-Roboto text-xs md:text-sm min-w-full'>{pathUser.firstName} {pathUser.lastName}</h1>
                     <p className='text-[#888888] font-Roboto text-xs md:text-sm'>@{pathUser.username}</p>
@@ -496,7 +514,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
               <div className='flex justify-center px-2'>
                 <Dialog open={changeImgDialogOpen} onOpenChange={setChangeImgDialogOpen}>
                   <DialogTrigger>
-                    <Avatar className='relative w-[45px] h-[45px] 2xl:w-[65px] 2xl:h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)] group' onClick={() =>  setChangeImgDialogOpen(true)}>
+                    <Avatar className='relative w-[65px] h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)] group' onClick={() =>  setChangeImgDialogOpen(true)}>
                       <span><Camera size={32} className='group-hover:block hidden absolute top-[25%] left-[25%] rounded-full text-white transition-all'/></span>
                       <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover cursor-pointer hover:opacity-10 transition-all"  /><AvatarFallback>{shortUsername}</AvatarFallback>
                     </Avatar>
@@ -505,7 +523,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                     <DialogHeader>
                       <DialogTitle className='font-Roboto font-normal text-[#DFDEDE]'>Change your profile picture.</DialogTitle>
                     </DialogHeader>
-                      <label htmlFor="picture">
+                      <label htmlFor="picture" onDrop={handleDrop} onDragOver={handleDragOver}>
                         <div className='border-dotted border-whit[#DFDEDE] border-[2px] rounded-lg flex flex-col items-center justify-center px-8 py-8 cursor-pointer gap-2'>
                           <Upload size={32} className='text-[#DFDEDE]' />
                           <p className='font-Roboto text-[#DFDEDE] text-xs sm:text-sm text-center'>Drag 'n' drop image here, or click to select an image</p>

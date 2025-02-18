@@ -188,7 +188,7 @@ const UserProfile = () => {
           {getFriendsQuery.data?.length === 0 ? null : (
             <div>
               <div className='flex justify-center w-screen px-4'>
-                <div className={`xl:hidden group max-w-[400px] sm:max-w-[570px] md:max-w-[716px] lg:max-w-[765px] w-full h-full flex flex-col items-center gap-2 bg-transparent px-2 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)] py-4 mb-6 lg:mb-10`}>
+                <div className={`xl:hidden group max-w-[350px] sm:max-w-[585px] md:max-w-[716px] lg:max-w-[765px] w-full h-full flex flex-col items-center gap-2 bg-transparent px-2 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)] py-4 mb-6 lg:mb-10`}>
                   <h1 className='font-Roboto text-[#DFDEDE] text-2xl text-center'>{myProfile ? 'Your friends' : `${user.firstName}'s friends`}</h1>
                   <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
                     {getFriendsQuery.isLoading || isRendering ? <UserSkeleton /> : getFriendsQuery.data?.map((user, index, array) => {
