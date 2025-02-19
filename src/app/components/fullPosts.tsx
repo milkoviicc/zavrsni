@@ -16,7 +16,7 @@ import { filter } from 'lodash';
 import {Popover, PopoverContent, PopoverTrigger} from "../../components/ui/popover";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "../../components/ui/command";
 import {Button} from "../../components/ui/button";
-import { Check, ChevronDown, ChevronsDown, ChevronsUpDown, ChevronUp, Circle} from 'lucide-react';
+import { Check, ChevronDown, ChevronsDown, ChevronsUpDown, ChevronUp, Circle, Menu} from 'lucide-react';
 import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
 import { profile } from 'console';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog';
@@ -55,8 +55,21 @@ const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => 
     if(feed) {
       setPostsState(feed);
     }
-  }, [feed])
+  }, [feed]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setPostPopoverOpen(false);
+    };
+
+    if (postPopoverOpen) {
+      requestAnimationFrame(() => {
+        window.addEventListener("scroll", handleScroll, { passive: true });
+      });
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+
+  }, [postPopoverOpen]);
 
 
   const popularFeedQuery = useQuery({queryKey: ["popularFeed"], queryFn: () => getPosts(postsPage), enabled: postsState === 'Popular'});
@@ -215,7 +228,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
         const newPost: Post = res.data;
         setPosts((prev) => [newPost, ...prev]);
         queryClient.invalidateQueries({queryKey: [postsState === "Popular" ? "popularFeed" : "yourFeed"]});
-        toast({description: "Post successfully posted!", duration: 1000});
+        toast({description: "Post successfully posted!", duration: 1500});
       }
     } catch(err) {
         // ukoliko je došlo do greške, ispisuje se u konzoli
@@ -387,7 +400,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
             const res = await axios.put<Post>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/update-post/${postId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
           
             if(res.status === 200) {
-              toast({description: "Post successfully updated!", duration: 1000});
+              toast({description: "Post successfully updated!", duration: 1500});
             }
           });
 
@@ -500,12 +513,12 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                 </DialogContent>
             </Dialog>
           </div>
-          <div className='w-full sm:hidden flex items-center justify-center px-2 pt-2'>
+          <div className='w-full sm:hidden flex items-center justify-center px-2 pt-2 '>
             <Popover open={postPopoverOpen} onOpenChange={setPostPopoverOpen}>
-              <PopoverTrigger asChild className='bg-[#222222] text-[#AFAFAF] w-fit'>
-                <Button role="combobox" aria-expanded={postPopoverOpen} className="py-0 px-0 w-fit justify-start bg-[#222222] focus:bg-[#222222] text-[#AFAFAF] border-none shadow-none text-lg">{postsState} {!postPopoverOpen ? <ChevronDown className='ml-2 h-4 w-4 shrink-0 opacity-50' /> : <ChevronUp className='ml-2 h-4 w-4 shrink-0 opacity-50'/>}</Button>
+              <PopoverTrigger onClick={() => setPostPopoverOpen(!postPopoverOpen)} className='bg-[#222222] text-[#AFAFAF]' asChild>
+                <p className="py-0 px-0 w-fit flex justify-start items-center bg-[#222222] focus:bg-[#222222] text-[#AFAFAF] font-[500] cursor-pointer border-none shadow-none text-lg">{postsState} {!postPopoverOpen ? <ChevronDown className='ml-2 h-4 w-4 shrink-0 opacity-50' /> : <ChevronUp className='ml-2 h-4 w-4 shrink-0 opacity-50'/>}</p>
               </PopoverTrigger>
-              <PopoverContent className='w-fit'>
+              <PopoverContent className='w-[150px] fixed top-0 z-[9999]'>
                 <Command>
                   <CommandList>
                     <CommandGroup className='bg-[#222222]'>
@@ -547,7 +560,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                       ) : randomNmbs?.includes(index) && suggestionsQuery.data?.length === 0 ? (
                         <div className='grid grid-cols-1 grid-rows-2 gap-4 border-t-[1px] border-[#515151]'>
                             {fillSuggestions.map((suggestion, index) => (
-                                <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/>
+                                index <= 1 ? <Suggestion key={suggestion.userId} profileSuggestion={suggestion} handleRoute={null}/> : null
                               ))
                             }
                           </div>

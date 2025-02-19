@@ -120,7 +120,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
           const newPost: Post = res.data;
           setPosts((prev) => [newPost, ...prev]);
           queryClient.invalidateQueries({queryKey: ["getPosts"]});
-          toast({description: "Post successfully posted!", duration: 1000});
+          toast({description: "Post successfully posted!", duration: 1500});
         }
       } catch(err) {
           // ukoliko je došlo do greške, ispisuje se u konzoli
@@ -271,7 +271,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
         const res = await axios.put<Post>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/update-post/${postId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
         
         if(res.status === 200) {
-            toast({description: "Post successfully updated!", duration: 1000});
+            toast({description: "Post successfully updated!", duration: 1500});
         }
         });
 
@@ -283,6 +283,15 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
         updatedPost.fileUrls = updatedFiles;
       } catch(err) {
       console.error(err);
+      }
+    }
+
+    const handleAddPost = () => {
+      if(content.trim() === '' && postFile.length === 0) {
+        toast({description: "You can't create an empty post!", duration: 1500, className: "bg-[#CA3C3C] font-semibold font-Roboto"});
+        setContent('');
+      } else {
+        sendPost();
       }
     }
 
@@ -324,7 +333,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
                                 <label htmlFor="file-input-pc" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" className='pt-[3px]'/></label>
                               </div>
                             </div>
-                            <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
+                            <button onClick={() => handleAddPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
                         </div>
                       </div>
                   </div>

@@ -387,7 +387,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
                               <div className='flex flex-col flex-grow gap-4 pr-4'>  
                                 <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent} className="font-Roboto font-normal leading-5 scrollbar-none w-full max-h-[100px] lg:max-h-[150px] text-sm lg:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                                 <div className='flex justify-end'>
-                                  <button onClick={() => {update(); toast({description: "Comment successfully updated!", duration: 1000})}} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base">Update comment</button>
+                                  <button onClick={() => {update(); toast({description: "Comment successfully updated!", duration: 1500})}} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base">Update comment</button>
                                 </div>
                               </div>
                             </div>

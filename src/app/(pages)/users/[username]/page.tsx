@@ -115,7 +115,7 @@ const UserProfile = () => {
         const updatedUser: User = res.data;
         localStorage.removeItem('user');
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        toast({description: "Profile details successfully updated!", duration: 1000});
+        toast({description: "Profile details successfully updated!", duration: 1500});
         if(user?.username === updatedUser.username) {
           queryClient.invalidateQueries({queryKey: ["getUser"]});
           return;
@@ -181,8 +181,8 @@ const UserProfile = () => {
   }
 
   return (
-    <div className='flex-col mt-[35px] sm:mt-[80px] xl:mt-[35px] min-h-[829px] h-full 2k:min-h-[1150px] bg-[#222222]'>
-      <div className='flex-col shadow-[0px_0.1px_15px_0px_rgba(0_0_0_0.26)] min-h-[829px] h-full pt-0 sm:pt-6 xl:pt-24 2xl:pt-16'>
+    <div className='flex-col mt-[35px] sm:mt-[80px] xl:mt-[35px] min-h-[824px] h-full 2k:min-h-[1220px] bg-[#222222]'>
+      <div className='flex-col shadow-[0px_0.1px_15px_0px_rgba(0_0_0_0.26)] min-h-[824px] h-full pt-0 sm:pt-6 xl:pt-24 2xl:pt-16'>
         <div className='flex flex-col relative w-screen justify-center items-center 2xl:px-4 xl:px-14 lg:px-4 gap-4'>
           <ProfileUserComponent pathUser={user} editProfile={editProfile} changeImage={handleChangeImage}/>
           {getFriendsQuery.data?.length === 0 ? null : (
