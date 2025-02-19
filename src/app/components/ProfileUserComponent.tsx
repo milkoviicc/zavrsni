@@ -269,7 +269,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
       <div>
         <div className='xl:hidden pt-8 md:pb-4 flex justify-center px-4 w-screen'>
           <div className='w-fit sm:gap-10'>
-            <div className='w-full relative rounded-lg flex flex-col sm:hidden justify-center items-center gap-5 px-2 lg:px-8 py-4 shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)]'>
+            <div className='w-[350px] sm:w-[580px] md:w-[716px] lg:w-[765px] relative rounded-lg flex flex-col xl:hidden justify-center items-center gap-5 px-2 lg:px-8 py-4 shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)]'>
               <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                 <PopoverTrigger className='absolute top-2 right-2 z-50 cursor-pointer' onClick={() => setPopoverOpen(!popoverOpen)} asChild><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
                 <PopoverContent className='w-fit mr-4'>
@@ -284,9 +284,10 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
               </Popover>
               <div className='flex items-center justify-center gap-1'>
                 <button onClick={() => setChangeImgDialogOpen((prev) => !prev)}>
-                  <Avatar className='w-[125px] h-[125px] rounded-full overflow-visible shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
-                    <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
-                    <span><Camera size={24} className='block absolute bottom-[5px] right-[5px] rounded-full text-white transition-all'/></span>
+                  <Avatar className='w-[125px] h-[125px] rounded-full overflow-visible shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)] group'>
+                    <span><Camera size={40} className='md:group-hover:block hidden absolute top-[34%] left-[34%] rounded-full text-white transition-all'/></span>
+                    <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover cursor-pointer md:hover:opacity-10 transition-all" /><AvatarFallback>{shortUsername}</AvatarFallback>
+                    <span><Camera size={24} className='md:hidden block absolute bottom-[5px] right-[5px] rounded-full text-white transition-all'/></span>
                   </Avatar>
                 </button>
                 <div className='flex flex-col justify-center px-2 pl-4'>
@@ -356,174 +357,6 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                 </div>
               </div>
             </div>
-            <div className='w-full relative rounded-lg hidden sm:flex md:hidden justify-center gap-10 px-2 lg:px-8 py-4 shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)]'>
-              <Popover open={popoverTabletOpen} onOpenChange={setPopoverTabletOpen}>
-                <PopoverTrigger className='absolute top-2 right-2 z-50 cursor-pointer' onClick={() => setPopoverTabletOpen(!popoverTabletOpen)} asChild><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
-                <PopoverContent className='w-fit mr-4'>
-                  <Command>
-                    <CommandList>
-                      <CommandGroup>
-                        <CommandItem><button onClick={() => setDeleteAccDialogOpen((prev) => !prev)} className='text-[#DFDEDE] flex gap-2 items-center text-base'><Trash2Icon size={20}/>Delete Your Account</button></CommandItem>
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <div className='flex flex-col'>
-                <div className='flex items-center justify-center gap-1'>
-                  <button onClick={() => setChangeImgDialogOpen((prev) => !prev)}>
-                    <Avatar className='w-[45px] h-[45px] rounded-full overflow-visible shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
-                      <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
-                      <span><Camera size={16} className='block absolute bottom-0 right-0 rounded-full text-white transition-all'/></span>
-                    </Avatar>
-                  </button>
-                  <div className='flex flex-col justify-center px-2'>
-                    <h1 className='text-[#DFDEDE] font-Roboto text-xs md:text-sm min-w-full'>{pathUser.firstName} {pathUser.lastName}</h1>
-                    <p className='text-[#888888] font-Roboto text-xs md:text-sm'>@{pathUser.username}</p>
-                  </div>
-                </div>
-                <div className='flex flex-col justify-center px-1 py-2 gap-4'>
-                  <p className='text-left text-[#888888] font-Roboto text-xs 2xl:text-sm max-w-[150px]'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
-                  <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
-                  <div className='flex justify-evenly gap-4'>
-                    <div className='flex items-center gap-2'>
-                      <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers</p>
-                      <span className='text-[#888888] text-lg'>{pathUser.followers}</span>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following</p>
-                      <span className='text-[#888888] text-lg'>{pathUser.following}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className='flex flex-col justify-center'>
-                <div className='flex flex-col gap-4'>
-                  <div className='flex gap-2 justify-center items-center'>
-                    <h1 className='text-center font-Roboto text-[#A0A0A0] text-sm 2xl:text-lg font-semibold'>EDIT PROFILE</h1>
-                  </div>
-                  <div className='flex flex-col gap-2'>
-                    <div className='flex gap-2'>
-                      <div className='flex flex-col items-start h-fit w-full'>
-                        <label htmlFor="profileName" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Name</label>
-                        <div className='flex items-center relative w-full'>
-                          {editableName ? (<input type="text" id="profileName" value={fullName} onChange={(e) => {`${pathUser.firstName} ${pathUser.lastName}` === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setFullName(e.target.value)}} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] px-2 py-1 rounded-md outline-none'/>) : <input type="text" id="profileName" value={fullName} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] px-2 py-1 rounded-md outline-none cursor-not-allowed'/>}
-                          <label htmlFor="profileName" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableName((prev) => !prev)}/></label>
-                        </div>
-                      </div>
-                      <div className='flex flex-col items-start h-fit w-full'>
-                        <label htmlFor="username" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Username</label>
-                        <div className='flex items-center relative w-full'>
-                          {editableUsername ? (<input type="text" id="username" value={username} onChange={(e) => {pathUser.username === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setUsername(e.target.value)}} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] px-2 py-1 rounded-md outline-none'/>) : <input type="text" id="username" value={username} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] px-2 py-1 rounded-md outline-none cursor-not-allowed'/>}
-                          <label htmlFor="username" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableUsername((prev) => !prev)}/></label>
-                        </div>
-                      </div>
-                    </div>
-                    <div className='flex gap-2'>
-                      <div className='flex flex-col items-start h-fit w-full'>
-                        <label htmlFor="description" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Description</label>
-                        <div className='flex items-center relative w-full'>
-                          {editableDescription ? <textarea id="description" value={description !== null ? description : ''} onChange={(e) => {pathUser.description === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setDescription(e.target.value)}} rows={4} maxLength={200} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none'/>: <textarea id="description" value={description ? `${description}` : 'Set a description'} rows={4} maxLength={200} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none cursor-not-allowed'/>}
-                          <label htmlFor="description" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableDescription((prev) => !prev)}/></label>
-                        </div>
-                      </div>
-                      <div className='flex flex-col gap-2 w-full'>
-                        <div className='flex flex-col items-start h-fit w-full'>
-                          <label htmlFor="occupation" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Occupation</label>
-                          <div className='flex items-center relative w-full'>
-                            {editableOccupation ? <input type="text" id="occupation" value={occupation !== null ? occupation : ''} onChange={(e) => {pathUser.occupation === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setOccupation(e.target.value)}} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none'/> : <input type="text" id="occupation" value={occupation ? `${occupation}` : 'Set an occupation'} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none cursor-not-allowed'/>}
-                            <label htmlFor="occupation" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableOccupation((prev) => !prev)}/></label>
-                          </div>
-                          <div className='flex w-full justify-center py-4'>
-                            {allowSaving ? <button className='text-[#EDEDED] font-light rounded-full bg-[#1565CE] w-fit px-4 py-1 shadow-[0_2px_3px_0_rgba(0,0,0,0.3)] cursor-pointer' onClick={() =>  handleEditProfile()}>Save changes</button> :<button className='text-[#7D7D7D] font-light rounded-full bg-[#2C2C2C] w-fit px-4 py-1 shadow-[0_2px_3px_0_rgba(0,0,0,0.3)] cursor-not-allowed'>Save changes</button>}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className='w-full relative rounded-lg hidden md:flex justify-center gap-10 px-2 lg:px-8 py-4 shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)]'>
-              <Popover open={popoverLaptopOpen} onOpenChange={setPopoverLaptopOpen}>
-                <PopoverTrigger className='absolute top-2 right-2 z-50 cursor-pointer' onClick={() => setPopoverLaptopOpen(!popoverLaptopOpen)} asChild><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
-                <PopoverContent className='w-fit mr-4'>
-                  <Command>
-                    <CommandList>
-                      <CommandGroup>
-                        <CommandItem><button onClick={() => setDeleteAccDialogOpen((prev) => !prev)} className='text-[#DFDEDE] flex gap-2 items-center text-base'><Trash2Icon size={20}/>Delete Your Account</button></CommandItem>
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <div className='flex flex-col items-center justify-center px-2 gap-2'>
-                <button onClick={(prev) => setChangeImgDialogOpen(true)}>
-                  <Avatar className='w-[65px] h-[65px] rounded-full overflow-visible shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
-                    <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{shortUsername}</AvatarFallback>
-                    <span><Camera size={24} className='block absolute bottom-0 right-0 rounded-full text-white transition-all'/></span>
-                  </Avatar>
-                </button>
-                <div className='flex flex-col justify-center items-center'>
-                  <h1 className='text-[#DFDEDE] font-Roboto text-[12px] min-w-full'>{pathUser.firstName} {pathUser.lastName}</h1>
-                  <p className='text-[#888888] font-Roboto text-xs md:text-sm'>@{pathUser.username}</p>
-                </div>
-              </div>
-              <div className='flex flex-col justify-center px-1 py-2 gap-4'>
-                <p className='text-left text-[#888888] font-Roboto text-xs 2xl:text-sm max-w-[150px]'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
-                <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
-                <div className='flex gap-4'>
-                  <div className='w-full flex items-center gap-2'>
-                    <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers</p>
-                    <span className='text-[#888888] text-lg'>{pathUser.followers}</span>
-                  </div>
-                  <div className='w-full flex items-center gap-2'>
-                    <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following</p>
-                    <span className='text-[#888888] text-lg'>{pathUser.following}</span>
-                  </div>
-                </div>
-              </div>
-              <div className='flex flex-col'>
-                <h1 className='text-center font-Roboto text-[#A0A0A0] text-sm 2xl:text-lg font-semibold'>EDIT PROFILE</h1>
-                <div className='flex gap-4'>
-                  <div className='flex flex-col gap-2'>
-                    <div className='flex flex-col items-start h-fit'>
-                      <label htmlFor="profileName" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Name</label>
-                      <div className='flex items-center relative w-full'>
-                        {editableName ? (<input type="text" id="profileName" value={fullName} onChange={(e) => {`${pathUser.firstName} ${pathUser.lastName}` === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setFullName(e.target.value)}} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] px-2 py-1 rounded-md outline-none'/>) : <input type="text" id="profileName" value={fullName} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] px-2 py-1 rounded-md outline-none cursor-not-allowed'/>}
-                        <label htmlFor="profileName" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableName((prev) => !prev)}/></label>
-                      </div>
-                    </div>
-                    <div className='flex flex-col items-start h-fit'>
-                      <label htmlFor="description" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Description</label>
-                      <div className='flex items-center relative w-full'>
-                        {editableDescription ? <textarea id="description" value={description !== null ? description : ''} onChange={(e) => {pathUser.description === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setDescription(e.target.value)}} rows={4} maxLength={200} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none'/>: <textarea id="description" value={description ? `${description}` : 'Set a description'} rows={4} maxLength={200} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none resize-none cursor-not-allowed'/>}
-                        <label htmlFor="description" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableDescription((prev) => !prev)}/></label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className='flex flex-col gap-2'>
-                    <div className='flex flex-col items-start h-fit'>
-                      <label htmlFor="username" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Username</label>
-                      <div className='flex items-center relative w-full'>
-                        {editableUsername ? (<input type="text" id="username" value={username} onChange={(e) => {pathUser.username === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setUsername(e.target.value)}} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] px-2 py-1 rounded-md outline-none'/>) : <input type="text" id="username" value={username} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] px-2 py-1 rounded-md outline-none cursor-not-allowed'/>}
-                        <label htmlFor="username" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableUsername((prev) => !prev)}/></label>
-                      </div>
-                    </div>
-                    <div className='flex flex-col items-start h-fit'>
-                      <label htmlFor="occupation" className='text-[#7B7B7B] font-extralight text-xs 2xl:text-sm'>Occupation</label>
-                      <div className='flex items-center relative w-full'>
-                        {editableOccupation ? <input type="text" id="occupation" value={occupation !== null ? occupation : ''} onChange={(e) => {pathUser.occupation === e.target.value ? setAllowSaving(false) : setAllowSaving(true);setOccupation(e.target.value)}} className='placeholder-[#7B7B7B] text-[#EDEDED] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none'/> : <input type="text" id="occupation" value={occupation ? `${occupation}` : 'Set an occupation'} readOnly className='placeholder-[#7B7B7B] text-[#7B7B7B] w-full text-xs 2xl:text-sm bg-[#363636] pl-2 pr-7 py-1 rounded-md outline-none cursor-not-allowed'/>}
-                        <label htmlFor="occupation" className='absolute right-1 cursor-pointer'><Pencil className='text-[#7D7D7D]' size="20" onClick={() => setEditableOccupation((prev) => !prev)}/></label>
-                      </div>
-                      <div className='flex w-full justify-center py-4'>
-                        {allowSaving ? <button className='text-[#EDEDED] font-light rounded-full bg-[#1565CE] w-fit px-4 py-1 shadow-[0_2px_3px_0_rgba(0,0,0,0.3)] cursor-pointer' onClick={() =>  handleEditProfile()}>Save changes</button> :<button className='text-[#7D7D7D] font-light rounded-full bg-[#2C2C2C] w-fit px-4 py-1 shadow-[0_2px_3px_0_rgba(0,0,0,0.3)] cursor-not-allowed'>Save changes</button>}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
         <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-12 xl:left-0 self-start gap-0 xl:w-[245px] 2xl:w-[245px] 2k:w-[300px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-2 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
@@ -545,7 +378,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                 <Dialog open={changeImgDialogOpen} onOpenChange={setChangeImgDialogOpen}>
                   <DialogTrigger>
                     <Avatar className='relative w-[65px] h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)] group' onClick={() =>  setChangeImgDialogOpen(true)}>
-                      <span><Camera size={32} className='group-hover:block hidden absolute top-[25%] left-[25%] rounded-full text-white transition-all'/></span>
+                      <span><Camera size={32} className='group-hover:block hidden absolute top-[25%] left-[25%] 2k:top-[30%] 2k:left-[31%] 2k:size-10 rounded-full text-white transition-all'/></span>
                       <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover cursor-pointer hover:opacity-10 transition-all"  /><AvatarFallback>{shortUsername}</AvatarFallback>
                     </Avatar>
                   </DialogTrigger>
@@ -653,7 +486,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
       <div>
         <div className='xl:hidden flex justify-center w-screen pt-8'>
           <div className='flex w-screen relative justify-center gap-10 px-4 py-4'>
-            <div className='w-[396px] sm:hidden flex flex-col justify-center items-center gap-2 px-2 lg:px-8 py-4 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)]'>
+            <div className='w-[350px] sm:w-[580px] md:w-[716px] lg:w-[765px] xl:hidden flex flex-col justify-center items-center gap-2 px-2 lg:px-8 py-4 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)]'>
               <div className='flex items-center justify-center gap-1'>
                 <Avatar className='w-[125px] h-[125px] relative shrink-0 overflow-x-hidden rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
                   <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
@@ -666,7 +499,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
               <div className='flex flex-col w-full'>
                 <div className='flex flex-col gap-2 justify-center'>
                   <div className='flex flex-col items-center px-4 py-2 gap-4'>
-                    <p className='text-center text-[#888888] font-Roboto text-sm '>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
+                    <p className='text-center text-[#888888] font-Roboto text-sm w-[80%]'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
                   </div>
                   <div className='flex items-center justify-evenly gap-4'>
                     <p className='text-[#888888] text-center font-Roboto text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
@@ -742,100 +575,6 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                           </div>    
                       </div>
                     )})}
-                </div>
-              </div>
-            </div>
-            <div className='sm:w-[570px] md:w-[716px] lg:w-[765px] hidden sm:flex justify-center items-center gap-10 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)]'>
-              <div className='flex flex-col gap-4 w-[50%] h-full py-4'>
-                <div className='flex flex-col px-2 gap-2 items-center justify-center'>
-                  <Avatar className='w-[85px] h-[85px] relative shrink-0 overflow-x-hidden rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
-                    <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{shortUsername}</AvatarFallback>
-                  </Avatar>
-                  <div className='flex flex-col justify-center items-center'>
-                    <h1 className='text-[#DFDEDE] font-Roboto text-xs md:text-sm min-w-full'>{pathUser.firstName} {pathUser.lastName}</h1>
-                    <p className='text-[#888888] font-Roboto text-sm 2xl:text-base'>@{pathUser.username}</p>
-                  </div>
-                </div>
-                <div className='flex flex-col px-2 gap-2 justify-center'>
-                  <div className='flex flex-col px-2 py-2 gap-2'>
-                    <p className='text-center text-[#888888] font-Roboto text-xs 2xl:text-sm'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
-                    <p className='text-[#888888] text-center font-Roboto text-xs 2xl:text-sm'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
-                  </div>
-                  <div className='flex justify-evenly gap-4'>
-                    <div className='flex items-center gap-2'>
-                    <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers</p>
-                    <span className='text-[#888888] text-lg'>{pathUser.followers}</span>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                    <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following</p>
-                    <span className='text-[#888888] text-lg'>{pathUser.following}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className='flex flex-col justify-center items-center w-full h-full py-4'>
-                <div className='w-full flex justify-center items-center py-8 gap-4'>
-                  <div className='flex flex-col'>
-                    <p className='text-[#808080] font-Roboto text-center'>{friendshipStatus === 0 ? 'You are not friends' : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
-                  
-                    {friendshipStatus === 0 ? (
-                      <div className='w-full px-2 flex justify-center gap-4 pt-2 text-base'>
-                        <button onClick={() => addFriend()} className='px-4 py-0 w-fit rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Add friend</button>
-                      </div>
-                    ) : friendshipStatus === 1 ? (
-                      <div className='w-full px-2 flex justify-center gap-4 pt-2'>
-                        <button onClick={() => unsendFriendReq()} className='px-4 py-0 w-fit h-full rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)] hover:opacity-90 text-[#E3E3E3]'>Unsend</button>
-                      </div>
-                    ) : friendshipStatus === 2 ? (
-                      <div className='w-full px-2 flex flex-col gap-4 pt-2'>
-                        <div className='w-full flex justify-center gap-4'>
-                          <button onClick={() => acceptRequest()} className='px-4 py-0 w-fit h-fit rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Accept</button>
-                          <button onClick={() => declineRequest()} className='px-4 py-0 w-fit h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]  hover:opacity-90 text-[#E3E3E3]'>Decline</button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className='w-fit px-2 flex justify-center gap-4 pt-2'>
-                        <button onClick={() => unfriend()} className='px-4 py-0 w-fit h-fit rounded-full font-Roboto font-normal bg-[#CA3C3C] transition-all shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[0px_1px_2px_2px_rgba(110, 122, 248, 0.5)] hover:opacity-90 text-[#E3E3E3]'>Unfriend</button>
-                      </div>
-                    )}
-                  </div>
-                  <div className='flex flex-col'>
-                    <p className='text-[#808080] font-Roboto text-center'>{isFollowed ? `You are following ${pathUser.firstName}`  : `You are not following ${pathUser.firstName}`}</p>
-                    <div className='pt-2 flex justify-center'>
-                      <button className={`${isFollowed ? 'bg-[#CA3C3C] shadow-[1px_1px_3px_0px_rgba(202, 60, 60, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(0,0,0,0.2)]' : 'bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)]'} px-4 w-fit h-fit rounded-2xl font-Roboto text-[#E3E3E3] transition-all hover:opacity-90`} onClick={() => handleFollow(pathUser.userId)}>{isFollowed ? 'Unfollow' : 'Follow'}</button>
-                    </div>
-                  </div>
-                </div>
-                <div className='w-full h-full py-4'>
-                  <div className='h-fit flex flex-col items-center '>
-                    <h3 className='font-Roboto text-[#808080] mt-2'>{getMutualFriendsQuery?.data?.length !== 0 ? 'Mutual friends' : 'You might know'}</h3>
-                    <div className='grid grid-cols-2 gap-2 px-1 w-full place-items-center'>
-                      {getMutualFriendsQuery?.data?.length !== 0 ? getMutualFriendsQuery.data?.map((profile, index) => (
-                        <div key={profile.userId} className="hover:cursor-pointer flex gap-2 py-2 items-center " onClick={() => router.push(`/users/${profile.username}`)}>
-                          <Avatar className='w-[45px] h-[45px] 2k:w-[55px] 2k:h-[55px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
-                              <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex flex-col h-full items-start justify-center w-full">
-                              <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap" title={`${profile.firstName} ${profile.lastName}`}>{profile.firstName} {profile.lastName}</h1>
-                              <p className="text-[#888888] text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap">@{profile.username}</p>
-                          </div>    
-                        </div>
-                      )) : 
-                      getPopularUsersQuery.data?.map((profile, index, array) => {
-                        const isLastOdd = array.length % 2 !== 0 && index === array.length -1;
-                        return (
-                          <div key={profile.userId} className={`hover:cursor-pointer flex gap-2 py-2 items-center ${isLastOdd ? "col-span-2 justify-center" : "w-fit"}`} onClick={() => router.push(`/users/${profile.username}`)}>
-                              <Avatar className='w-[45px] h-[45px] 2xl:w-[55px] 2xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
-                                  <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
-                              </Avatar>
-                              <div className="flex flex-col h-full items-start justify-center w-fit">
-                                  <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-sm 2xl:text-base 2k:text-lg max-w-[80px] sm:max-w-full truncate whitespace-nowrap" title={`${profile.firstName} ${profile.lastName}`}>{profile.firstName} {profile.lastName}</h1>
-                                  <p className="text-[#888888] text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap">@{profile.username}</p>
-                              </div>    
-                          </div>
-                        )})}
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

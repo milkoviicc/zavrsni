@@ -11,6 +11,7 @@ import { AuthContextType, User, Profile, Auth } from '../types/types';
 
 import {jwtDecode} from 'jwt-decode';
 import jwt from 'jsonwebtoken';
+import { useToast } from '@/hooks/use-toast';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -26,6 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // nextjs router za preusmjeravanje na druge pathove.
   const router = useRouter();
   const path = usePathname();
+  const {toast} = useToast();
 
   // rendera se svaki put kad je isLoggedIn state promjenjen
   useEffect(() => {
@@ -153,6 +155,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             // spremam u 'user' state korisnika sa svim novim podatcima
             setUser(updatedProfile);
+            toast({description: "Profile picture successfully updated!", duration: 1500});
         }
       }
     } catch(error) {

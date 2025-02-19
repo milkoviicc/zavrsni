@@ -19,10 +19,11 @@ import { FollowSuggestion, Profile, User } from "../../types/types";
 import { Popover, PopoverTrigger, PopoverContent, PopoverAnchor } from "@/src/components/ui/popover";
 import UserComponent from "../userComponent";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/src/components/ui/command";
-import { ChevronDown, ChevronUp, LogOut, Menu, Trash2, Users } from "lucide-react";
+import { ChevronDown, ChevronUp, LogOut, Menu, Trash2, User as UserIcon, Users } from "lucide-react";
 import Suggestion from "../suggestion";
 import { useTime } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
+import SearchSkeleton from "../SearchSkeleton";
 
 const Navbar = memo(() => {
 
@@ -129,9 +130,6 @@ const Navbar = memo(() => {
             setPcPopoverOpen(false);
             setSearchOpen(false)
             setSearch('');
-            if(document.activeElement === inputRef.current) {
-                inputRef.current?.blur();
-            }
         };
 
         if (popoverOpen || pcPopoverOpen || searchOpen) {
@@ -189,7 +187,7 @@ const Navbar = memo(() => {
                                             <p className="text-sm font-Roboto text-[#AFAFAF] sm:text-base">You searched {search}</p>
                                         </div>
                                         <hr className="h-[1px] w-full px-0 border-[#525252]" />
-                                        {isSearchLoading ? <div className="w-full flex justify-center py-4"><span className="loader"></span></div> : recievedItems.length === 0 ? <div className="w-full text-center py-4"><h1>No users found!</h1></div> : recievedItems.map((item, index) => (<div key={index} className="px-[12px] relative w-full"><Suggestion key={index} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
+                                        {isSearchLoading ? <SearchSkeleton /> : recievedItems.length === 0 ? <div className="w-full text-center py-4"><h1>No users found!</h1></div> : recievedItems.map((item, index) => (<div key={index} className="px-[12px] relative w-full"><Suggestion key={index} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
                                         <div className="w-full flex justify-center py-4">
                                             <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
                                         </div>
@@ -213,7 +211,7 @@ const Navbar = memo(() => {
                                 {popoverOpen && (
                                 <div className="absolute top-full bg-[#222222] px-4 right-0 py-4 flex flex-col gap-2 w-full rounded-br-xl rounded-bl-xl z-0 shadow-[0px_5px_10px_0px_rgba(0,_0,_0,_0.26)]">
                                     <div className="flex flex-col gap-2">
-                                        <button className="text-[#DFDEDE] font-Roboto text-sm xl:text-base flex px-4 py-2 bg-[#515151] rounded-full w-full justify-center items-center hover:opacity-80 transition-all" onClick={() => {setPopoverOpen(false); router.push(`/users/${userData?.username}`)}}>Show Profile</button>
+                                        <button className="text-[#DFDEDE] font-Roboto text-sm xl:text-base flex gap-1 px-4 py-2 bg-[#515151] rounded-full w-full justify-center items-center hover:opacity-80 transition-all" onClick={() => {setPopoverOpen(false); router.push(`/users/${userData?.username}`)}}><UserIcon className="size-4 xl:size-6"/> Show Profile</button>
                                         <button className="text-[#DFDEDE] font-Roboto text-sm xl:text-base flex gap-2 px-4 py-2 bg-[#515151] rounded-full w-full justify-center items-center hover:opacity-80 transition-all" onClick={() => logout()}><LogOut className="size-4 xl:size-6"/> Logout</button>
                                     </div>
                                     <div className="w-full pt-6">
@@ -243,7 +241,7 @@ const Navbar = memo(() => {
                                         <p className="text-sm font-Roboto text-[#AFAFAF] sm:text-base">You searched {search}</p>
                                     </div>
                                     <hr className="h-[1px] w-full px-0 border-[#525252]" />
-                                    {isSearchLoading ? <div className="w-full flex justify-center py-4"><span className="loader"></span></div> : recievedItems.length === 0 ? <div className="w-full text-center py-4"><h1>No users found!</h1></div> : recievedItems.map((item, index) => (<div key={item.userId} className="ml-[12px] w-[95%]"><Suggestion key={item.userId} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
+                                    {isSearchLoading ? <SearchSkeleton /> : recievedItems.length === 0 ? <div className="w-full text-center py-4"><h1>No users found!</h1></div> : recievedItems.map((item, index) => (<div key={item.userId} className="ml-[12px] w-[95%]"><Suggestion key={item.userId} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
                                     <div className={`w-full flex justify-center py-4 ${isSearchLoading || recievedItems.length === 0 ? 'hidden' : 'flex'}`}>
                                         <button className={`flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base`} onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
                                     </div>
@@ -270,7 +268,7 @@ const Navbar = memo(() => {
                             {pcPopoverOpen && (
                             <div className="absolute top-full bg-[#222222] px-4 right-0 py-4 flex flex-col gap-2 w-full rounded-br-xl rounded-bl-xl z-0 shadow-[0px_5px_10px_0px_rgba(0,_0,_0,_0.26)]">
                                 <div className="flex flex-col gap-2">
-                                    <button className="text-[#DFDEDE] font-Roboto text-sm xl:text-base flex px-4 py-2 bg-[#515151] rounded-full w-full justify-center items-center hover:opacity-80 transition-all" onClick={() => {setPcPopoverOpen(false); router.push(`/users/${userData?.username}`)}}>Show Profile</button>
+                                    <button className="text-[#DFDEDE] font-Roboto text-sm xl:text-base flex gap-1 px-4 py-2 bg-[#515151] rounded-full w-full justify-center items-center hover:opacity-80 transition-all" onClick={() => {setPcPopoverOpen(false); router.push(`/users/${userData?.username}`)}}><UserIcon className="size-4 xl:size-6"/>Show Profile</button>
                                     <button className="text-[#DFDEDE] font-Roboto text-sm xl:text-base flex gap-2 px-4 py-2 bg-[#515151] rounded-full w-full justify-center items-center hover:opacity-80 transition-all" onClick={() => logout()}><LogOut className="size-4 xl:size-6"/> Logout</button>
                                 </div>
                                 <div className="w-full pt-6">
