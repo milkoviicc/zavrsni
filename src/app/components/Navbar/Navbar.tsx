@@ -129,6 +129,9 @@ const Navbar = memo(() => {
             setPcPopoverOpen(false);
             setSearchOpen(false)
             setSearch('');
+            if(document.activeElement === inputRef.current) {
+                inputRef.current?.blur();
+            }
         };
 
         if (popoverOpen || pcPopoverOpen || searchOpen) {
