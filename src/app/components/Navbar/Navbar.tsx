@@ -124,20 +124,33 @@ const Navbar = memo(() => {
     }
 
     useEffect(() => {
-    const handleScroll = () => {
-        setPopoverOpen(false);
-        setPcPopoverOpen(false);
-        setSearchOpen(false)
-        setSearch('');
-    };
+        const handleScroll = () => {
+            setPopoverOpen(false);
+            setPcPopoverOpen(false);
+            setSearchOpen(false)
+            setSearch('');
+        };
 
-    if (popoverOpen || pcPopoverOpen || searchOpen) {
-        requestAnimationFrame(() => {
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        });
-        return () => window.removeEventListener("scroll", handleScroll);
-    }
+        if (popoverOpen || pcPopoverOpen || searchOpen) {
+            requestAnimationFrame(() => {
+            window.addEventListener("scroll", handleScroll, { passive: true });
+            });
+            return () => window.removeEventListener("scroll", handleScroll);
+        }
     }, [popoverOpen, pcPopoverOpen, searchOpen]);
+
+    useEffect(() => {
+        const handleClick = () => {
+            setPcPopoverOpen(false);
+        }
+
+        if(pcPopoverOpen) {
+            requestAnimationFrame(() => {
+                window.addEventListener("click", handleClick, {passive: true});
+            });
+            return () => window.removeEventListener("click", handleClick);
+        }
+    }, [pcPopoverOpen])
 
     const [showLogo, setShowLogo] = useState(true);
 
