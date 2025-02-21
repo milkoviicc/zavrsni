@@ -17,6 +17,7 @@ import FullPosts from '../../../components/fullPosts';
 import ProfilePosts from '../../../components/ProfilePosts';
 import { useToast } from '@/hooks/use-toast';
 import {Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
+import ProfileSkeleton from '@/src/app/components/ProfileSkeleton';
 
 const UserProfile = () => {
   const {addImage, deleteAccount} = useAuth();
@@ -31,6 +32,7 @@ const UserProfile = () => {
   const [friendsList, setFriendsList] = useState<Profile[]>([]);
   const [myProfile, setMyProfile] = useState(false);
   const [isRendering, setIsRendering] = useState(false);
+  const [isDataRendering, setIsDataRendering] = useState(false);
   const [user, setUser] = useState<Profile>();
   const loggedUser = localStorage.getItem('user');
   const pathname = usePathname();
@@ -51,8 +53,7 @@ const UserProfile = () => {
 
   const getUserData = async () => {
     try {
-
-      const getUserByUsername = pathname.replace('/users', '');
+      const getUserByUsername = pathname.replace('/users', '').slice(1);
       const res = await axios.get<Profile>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/profiles/username/${getUserByUsername}`);
 
       if(res.status === 200) {
@@ -89,7 +90,7 @@ const UserProfile = () => {
       return () => clearTimeout(timeout);
     }
     if(getUserQuery.data) {
-      const timeout = setTimeout(() => setIsRendering(false), 500);
+      const timeout = setTimeout(() => setIsDataRendering(false), 500);
       return () => clearTimeout(timeout);
     }
   }, [getFriendsQuery.data, getUserQuery.data]);
@@ -175,7 +176,6 @@ const UserProfile = () => {
     queryClient.invalidateQueries({queryKey: ["getUser"]});
   };
 
-
   if(!user) {
     return null;
   }
@@ -184,7 +184,12 @@ const UserProfile = () => {
     <div className='mt-[35px] sm:mt-[80px] xl:mt-[35px] min-h-[824px] h-full 2k:min-h-[1220px] bg-[#222222]'>
       <div className='shadow-[0px_0.1px_15px_0px_rgba(0_0_0_0.26)] min-h-[824px] h-full pt-0 sm:pt-6 xl:pt-24 2xl:pt-16'>
         <div className='flex flex-col relative w-screen justify-center items-center 2xl:px-4 xl:px-14 lg:px-4 gap-4'>
-          <ProfileUserComponent pathUser={user} editProfile={editProfile} changeImage={handleChangeImage}/>
+          <div className='xl:flex hidden w-fit h-fit fixed top-0 translate-y-[100px] 3k:left-80 2k:left-64 2xl:left-12 xl:left-0'>
+            {getFriendsQuery.isLoading ? <ProfileSkeleton myProfile={myProfile}/> : <ProfileUserComponent pathUser={user} editProfile={editProfile} changeImage={handleChangeImage}/>}
+          </div>
+          <div className='xl:hidden flex flex-col'>
+            {getFriendsQuery.isLoading ? <ProfileSkeleton myProfile={myProfile}/> : <ProfileUserComponent pathUser={user} editProfile={editProfile} changeImage={handleChangeImage}/>}
+          </div>
           {getFriendsQuery.data?.length === 0 ? null : (
             <div>
               <div className='flex justify-center w-screen px-4'>

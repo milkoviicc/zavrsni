@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import ResizableTextarea from './ResizableTextarea'
 import { FollowSuggestion, Friendship, FriendshipStatus, Post, Profile, User } from '../types/types'
 import Image from 'next/image'
@@ -48,6 +48,8 @@ const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => 
   const [fillSuggestions, setFillSuggestions] = useState<User[]>([]);
   const [postDialogOpen, setPostDialogOpen] = useState(false);  
   const [postsPage, setPostsPage] = useState(0);
+  const [getComments, setGetComments] = useState(false);
+  const [isRendering, setIsRendering] = useState(true);
 
   const feed = localStorage.getItem('feed');
 
@@ -75,6 +77,7 @@ const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => 
   const popularFeedQuery = useQuery({queryKey: ["popularFeed"], queryFn: () => getPosts(postsPage), enabled: postsState === 'Popular'});
   const yourFeedQuery = useQuery({queryKey: ["yourFeed"], queryFn: () => getYourFeed(postsPage), enabled: postsState === 'Your Feed'});
   const getFollowedQuery = useQuery({queryKey: ["getFollowed"], queryFn: () => getFollowedUsers()});
+  const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn:() => getFollowSuggestions(), enabled: getFollowedQuery.isSuccess});
   
   const getFollowedUsers = async () => {
     try {
@@ -91,6 +94,7 @@ const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => 
       if(page === 0) {
         setPosts([]);
       }
+
       const res = await axios.get<Post[]>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/popular-feed?page=${page}`);
       if (res.status === 200) {
         if (page === 0) {
@@ -105,6 +109,7 @@ const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => 
         }
         if (res.data.length === 0) {
           setHasMore(false);
+          return [];
         }
         setLoading(false);
       }
@@ -162,9 +167,6 @@ const getFollowSuggestions = async () => {
   }
 }
 
-
-
-const suggestionsQuery = useQuery({queryKey: ["suggestions"], queryFn:getFollowSuggestions, enabled: getFollowedQuery.isSuccess});
 
 const checkFollowSuggestions = async (existingSuggestions: User[]) => {
   if(suggestionsChecked) return;
@@ -270,28 +272,32 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
       return;
     } else if (currentFeed === 'Popular' && feedState === 'Your Feed') {
       localStorage.setItem('feed', 'Your Feed');
+      setPostsState('Your Feed');
       setCurrentPage(0);
       setPosts([]);
       setHasMore(true);
+
+
     } else if (currentFeed === 'Your Feed' && feedState === 'Popular') {
       localStorage.setItem('feed', 'Popular');
+      
+      setPostsState('Popular');
       setCurrentPage(0);
       setPosts([]);
       setHasMore(true);
+
+
     } else if (currentFeed === 'Your Feed' && feedState === 'Your Feed') {
       return;
     }
-}
+  }
 
   useEffect(() => {
-      if (posts.length === 0 && currentPage >= 1) {
-          setCurrentPage((prev) => Math.max(prev - 1, 0));
-      }
+    if (posts.length === 0 && currentPage >= 1) {
+        setCurrentPage((prev) => Math.max(prev - 1, 0));
+    }
   }, [posts, currentPage]);
 
-  useEffect(() => {
-    handleFeedState(postsState);
-  }, [postsState])
 
   useEffect(() => {
     setContent('');
@@ -432,9 +438,6 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
     setRandomNmbs(newRandomNmbs);
   }, []);
 
-  const [getComments, setGetComments] = useState(false);
-  const [isRendering, setIsRendering] = useState(true);
-
   useEffect(() => {
     if (popularFeedQuery.data) {
       const timeout = setTimeout(() => setIsRendering(false), 500);
@@ -444,7 +447,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
       const timeout = setTimeout(() => setIsRendering(false), 500);
       return () => clearTimeout(timeout);
     }
-  }, [popularFeedQuery.data, yourFeedQuery.data]);
+  }, [popularFeedQuery.data, yourFeedQuery.data, isRendering]);
 
 
   const {toast} = useToast();
@@ -612,15 +615,14 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
         <div className="h-full w-full sm:flex hidden flex-col items-center">
             <div className="flex gap-4 py-6 items-center">
               <div>
-                  <button className={`text-2xl text-[#8A8A8A] ${postsState === "Popular" ? ' text-[#EFEFEF]' : null}`} onClick={() => setPostsState('Popular')}>Popular</button>
+                  <button className={`text-2xl text-[#8A8A8A] ${postsState === "Popular" ? ' text-[#EFEFEF]' : null}`} onClick={() => handleFeedState('Popular')}>Popular</button>
                   <span className={`${postsState === 'Popular' ? 'block bg-[#EFEFEF]' : 'hidden'} w-full h-[2px]`}></span>
               </div>
               <span className="h-10 block border-black bg-[#8A8A8A] w-[1px]"></span>
               <div>
-                  <button className={`text-2xl text-[#8A8A8A] ${postsState === "Your Feed" ? 'text-[#EFEFEF]' : null}`} onClick={() => setPostsState('Your Feed')}>Your Feed</button>
+                  <button className={`text-2xl text-[#8A8A8A] ${postsState === "Your Feed" ? 'text-[#EFEFEF]' : null}`} onClick={() => handleFeedState('Your Feed')}>Your Feed</button>
                   <span className={`${postsState === 'Your Feed' ? 'block bg-[#EFEFEF]' : 'hidden'} w-full h-[1px]`}></span>
               </div>
-            
             </div>
             <div className='w-full lg:min-w-[832px] flex flex-col justify-center mt-10'>
                 {popularFeedQuery.isFetching || yourFeedQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (

@@ -142,16 +142,19 @@ const Navbar = memo(() => {
 
     useEffect(() => {
         const handleClick = () => {
+            setPopoverOpen(false);
             setPcPopoverOpen(false);
+            setSearchOpen(false);
+            setSearch('');
         }
 
-        if(pcPopoverOpen) {
+        if(popoverOpen || pcPopoverOpen || searchOpen) {
             requestAnimationFrame(() => {
                 window.addEventListener("click", handleClick, {passive: true});
             });
             return () => window.removeEventListener("click", handleClick);
         }
-    }, [pcPopoverOpen])
+    }, [popoverOpen, pcPopoverOpen, searchOpen])
 
     const [showLogo, setShowLogo] = useState(true);
 

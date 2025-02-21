@@ -30,7 +30,7 @@ const ResizableTextarea: React.FC<ResizableTextareaProps> = ({ value, onChange, 
         }
       }}
       {...props}
-      style={{ overflowY: "auto", resize: "none", maxHeight: "150px" }} // Prevent manual resizing
+      style={{ overflowY: "auto", resize: "none" }} // Prevent manual resizing
     />
   );
 };
