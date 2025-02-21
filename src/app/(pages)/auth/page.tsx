@@ -182,7 +182,7 @@ const Auth = () => {
 
   return (
     <AnimatePresence mode="wait">
-    <div className='min-w-screen min-h-screen flex sm:flex-row sm:justify-between flex-col overflow-y-hidden overflow-x-hidden relative'>
+    <div className='flex-grow flex sm:flex-row sm:justify-between flex-col overflow-y-hidden overflow-x-hidden relative'>
         <div className='flex justify-center items-center sm:w-[37%] w-full'>
           <div className='flex items-center justify-center'>
             <div className='md:px-4 px-2 sm:py-14 py-10'>

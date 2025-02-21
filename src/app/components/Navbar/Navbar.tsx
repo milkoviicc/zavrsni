@@ -46,6 +46,7 @@ const Navbar = memo(() => {
     const searchInputRef = useRef<HTMLInputElement | null>(null);
     const [searchOpen, setSearchOpen] = useState(false);
     const [deleteAccOpen, setDeleteAccOpen] = useState(false);
+    const [showLogo, setShowLogo] = useState(true);
 
     const user = localStorage.getItem('user');
     const [userData, setUserData] = useState<User>();
@@ -141,22 +142,21 @@ const Navbar = memo(() => {
     }, [popoverOpen, pcPopoverOpen, searchOpen]);
 
     useEffect(() => {
+        if(popoverOpen && searchOpen) {
+            setSearchOpen(false);
+        }
         const handleClick = () => {
             setPopoverOpen(false);
             setPcPopoverOpen(false);
-            setSearchOpen(false);
-            setSearch('');
         }
 
-        if(popoverOpen || pcPopoverOpen || searchOpen) {
+        if(popoverOpen || pcPopoverOpen) {
             requestAnimationFrame(() => {
                 window.addEventListener("click", handleClick, {passive: true});
             });
             return () => window.removeEventListener("click", handleClick);
         }
-    }, [popoverOpen, pcPopoverOpen, searchOpen])
-
-    const [showLogo, setShowLogo] = useState(true);
+    }, [popoverOpen, pcPopoverOpen, searchOpen]);
 
     useEffect(() => {
         const windowSize = window.innerWidth;
@@ -192,7 +192,7 @@ const Navbar = memo(() => {
                                         <hr className="h-[1px] w-full px-0 border-[#525252]" />
                                         {isSearchLoading ? <SearchSkeleton /> : recievedItems.length === 0 ? <div className="w-full text-center py-4"><h1>No users found!</h1></div> : recievedItems.map((item, index) => (<div key={index} className="px-[12px] relative w-full"><Suggestion key={index} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
                                         <div className="w-full flex justify-center py-4">
-                                            <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
+                                            <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => router.push(`/people?searchTerm=${search}`)}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
                                         </div>
                                     </div>
                                 </div>
@@ -200,10 +200,10 @@ const Navbar = memo(() => {
                         </div>
                         <div className={`w-fit absolute flex flex-col items-center rounded-tr-xl rounded-tl-xl bg-[#222222] z-30 ${popoverOpen ? 'shadow-[0px_-2px_10px_0px_rgba(0,_0,_0,_0.26)] pl-6 py-2' : ''}`}>
                             <div className="flex flex-col items-center justify-end w-full">
-                                <div className="flex items-center justify-end gap-6 w-full">
+                                <div className={`flex items-center ${popoverOpen ? 'justify-between' : 'justify-end'} gap-6 w-full`}>
                                     {popoverOpen && (
-                                        <div className="flex flex-col items-start mr-2">
-                                            <h1 className="text-[#DFDEDE] font-Roboto text-sm xl:text-base">{userData?.firstName} {userData?.lastName}</h1>
+                                        <div className="flex flex-col items-start mr-2 w-[125px]">
+                                            <h1 className="text-[#DFDEDE] font-Roboto text-sm xl:text-base max-w-[125px] truncate">{userData?.firstName} {userData?.lastName}</h1>
                                             <p className="text-[#DFDEDE] font-Roboto text-sm xl:text-base">@{userData?.username}</p>
                                         </div>
                                     )}
@@ -215,6 +215,7 @@ const Navbar = memo(() => {
                                 <div className="absolute top-full bg-[#222222] px-4 right-0 py-4 flex flex-col gap-2 w-full rounded-br-xl rounded-bl-xl z-0 shadow-[0px_5px_10px_0px_rgba(0,_0,_0,_0.26)]">
                                     <div className="flex flex-col gap-2">
                                         <button className="text-[#DFDEDE] font-Roboto text-sm xl:text-base flex gap-1 px-4 py-2 bg-[#515151] rounded-full w-full justify-center items-center hover:opacity-80 transition-all" onClick={() => {setPopoverOpen(false); router.push(`/users/${userData?.username}`)}}><UserIcon className="size-4 xl:size-6"/> Show Profile</button>
+                                        <button className="text-[#DFDEDE] font-Roboto text-sm xl:text-base flex gap-1 px-4 py-2 bg-[#515151] rounded-full w-full justify-center items-center hover:opacity-80 transition-all" onClick={() => {setPopoverOpen(false); router.push(`/people`)}}><Users className="size-4 xl:size-6"/> People</button>
                                         <button className="text-[#DFDEDE] font-Roboto text-sm xl:text-base flex gap-2 px-4 py-2 bg-[#515151] rounded-full w-full justify-center items-center hover:opacity-80 transition-all" onClick={() => logout()}><LogOut className="size-4 xl:size-6"/> Logout</button>
                                     </div>
                                     <div className="w-full pt-6">
@@ -246,21 +247,21 @@ const Navbar = memo(() => {
                                     <hr className="h-[1px] w-full px-0 border-[#525252]" />
                                     {isSearchLoading ? <SearchSkeleton /> : recievedItems.length === 0 ? <div className="w-full text-center py-4"><h1>No users found!</h1></div> : recievedItems.map((item, index) => (<div key={item.userId} className="ml-[12px] w-[95%]"><Suggestion key={item.userId} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
                                     <div className={`w-full flex justify-center py-4 ${isSearchLoading || recievedItems.length === 0 ? 'hidden' : 'flex'}`}>
-                                        <button className={`flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base`} onClick={() => router.push('/people')}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
+                                        <button className={`flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base`} onClick={() => router.push(`/people?searchTerm=${search}`)}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
                                     </div>
                                 </div>
                             </div>
                         ) : null}
                     </div>
-                    <button className={`px-0 group w-[25px] h-[25px] md:w-[35px] md:h-[35px] 2xl:w-[40px] 2xl:h-[40px]`} onClick={() => router.push('/')}><svg viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_109_73)"><path d="M8.44333 9.55808V8.67007C8.44333 8.19904 8.25622 7.7473 7.92315 7.41423C7.59008 7.08116 7.13834 6.89404 6.66731 6.89404H3.11526C2.64423 6.89404 2.19249 7.08116 1.85942 7.41423C1.52635 7.7473 1.33923 8.19904 1.33923 8.67007V9.55808" stroke="#AFAFAF" strokeWidth="0.666009" strokeLinecap="round" strokeLinejoin="round"/><path d="M4.89138 5.11797C5.87225 5.11797 6.66741 4.32281 6.66741 3.34194C6.66741 2.36107 5.87225 1.56592 4.89138 1.56592C3.91051 1.56592 3.11536 2.36107 3.11536 3.34194C3.11536 4.32281 3.91051 5.11797 4.89138 5.11797Z" stroke="#AFAFAF" strokeWidth="0.666009" strokeLinecap="round" strokeLinejoin="round"/><path d="M11.1074 9.5581V8.67009C11.1071 8.27658 10.9761 7.89431 10.7351 7.5833C10.494 7.27229 10.1564 7.05016 9.77539 6.95178" stroke="#AFAFAF" strokeWidth="0.666009" strokeLinecap="round" strokeLinejoin="round"/><path d="M7.99939 1.62366C8.38142 1.72147 8.72003 1.94365 8.96183 2.25517C9.20364 2.56669 9.33489 2.94983 9.33489 3.34418C9.33489 3.73853 9.20364 4.12167 8.96183 4.43319C8.72003 4.74471 8.38142 4.96689 7.99939 5.06471" stroke="#AFAFAF" strokeWidth="0.666009" strokeLinecap="round" strokeLinejoin="round"/></g><defs><clipPath id="clip0_109_73"><rect width="10.6561" height="10.6561" fill="white" transform="translate(0.895264 0.234009)"/></clipPath></defs></svg>{path === '/people' ? <span className="block bg-[#AFAFAF] border-[#AFAFAF] h-[2px]"></span> : <span className="block opacity-0 group-hover:opacity-100 transition-all bg-[#535252] border-[#535252] h-[2px]"></span>}</button>           
+                    <button className={`px-0 group w-[25px] h-[25px] md:w-[35px] md:h-[35px] 2xl:w-[40px] 2xl:h-[40px]`} onClick={() => router.push('/people')}><svg viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_109_73)"><path d="M8.44333 9.55808V8.67007C8.44333 8.19904 8.25622 7.7473 7.92315 7.41423C7.59008 7.08116 7.13834 6.89404 6.66731 6.89404H3.11526C2.64423 6.89404 2.19249 7.08116 1.85942 7.41423C1.52635 7.7473 1.33923 8.19904 1.33923 8.67007V9.55808" stroke="#AFAFAF" strokeWidth="0.666009" strokeLinecap="round" strokeLinejoin="round"/><path d="M4.89138 5.11797C5.87225 5.11797 6.66741 4.32281 6.66741 3.34194C6.66741 2.36107 5.87225 1.56592 4.89138 1.56592C3.91051 1.56592 3.11536 2.36107 3.11536 3.34194C3.11536 4.32281 3.91051 5.11797 4.89138 5.11797Z" stroke="#AFAFAF" strokeWidth="0.666009" strokeLinecap="round" strokeLinejoin="round"/><path d="M11.1074 9.5581V8.67009C11.1071 8.27658 10.9761 7.89431 10.7351 7.5833C10.494 7.27229 10.1564 7.05016 9.77539 6.95178" stroke="#AFAFAF" strokeWidth="0.666009" strokeLinecap="round" strokeLinejoin="round"/><path d="M7.99939 1.62366C8.38142 1.72147 8.72003 1.94365 8.96183 2.25517C9.20364 2.56669 9.33489 2.94983 9.33489 3.34418C9.33489 3.73853 9.20364 4.12167 8.96183 4.43319C8.72003 4.74471 8.38142 4.96689 7.99939 5.06471" stroke="#AFAFAF" strokeWidth="0.666009" strokeLinecap="round" strokeLinejoin="round"/></g><defs><clipPath id="clip0_109_73"><rect width="10.6561" height="10.6561" fill="white" transform="translate(0.895264 0.234009)"/></clipPath></defs></svg>{path === '/people' ? <span className="block bg-[#AFAFAF] border-[#AFAFAF] h-[2px]"></span> : <span className="block opacity-0 group-hover:opacity-100 transition-all bg-[#535252] border-[#535252] h-[2px]"></span>}</button>           
                 </div>
                 <div className="w-[33%] flex justify-end gap-1 items-center">
                     <div className={`w-fit absolute flex flex-col items-center rounded-tr-xl rounded-tl-xl pl-6 pr-2 mr-1 py-2 bg-[#222222] ${pcPopoverOpen ? 'shadow-[0px_-2px_10px_0px_rgba(0,_0,_0,_0.26)]' : ''}`}>
                         <div className="flex flex-col items-center justify-end w-full">
-                            <div className="flex items-center justify-end gap-6 w-full">
+                            <div className={`flex items-center ${pcPopoverOpen ? 'justify-between' : 'justify-end'} gap-6 w-full`}>
                                 {pcPopoverOpen && (
-                                    <div className="flex flex-col items-start mr-2">
-                                        <h1 className="text-[#DFDEDE] font-Roboto text-sm xl:text-base">{userData?.firstName} {userData?.lastName}</h1>
+                                    <div className="flex flex-col items-start mr-2 w-[150px]">
+                                        <h1 className="text-[#DFDEDE] font-Roboto text-sm xl:text-base max-w-[150px] truncate">{userData?.firstName} {userData?.lastName}</h1>
                                         <p className="text-[#DFDEDE] font-Roboto text-sm xl:text-base">@{userData?.username}</p>
                                     </div>
                                 )}

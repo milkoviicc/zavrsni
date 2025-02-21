@@ -24,7 +24,7 @@ export default function ClientLayout({
 
   const isAuthRoute = pathname === '/auth';
   const [loading, setLoading] = useState(true);
-  const {fullyRegistered} = useAuth();
+  const {fullyRegistered, defaultPicture, ignoreDefaultPic} = useAuth();
   
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -46,12 +46,12 @@ export default function ClientLayout({
 
   
   return (
-        <div className="min-h-screen flex flex-col flex-grow">
-          {!isAuthRoute && <Navbar />}
-          <div className="flex-grow overflow-x-hidden overflow-y-hidden">
-              {children}  
-            {!isAuthRoute && <Footer />}
-          </div>
-        </div>
+    <div className="min-h-screen flex flex-col flex-grow">
+      {!isAuthRoute && <Navbar />}
+      <div className="flex flex-grow overflow-x-hidden overflow-y-hidden relative">
+        {children}  
+      </div>
+      {!isAuthRoute && <Footer />}
+    </div>
   );
 }

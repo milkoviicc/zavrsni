@@ -276,7 +276,7 @@ const handleReaction = async (reaction: number) => {
                 <div>
                   {showUpdate && (
                     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                      <PopoverTrigger className='cursor-pointer' onClick={() => setPopoverOpen(!popoverOpen)} asChild><EllipsisIcon className="text-[#AFAFAF] size-7" /></PopoverTrigger>
+                      <PopoverTrigger className='cursor-pointer mr-4 sm:mr-0' onClick={() => setPopoverOpen(!popoverOpen)} asChild><EllipsisIcon className="text-[#AFAFAF] size-7" /></PopoverTrigger>
                       <PopoverContent className="w-fit px-2">
                         <Command>
                           <CommandList>
