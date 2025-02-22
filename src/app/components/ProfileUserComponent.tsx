@@ -590,7 +590,7 @@ const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: P
                 <Avatar className='w-[45px] h-[45px] 2xl:w-[65px] 2xl:h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
                   <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{shortUsername}</AvatarFallback>
                 </Avatar>
-                <div className='flex flex-col justify-center items-start px-3 2k:px-4'>
+                <div className='flex flex-col justify-center items-start px-2 2k:px-4'>
                   <h1 className='text-[#DFDEDE] font-Roboto text-sm 2xl:text-base 2k:text-lg'>{pathUser.firstName} {pathUser.lastName}</h1>
                   <p className='text-[#888888] font-Roboto text-sm 2xl:text-base 2k:text-lg'>@{pathUser.username}</p>
                 </div>
