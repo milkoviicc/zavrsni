@@ -19,6 +19,10 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  background-color: #222222;
+}
+
 html body[data-scroll-locked] {
   overflow-y: scroll !important;
 }

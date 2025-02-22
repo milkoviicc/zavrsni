@@ -7,6 +7,8 @@ import UserSkeleton from '../../components/UserSkeleton';
 import Suggestion from '../../components/suggestion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
 import { useSearchParams } from 'next/navigation';
+import PeopleSkeleton from '../../components/PeopleSkeleton';
+import { Skeleton } from '@/src/components/ui/skeleton';
 
 const People = () => {
   const searchParams = useSearchParams();
@@ -28,7 +30,8 @@ const People = () => {
       setUsers(getSuggestionsQuery.data);
 
       if(getUsersQuery.data) {
-        setUsers((prev) => [...prev, ...getUsersQuery.data?.slice(0,6) ?? []]);
+        const filtered = getUsersQuery.data.filter((user) => !getSuggestionsQuery.data?.some((suggestion) => suggestion.userId === user.userId));
+        setUsers((prev) => [...prev, ...filtered.slice(0,4)]);
       }
     }
   }, [getSuggestionsQuery.data, getUsersQuery.data]);
@@ -99,8 +102,8 @@ const People = () => {
     <div className='flex-grow bg-[#252525]'>
       <div className='flex flex-col justify-center items-center h-full'>
         <div className='flex flex-col gap-4 max-w-[600px] w-full px-6 sm:px-0 py-32'>
-          {searchTerm ? <h1 className='text-[#808080] font-Roboto text-2xl text-center'>You searched "{searchTerm}"</h1> : null}
-          {isRendering && searchTerm ? <UserSkeleton /> : getUsersBySearchQuery.data?.map((user) => (
+          {searchTerm && isRendering ? <div className='flex justify-center'><Skeleton className='w-[175px] h-[20px] bg-[#515151] text-center'/></div>  : searchTerm && !isRendering ? <h1 className='text-[#808080] font-Roboto text-2xl text-center'>You searched "{searchTerm}"</h1> : null}
+          {isRendering && searchTerm ? <PeopleSkeleton /> : getUsersBySearchQuery.data?.map((user) => (
             <div key={user.userId} className='bg-[#363636] flex justify-between rounded-lg py-2 px-3 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.2)]'>
               <div className='flex gap-2 items-center'>
                 <Avatar className='w-[45px] h-[45px] rounded-full'>
@@ -116,8 +119,8 @@ const People = () => {
               </div>
             </div>
           ))}
-          <h1 className='font-Roboto text-center text-[#888888] text-2xl pt-4'>You might like</h1>
-          {isRendering ? <UserSkeleton /> : getSuggestionsQuery.data?.map((user) => (
+          {isRendering ? <div className='flex justify-center'><Skeleton className='w-[175px] h-[20px] bg-[#515151] text-center'/></div> : <h1 className='font-Roboto text-center text-[#888888] text-2xl pt-4'>You might like</h1>}
+          {isRendering ? <PeopleSkeleton /> : users?.map((user) => (
             <div key={user.userId} className='bg-[#363636] flex justify-between rounded-lg py-2 px-3 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.2)]'>
               <div className='flex gap-2 items-center'>
                 <Avatar className='w-[45px] h-[45px] rounded-full'>
