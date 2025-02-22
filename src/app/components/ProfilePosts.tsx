@@ -300,9 +300,9 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
     }
 
   return (
-    <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full 2xl:py-12 py-0 overflow-y-hidden">
+    <div className={`border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full ${myProfile ? 'xl:mt-12' : ''} 2xl:py-12 py-0 overflow-y-hidden`}>
         <div className='flex flex-col md:hidden w-full justify-center'>
-          <h1 className='text-[#EDEDED] text-center font-Roboto text-3xl sm:hidden'>{myProfile ? 'Your posts' : `${pathUser.firstName}'s posts`}</h1>
+          <h1 className='text-[#EDEDED] text-center font-Roboto text-3xl sm:hidden'>{myProfile ? 'Your posts' : `${pathUser.firstName?.slice(0,1).toUpperCase()}${pathUser.firstName?.slice(1)}'s posts`}</h1>
           <div className='flex sm:hidden flex-col py-8'>
             {getPostsQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
               <InfiniteScroll className='w-full flex flex-col bg-transparent' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
@@ -356,7 +356,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
         ) : null}
         <div className="h-full w-full sm:flex hidden flex-col items-center overflow-x-hidden">
           <div className={`flex gap-4 ${myProfile ? 'pt-3' : 'py-0'} items-center`}>
-            <h1 className='text-[#EDEDED] font-Roboto text-3xl'>{myProfile ? 'Your posts' : `${pathUser.firstName}'s posts`}</h1>
+            <h1 className='text-[#EDEDED] font-Roboto text-3xl'>{myProfile ? 'Your posts' : `${pathUser.firstName?.slice(0,1).toUpperCase()}${pathUser.firstName?.slice(1)}'s posts`}</h1>
           </div>
           <div className='w-full lg:min-w-[832px] flex flex-col justify-center mt-6'>
               {getPostsQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
