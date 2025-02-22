@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar'
 import { useSearchParams } from 'next/navigation';
 import PeopleSkeleton from '../../components/PeopleSkeleton';
 import { Skeleton } from '@/src/components/ui/skeleton';
+import { useRouter } from 'next/navigation';
 
 const People = () => {
   const searchParams = useSearchParams();
@@ -20,6 +21,8 @@ const People = () => {
   const getUsersBySearchQuery = useQuery({queryKey: ["getSearchedUsers"], queryFn: () => getUsersBySearch(), enabled: searchTerm !== ""});
   const getSuggestionsQuery = useQuery({queryKey: ["getSuggestions"], queryFn: () => getSuggestions()});
   const [users, setUsers] = useState<User[]>([]);
+
+  const router = useRouter();
 
   useEffect(() => {
     setSearchTerm(query);
@@ -115,7 +118,7 @@ const People = () => {
                 </div>
               </div>
               <div className='flex items-center px-2'>
-                <button className='px-4 sm:px-6 py-1 text-[#DFDEDE] font-Roboto bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)] transition-all rounded-full w-fit'>Check out</button>
+                <button className='px-4 sm:px-6 py-1 text-[#DFDEDE] font-Roboto bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)] transition-all rounded-full w-fit' onClick={() => router.push(`/users/${user.username}`)}>Check out</button>
               </div>
             </div>
           ))}
@@ -132,7 +135,7 @@ const People = () => {
                 </div>
               </div>
               <div className='flex items-center px-2'>
-                <button className='px-4 sm:px-6 py-1 text-[#DFDEDE] font-Roboto bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)] transition-all rounded-full w-fit'>Check out</button>
+                <button className='px-4 sm:px-6 py-1 text-[#DFDEDE] font-Roboto bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)] transition-all rounded-full w-fit' onClick={() => router.push(`/users/${user.username}`)}>Check out</button>
               </div>
             </div>
           ))}
