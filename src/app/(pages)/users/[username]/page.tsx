@@ -184,7 +184,7 @@ const UserProfile = () => {
     <div className='flex-grow 2k:min-h-[1220px] bg-[#222222]'>
       <div className='shadow-[0px_0.1px_15px_0px_rgba(0_0_0_0.26)] min-h-[824px] h-full pt-0 sm:pt-6 xl:pt-24 2xl:pt-16'>
         <div className='flex flex-col relative w-screen justify-center items-center 2xl:px-4 xl:px-14 lg:px-4 gap-4'>
-          <div className='xl:flex hidden w-fit h-fit fixed xl:top-10 2xl:top-4 translate-y-[100px] 3k:left-80 2k:left-64 2xl:left-12 xl:left-0'>
+          <div className='xl:flex hidden w-fit h-fit fixed xl:top-10 2xl:top-4 translate-y-[100px] xl:left-0'>
             {getFriendsQuery.isLoading ? <ProfileSkeleton myProfile={myProfile}/> : <ProfileUserComponent pathUser={user} editProfile={editProfile} changeImage={handleChangeImage}/>}
           </div>
           <div className='xl:hidden flex flex-col pt-16'>

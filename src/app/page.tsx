@@ -44,7 +44,7 @@ export default function Home() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [description, setDescription] = useState('');
-  const [occupation, setOcuppation] = useState('');
+  const [occupation, setOccupation] = useState('');
   const [successfullUpdate, setSuccessfullUpdate] = useState(false);
   const [content, setContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -167,10 +167,10 @@ export default function Home() {
   }
 
   return (
-    <div className='relative flex-grow w-full'>
+    <div className='relative flex flex-grow w-full'>
       {isAuthenticated && fullyRegistered && !defaultPicture || ignoreDefaultPicture 
       ?
-      <div className="flex-col bg-[#222222] shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)] py-0 sm:py-6 md:py-16  mt-[35px] sm:mt-[70px] xl:mt-[60px] min-h-[800px]">
+      <div className="flex-col bg-[#222222] shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)] py-0 sm:py-6 md:py-16  mt-[35px] sm:mt-[70px] xl:mt-[60px] flex-grow">
         <div className="flex w-screen justify-between 2xl:px-16 xl:px-14 lg:px-4 gap-4">
           <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-24 xl:left-0 gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] 3k:h-[900px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
             <h1 className="font-Roboto text-xl xl:text-2xl 2k:text-3xl pb-4 px-4 text-[#EFEFEF] font-normal">Who's popular</h1>
@@ -208,9 +208,9 @@ export default function Home() {
               <input type="text" maxLength={20} required className={`w-full bg-[#515151] py-3 px-4 border border-gray-300 rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Last name' id="lastname" onChange={(e) => setLastName(e.target.value)} autoComplete="off"/>
             </div>
             <div>
-              <p>Please tell us somehting about yourself.</p>
+              <p>Please tell us something about yourself.</p>
               <textarea maxLength={100} className={`w-full bg-[#515151] py-3 px-4 resize-none border border-gray-300 rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Description' id="description" onChange={(e) => setDescription(e.target.value)} autoComplete="off"/>
-              <input type="text" maxLength={60}  className={`w-full bg-[#515151] py-3 px-4 border border-gray-300 rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Ocuppation ex. Student' id="occupation" onChange={(e) => setOcuppation(e.target.value)} autoComplete="off"/>
+              <input type="text" maxLength={60}  className={`w-full bg-[#515151] py-3 px-4 border border-gray-300 rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Occupation, ex. Student' id="occupation" onChange={(e) => setOccupation(e.target.value)} autoComplete="off"/>
             </div>
             <div className="flex justify-center items-center py-2">
               <button className='bg-[#1565CE] shadow-[1px_1px_3px_0px_rgba(12,75,156,1)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,0.7)] text-[#F0F0F0] font-Roboto w-fit px-8 py-2 border border-blue-700 rounded-lg transition-all '>Confirm</button>
@@ -221,7 +221,7 @@ export default function Home() {
       </div>
       : isAuthenticated && fullyRegistered && defaultPicture && !ignoreDefaultPicture
       ? 
-        <div className="flex flex-grow justify-center items-center h-full bg-[#222222]">
+        <div className="flex flex-grow justify-center items-center h-full bg-[#222222] px-2 sm:px-0">
           <div className='bg-[#363636] border-none rounded-xl px-4 py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.2)]'>
             <h1 className="font-roboto text-[#DFDEDE] text-center py-4">Change your profile picture</h1>
             <label htmlFor="picture" onDrop={handleDrop} onDragOver={handleDragOver}>
