@@ -500,11 +500,11 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex w-full h-full sm:ml-4">
+                    <div className="flex w-full h-full justify-center">
                       <div className={`grid gap-2 ${postFile.length <= 2 ? "grid-cols-3" : ''} ${postFile.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>
                         {postFile ? postFile.map((file, index) => (
                           <div key={index} className='w-full relative flex justify-center sm:px-2'>
-                            <Image key={index} src={URL.createObjectURL(file)} width={100} height={100} alt="a" className="py-2 opacity-80] rounded-xl h-[150px] w-full"/>
+                            <Image key={index} src={URL.createObjectURL(file)} width={100} height={100} alt="a" className="py-2 opacity-80 rounded-xl h-[150px] w-[150px] object-cover"/>
                             <button className="absolute text-white top-2 right-4" onClick={() => setPostFile(postFile.filter((_, postIndex) => postIndex != index))}>X</button>
                           </div>
                         )) : null}
@@ -598,11 +598,11 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                   </div>
               </div>
           </div>
-          <div className="flex w-full h-full ml-4">
+          <div className="flex w-full h-full justify-center">
             <div className={`grid gap-2 ${postFile.length <= 2 ? "grid-cols-3" : ''} ${postFile.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>
               {postFile ? postFile.map((file, index) => (
                 <div key={index} className='w-full relative flex justify-center px-2'>
-                  <Image key={index} src={URL.createObjectURL(file)} width={100} height={100} alt="a" className="py-2 opacity-80 rounded-xl h-[150px] w-full"/>
+                  <Image key={index} src={URL.createObjectURL(file)} width={100} height={100} alt="a" className="py-2 opacity-80 rounded-xl h-[150px] w-[150px] object-cover"/>
                   <button className="absolute text-white top-2 right-4" onClick={() => setPostFile(postFile.filter((_, postIndex) => postIndex != index))}>X</button>
                 </div>
               )) : null}
