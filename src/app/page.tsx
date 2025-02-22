@@ -198,7 +198,7 @@ export default function Home() {
 
       :  isAuthenticated && !fullyRegistered 
       ?  
-      <div className="flex justify-center items-center h-full bg-[#222222] px-4 sm:px-0">
+      <div className="flex justify-center items-center h-full bg-[#222222] px-4 sm:px-0 flex-grow">
         <div className="border-1 border-black bg-[#363636] text-[#F0F0F0] rounded-md px-4 py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.2)]">
           <h1 className="text-center py-4">We just need a little more information about you.</h1>
           <form onSubmit={(e) => {e.preventDefault(); addDetails(firstName, lastName, description, occupation); setSuccessfullUpdate(true)}}>
