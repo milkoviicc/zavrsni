@@ -167,6 +167,14 @@ const Navbar = memo(() => {
         }
     }, [searchOpen]);
 
+    const handleSeeMore = (search: string) => {
+        setSearchOpen(false);
+        router.push(`/people?searchTerm=${search}`);
+        setSearch('');
+        setReceivedItems([]);
+        searchInputRef.current?.blur();
+    }
+
     // ukoliko je user state null vraća se null (kao da navbar ne postoji uopće)
     if(!user) return null;
 
@@ -192,7 +200,7 @@ const Navbar = memo(() => {
                                         <hr className="h-[1px] w-full px-0 border-[#525252]" />
                                         {isSearchLoading ? <SearchSkeleton /> : recievedItems.length === 0 ? <div className="w-full text-center py-4"><h1>No users found!</h1></div> : recievedItems.map((item, index) => (<div key={index} className="px-[12px] relative w-full"><Suggestion key={index} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
                                         <div className="w-full flex justify-center py-4">
-                                            <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => router.push(`/people?searchTerm=${search}`)}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
+                                            <button className="flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base" onClick={() => handleSeeMore(search)}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
                                         </div>
                                     </div>
                                 </div>
@@ -247,7 +255,7 @@ const Navbar = memo(() => {
                                     <hr className="h-[1px] w-full px-0 border-[#525252]" />
                                     {isSearchLoading ? <SearchSkeleton /> : recievedItems.length === 0 ? <div className="w-full text-center py-4"><h1>No users found!</h1></div> : recievedItems.map((item, index) => (<div key={item.userId} className="ml-[12px] w-[95%]"><Suggestion key={item.userId} profileSuggestion={item} handleRoute={handleRoute}/></div>))}
                                     <div className={`w-full flex justify-center py-4 ${isSearchLoading || recievedItems.length === 0 ? 'hidden' : 'flex'}`}>
-                                        <button className={`flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base`} onClick={() => router.push(`/people?searchTerm=${search}`)}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
+                                        <button className={`flex flex-col text-[#AFAFAF] font-Roboto text-sm sm:text-base`} onClick={() => handleSeeMore(search)}>See more<span className="w-full h-[1px] bg-[#AFAFAF]"></span></button>
                                     </div>
                                 </div>
                             </div>
