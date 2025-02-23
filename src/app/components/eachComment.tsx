@@ -15,6 +15,7 @@ import { Command, CommandGroup, CommandItem, CommandList } from '@/src/component
 import { EllipsisIcon, Pencil, Trash2 } from 'lucide-react';
 import { PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 import { useToast } from '@/hooks/use-toast';
+import {Button as HeroUiBtn} from "@heroui/button";
 
 const EachComment = ({post, comment, refreshComments, updateComment}: {post: Post, comment: Comment, refreshComments: () => void, updateComment: (commentId: string, newContent: string) => void})=> {
 
@@ -176,6 +177,10 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
     }
 
     const update = async () => {
+      if(comment.content === updatedContent) {
+        toast({description: "You must change text to update your comment", duration: 1500, style:{backgroundColor: "#CA3C3C"}});
+        return;
+      }
       updateComment(comment.commentId, updatedContent);
       setIsUpdateCommentDialogOpen(false);
     }
@@ -186,7 +191,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
           if(res.status === 200) {
             const newReply: Reply = res.data;
             setCommentReplies((prev) => [...prev, newReply]);
-            toast({description: "Reply successfully posted."});
+            toast({description: "Reply successfully posted.", duration: 1500, style: {backgroundColor: "#1565CE"}});
           }
           setReplyContent('');
           setIsCommentReplyDialogOpen(false);
@@ -351,7 +356,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
                                       <CommandItem className="text-[#AFAFAF] text-lg cursor-pointer w-fit" onSelect={(currentValue) => {
                                           setPopoverOpen(false);
                                           deleteComment(comment.commentId);
-                                          toast({description: "Comment successfully deleted"})
+                                          toast({description: "Comment successfully deleted", duration: 1500, style:{backgroundColor: "#1565CE"}})
                                           }}><Trash2 className="w-6 h-6"/>Delete</CommandItem>
                                   </CommandGroup>
                               </CommandList>
@@ -387,7 +392,9 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
                               <div className='flex flex-col flex-grow gap-4 pr-4'>  
                                 <ResizableTextarea onChange={(e) =>  setUpdatedContent(e.target.value)} value={updatedContent} className="font-Roboto font-normal leading-5 scrollbar-none w-full max-h-[100px] lg:max-h-[150px] text-sm lg:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                                 <div className='flex justify-end'>
-                                  <button onClick={() => {update(); toast({description: "Comment successfully updated!", duration: 1500})}} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base">Update comment</button>
+                                  <HeroUiBtn onPress={() => update()} className="relative flex h-[40px] w-32 items-center justify-center overflow-hidden bg-[#5D5E5D] rounded-full font-Roboto text-[#EFEFEF] shadow-[0px_3px_3px_0px_rgba(0,0,0,0.2)] transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-gray-800 before:duration-500 before:ease-out hover:shadow-none hover:before:h-56 hover:before:w-56">
+                                    <span className="relative z-10 text-base">Submit</span>
+                                  </HeroUiBtn>
                                 </div>
                               </div>
                             </div>

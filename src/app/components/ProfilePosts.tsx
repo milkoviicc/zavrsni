@@ -300,7 +300,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
     }
 
   return (
-    <div className={`border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full ${myProfile ? 'xl:mt-12' : ''} 2xl:py-12 py-0 overflow-y-hidden`}>
+    <div className={`h-full flex flex-col items-center gap-4 w-full ${myProfile ? 'xl:mt-12' : ''} 2xl:py-12 py-0 overflow-y-hidden`}>
         <div className='flex flex-col md:hidden w-full justify-center'>
           <h1 className='text-[#EDEDED] text-center font-Roboto text-3xl sm:hidden'>{myProfile ? 'Your posts' : `${pathUser.firstName?.slice(0,1).toUpperCase()}${pathUser.firstName?.slice(1)}'s posts`}</h1>
           <div className='flex sm:hidden flex-col py-8'>

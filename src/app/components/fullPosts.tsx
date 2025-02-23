@@ -456,7 +456,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
   const {toast} = useToast();
 
   return (
-    <div className="border-1 border-gray-900 h-full flex flex-col items-center gap-4 w-full 2xl:py-12 py-0">
+    <div className="h-full flex flex-col items-center gap-4 w-full 2xl:py-12 py-0">
         <div className='flex flex-col md:hidden text-white w-full justify-center'>
           <div className="flex items-center w-full flex-col py-4">
             <div className="flex flex-col w-[85%] relative mt-6 py-2 px-4 shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636] rounded-full">
