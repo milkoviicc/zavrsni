@@ -25,7 +25,7 @@ import { CircleFadingPlus } from "lucide-react";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PostSkeleton from './PostSkeleton';
 import { useToast } from '@/hooks/use-toast';
-
+import {Button as HeroUiBtn, ButtonGroup} from "@heroui/button";
 
 
 const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => {
@@ -211,6 +211,9 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
         setContent('');
         setPostFile([]);
         setPostDialogOpen(false);
+      } else {
+        toast({description: "Text or image is required!", duration: 1500, style: {backgroundColor: "#CA3C3C"}});
+        return;
       }
 
       const formData = new FormData();
@@ -494,7 +497,9 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                                           <label htmlFor="file-input" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" className='pt-[3px]'/></label>
                                         </div>
                                       </div>
-                                      <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
+                                      <HeroUiBtn onPress={() => sendPost()} className="relative flex h-[40px] w-28 items-center justify-center overflow-hidden bg-[#5D5E5D] rounded-full font-Roboto text-[#EFEFEF] shadow-[0px_3px_3px_0px_rgba(0,0,0,0.2)] transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-gray-800 before:duration-500 before:ease-out hover:shadow-none hover:before:h-56 hover:before:w-56">
+                                        <span className="relative z-10 text-base">Post it</span>
+                                      </HeroUiBtn>
                                   </div>
                                 </div>
                             </div>
@@ -592,7 +597,9 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
                                 <label htmlFor="file-input-pc" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" className='pt-[3px]'/></label>
                               </div>
                             </div>
-                            <button onClick={() => sendPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
+                            <HeroUiBtn onPress={() => sendPost()} className="relative flex h-[40px] w-28 items-center justify-center overflow-hidden bg-[#5D5E5D] rounded-full font-Roboto text-[#EFEFEF] shadow-[0px_3px_3px_0px_rgba(0,0,0,0.2)] transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-gray-800 before:duration-500 before:ease-out hover:shadow-none hover:before:h-56 hover:before:w-56">
+                              <span className="relative z-10 text-base">Post it</span>
+                            </HeroUiBtn>
                         </div>
                       </div>
                   </div>
