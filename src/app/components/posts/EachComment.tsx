@@ -15,7 +15,7 @@ import { EllipsisIcon, Pencil, Trash2 } from 'lucide-react';
 import { PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 import { useToast } from '@/hooks/use-toast';
 import {Button as HeroUiBtn} from "@heroui/button";
-import EachReply from './eachReply';
+import EachReply from './EachReply';
 
 const EachComment = ({post, comment, refreshComments, updateComment, callComments}: {post: Post, comment: Comment, refreshComments: () => void, updateComment: (commentId: string, newContent: string) => void, callComments: React.Dispatch<React.SetStateAction<boolean>>})=> {
 

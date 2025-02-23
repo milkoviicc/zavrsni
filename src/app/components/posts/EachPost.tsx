@@ -22,7 +22,7 @@ import { Command, CommandGroup, CommandItem, CommandList } from '@/src/component
 import { CircleFadingPlus, Ellipsis, EllipsisIcon, Pencil, Settings, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {Button as HeroUiBtn} from '@heroui/button';
-import EachComment from './eachComment';
+import EachComment from './EachComment';
 
 const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, updatePost, refreshPosts}: {post: Post, getComments: boolean, handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string, updatedContent: string, updatedFiles: string[]) => void, refreshPosts: () => void})=> {
   
