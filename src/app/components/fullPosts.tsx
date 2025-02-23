@@ -233,7 +233,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
         const newPost: Post = res.data;
         setPosts((prev) => [newPost, ...prev]);
         queryClient.invalidateQueries({queryKey: [postsState === "Popular" ? "popularFeed" : "yourFeed"]});
-        toast({description: "Post successfully posted!", duration: 1500});
+        toast({description: "Post successfully posted!", duration: 1500, style:{backgroundColor: "#1565CE"}});
       }
     } catch(err) {
         // ukoliko je došlo do greške, ispisuje se u konzoli
@@ -262,6 +262,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
               // Izbacujem obrisani post
               setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
               queryClient.invalidateQueries({queryKey: [postsState === "Popular" ? "popularFeed" : "yourFeed"]});
+              toast({description: "Your post has been deleted.", duration: 1500, style:{backgroundColor: "#1565CE"}})
           }
       } catch(err) {
           // ukoliko dođe do greške ispisat će se u konzoli
@@ -409,7 +410,7 @@ const checkFollowSuggestions = async (existingSuggestions: User[]) => {
             const res = await axios.put<Post>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/update-post/${postId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
           
             if(res.status === 200) {
-              toast({description: "Post successfully updated!", duration: 1500});
+              toast({description: "Post successfully updated!", duration: 1500, style:{backgroundColor: "#1565CE"}});
             }
           });
 

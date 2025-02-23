@@ -17,7 +17,7 @@ import { PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 import { useToast } from '@/hooks/use-toast';
 import {Button as HeroUiBtn} from "@heroui/button";
 
-const EachComment = ({post, comment, refreshComments, updateComment}: {post: Post, comment: Comment, refreshComments: () => void, updateComment: (commentId: string, newContent: string) => void})=> {
+const EachComment = ({post, comment, refreshComments, updateComment, callComments}: {post: Post, comment: Comment, refreshComments: () => void, updateComment: (commentId: string, newContent: string) => void, callComments: React.Dispatch<React.SetStateAction<boolean>>})=> {
 
     const commentDate = comment.createdOn;
 
@@ -148,8 +148,8 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
           
           // ako je res.status jednak 200 znači da je post obrisan i onda mjenjam reactionTrigger state kako bi se postovi re-renderali na stranici.
           if(res.status === 200) {
+            callComments(true);
             post.commentCount--;
-            refreshComments();
           }
       } catch(err) {
           // ukoliko dođe do greške ispisat će se u konzoli
@@ -165,6 +165,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
         // ako je res.status jednak 200 znači da je post obrisan i onda mjenjam reactionTrigger state kako bi se postovi re-renderali na stranici.
         if(res.status === 200) {
           refreshComments();
+          callComments(true);
         }
     } catch(err) {
         // ukoliko dođe do greške ispisat će se u konzoli
@@ -186,12 +187,17 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
     }
 
     const handleReply = async (replyContent: string) => {
+      if(replyContent === '') {
+        toast({description: "Text is required!", duration: 1500, style: {backgroundColor: "#CA3C3C"}});
+        return;
+      }
       try {
           const res = await axios.post(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/comments/add-reply/${comment.commentId}`, {content: replyContent});
           if(res.status === 200) {
             const newReply: Reply = res.data;
             setCommentReplies((prev) => [...prev, newReply]);
             toast({description: "Reply successfully posted.", duration: 1500, style: {backgroundColor: "#1565CE"}});
+            callComments(true);
           }
           setReplyContent('');
           setIsCommentReplyDialogOpen(false);
@@ -356,7 +362,7 @@ const EachComment = ({post, comment, refreshComments, updateComment}: {post: Pos
                                       <CommandItem className="text-[#AFAFAF] text-lg cursor-pointer w-fit" onSelect={(currentValue) => {
                                           setPopoverOpen(false);
                                           deleteComment(comment.commentId);
-                                          toast({description: "Comment successfully deleted", duration: 1500, style:{backgroundColor: "#1565CE"}})
+                                          toast({description: "Your comment has been deleted.", duration: 1500, style:{backgroundColor: "#1565CE"}})
                                           }}><Trash2 className="w-6 h-6"/>Delete</CommandItem>
                                   </CommandGroup>
                               </CommandList>

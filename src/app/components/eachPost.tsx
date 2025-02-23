@@ -486,7 +486,7 @@ const handleReaction = async (reaction: number) => {
                     <h1 className='text-2xl font-Roboto mt-4 text-[#EFEFEF]'>Comments</h1>
                     {getCommentsQuery.data ? getCommentsQuery.data.map((comment, index) => (
                       <div key={index} className='py-2'>
-                        <EachComment post={post} comment={comment} refreshComments={handleComments} updateComment={updateComment} />
+                        <EachComment post={post} comment={comment} refreshComments={handleComments} updateComment={updateComment} callComments={setCallComents} />
                       </div>
                     )) : null}
                   </ScrollArea>

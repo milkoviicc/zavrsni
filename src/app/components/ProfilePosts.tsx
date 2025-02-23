@@ -300,7 +300,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
     }
 
   return (
-    <div className={`h-full flex flex-col items-center gap-4 w-full ${myProfile ? 'xl:mt-12' : ''} 2xl:py-12 py-0 overflow-y-hidden`}>
+    <div className={`h-full flex flex-col items-center gap-4 w-full ${myProfile ? '2xl:mt-12' : ''} overflow-y-hidden`}>
         <div className='flex flex-col md:hidden w-full justify-center'>
           <h1 className='text-[#EDEDED] text-center font-Roboto text-3xl sm:hidden'>{myProfile ? 'Your posts' : `${pathUser.firstName?.slice(0,1).toUpperCase()}${pathUser.firstName?.slice(1)}'s posts`}</h1>
           <div className='flex sm:hidden flex-col py-8'>
@@ -359,16 +359,16 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
             <h1 className='text-[#EDEDED] font-Roboto text-3xl'>{myProfile ? 'Your posts' : `${pathUser.firstName?.slice(0,1).toUpperCase()}${pathUser.firstName?.slice(1)}'s posts`}</h1>
           </div>
           <div className='w-full lg:min-w-[832px] flex flex-col justify-center mt-6'>
-              {getPostsQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
-                  <InfiniteScroll className='w-full flex flex-col items-center bg-transparent px-8 sm:px-4 2k:min-w-[832px]' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1 className='text-white'>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
-                      {posts.map((post, index) => (
-                        <div key={index} className='max-w-[832px] w-full'>
-                          <EachPost key={index} post={post} getComments={getComments} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
-                        </div>
-                        )
-                      )}
-                  </InfiniteScroll>
-              )}
+            {getPostsQuery.isFetching || isRendering ? <PostSkeleton /> : posts.length === 0 ? <h1 className='text-center text-[#AFAFAF]'>There are no posts yet!</h1> : (
+              <InfiniteScroll className='w-full flex flex-col items-center bg-transparent px-8 sm:px-4 2k:min-w-[832px]' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1 className='text-white'>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
+                  {posts.map((post, index) => (
+                    <div key={index} className='max-w-[832px] w-full'>
+                      <EachPost key={index} post={post} getComments={getComments} handleLike={handleLike} handleDislike={handleDislike} deletePost={deletePost} updatePost={updatePost} refreshPosts={() => handleFeedState}/>
+                    </div>
+                    )
+                  )}
+              </InfiniteScroll>
+            )}
           </div>
         </div>
     </div>
