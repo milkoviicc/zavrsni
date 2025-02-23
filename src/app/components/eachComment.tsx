@@ -445,7 +445,9 @@ const EachComment = ({post, comment, refreshComments, updateComment, callComment
                           <div className='flex flex-col flex-grow gap-4 pr-4'>  
                             <ResizableTextarea onChange={(e) =>  setReplyContent(e.target.value)} value={replyContent} placeholder='Write a reply.' className="font-Roboto font-normal leading-5 scrollbar-none w-full max-h-[100px] lg:max-h-[150px] text-sm lg:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                             <div className='flex justify-end'>
-                              <button onClick={() => handleReply(replyContent)} className="rounded-full w-[150px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base">Post reply</button>
+                              <HeroUiBtn onPress={() => handleReply(replyContent)} className="relative flex h-[40px] w-32 items-center justify-center overflow-hidden bg-[#5D5E5D] rounded-full font-Roboto text-[#EFEFEF] shadow-[0px_3px_3px_0px_rgba(0,0,0,0.2)] transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-gray-800 before:duration-500 before:ease-out hover:shadow-none hover:before:h-56 hover:before:w-56">
+                                <span className="relative z-10 text-base">Post reply</span>
+                              </HeroUiBtn>
                             </div>
                           </div>
                         </div>

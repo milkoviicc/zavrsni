@@ -296,7 +296,6 @@ const handleReaction = async (reaction: number) => {
                               <CommandItem className="text-[#AFAFAF] text-lg cursor-pointer w-fit" onSelect={(currentValue) => {
                                   setPopoverOpen(false);
                                   deletePost(post.postId);
-                                  toast({description: "Post successfully deleted."});
                               }}><Trash2 className="w-6 h-6"/>Delete</CommandItem>
                             </CommandGroup>
                           </CommandList>

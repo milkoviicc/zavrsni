@@ -19,6 +19,7 @@ import { CircleFadingPlus } from 'lucide-react';
 import PostSkeleton from './PostSkeleton';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import EachPost from './eachPost';
+import {Button as HeroUiBtn} from '@heroui/button';
 
 const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
 
@@ -101,6 +102,9 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
           setContent('');
           setPostFile([]);
           setPostDialogOpen(false);
+        } else {
+          toast({description: "Text or image is required!", duration: 1500, style: {backgroundColor: "#CA3C3C"}});
+          return;
         }
 
         const formData = new FormData();
@@ -120,7 +124,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
           const newPost: Post = res.data;
           setPosts((prev) => [newPost, ...prev]);
           queryClient.invalidateQueries({queryKey: ["getPosts"]});
-          toast({description: "Post successfully posted!", duration: 1500});
+          toast({description: "Post successfully posted!", duration: 1500, style:{backgroundColor: "#1565CE"}});
         }
       } catch(err) {
           // ukoliko je došlo do greške, ispisuje se u konzoli
@@ -163,6 +167,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
                 queryClient.invalidateQueries({queryKey: ["getPosts"]});
                 // Izbacujem obrisani post
                 setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
+                toast({description: "Your post has been deleted!", duration: 1500, style: {backgroundColor: "#1565CE"}});
             }
         } catch(err) {
             // ukoliko dođe do greške ispisat će se u konzoli
@@ -173,7 +178,6 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
     // async funckija koja se poziva klikom na gumb 'Like' i prima postId
   const handleLike = async (postId: string) => {
     try {
-
         // pokušavam pronaći post koji je likean tako što prolazim kroz sve postove i pronalazim koji post.id je jednak primljenom postId-u
         const post = posts.find((post) => post.postId === postId);
 
@@ -271,7 +275,7 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
         const res = await axios.put<Post>(`https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/api/posts/update-post/${postId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
         
         if(res.status === 200) {
-            toast({description: "Post successfully updated!", duration: 1500});
+            toast({description: "Post successfully updated!", duration: 1500, style:{backgroundColor: "#1565CE"}});
         }
         });
 
@@ -333,7 +337,9 @@ const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
                                 <label htmlFor="file-input-pc" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" className='pt-[3px]'/></label>
                               </div>
                             </div>
-                            <button onClick={() => handleAddPost()} className="rounded-full w-[100px] bg-[#5D5E5D] text-[#EFEFEF] py-[0.30rem] text-base font-Roboto">Post it</button>
+                            <HeroUiBtn onPress={() => handleAddPost()} className="relative flex h-[40px] w-32 items-center justify-center overflow-hidden bg-[#5D5E5D] rounded-full font-Roboto text-[#EFEFEF] shadow-[0px_3px_3px_0px_rgba(0,0,0,0.2)] transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-gray-800 before:duration-500 before:ease-out hover:shadow-none hover:before:h-56 hover:before:w-56">
+                              <span className="relative z-10 text-base">Post it</span>
+                            </HeroUiBtn>
                         </div>
                       </div>
                   </div>
