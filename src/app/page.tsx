@@ -8,8 +8,6 @@ import { useAuth } from "./context/AuthProvider";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-import img from '@/../public/images/test.png';
-
 import { Input } from '@/src/components/ui/input';
 
 
