@@ -17,10 +17,10 @@ import {Flex, Avatar as RadixAvatar } from "@radix-ui/themes";
 import searchOutline from "@/public/search-outline 1.svg"
 import { FollowSuggestion, Profile, User } from "../../types/types";
 import { Popover, PopoverTrigger, PopoverContent, PopoverAnchor } from "@/src/components/ui/popover";
-import UserComponent from "../ui/userComponent";
+import UserComponent from "../ui/UserComponent";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/src/components/ui/command";
 import { ChevronDown, ChevronUp, LogOut, Menu, Trash2, User as UserIcon, Users } from "lucide-react";
-import Suggestion from "../ui/suggestion";
+import Suggestion from "../ui/Suggestion";
 import { useTime } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import SearchSkeleton from "../skeletons/SearchSkeleton";

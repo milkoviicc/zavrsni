@@ -8,7 +8,7 @@ import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faPaperclip } from '@fortawesome/free-solid-svg-icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import Suggestion from '../ui/suggestion';
+import Suggestion from '../ui/Suggestion';
 import { filter } from 'lodash';
 
 import {Popover, PopoverContent, PopoverTrigger} from "../../../components/ui/popover";

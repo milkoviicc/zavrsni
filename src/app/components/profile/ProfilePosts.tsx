@@ -18,7 +18,7 @@ import Image from 'next/image';
 import { CircleFadingPlus } from 'lucide-react';
 import PostSkeleton from '../skeletons/PostSkeleton';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import EachPost from '../posts/eachPost';
+import EachPost from '../posts/EachPost';
 import {Button as HeroUiBtn} from '@heroui/button';
 
 const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {
