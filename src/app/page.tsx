@@ -12,7 +12,7 @@ import { Input } from '@/src/components/ui/input';
 
 
 import axios from "axios";
-import ResizableTextarea from "./components/ResizableTextarea";
+import ResizableTextarea from "./components/ui/ResizableTextarea";
 import { Friendship, Profile, User } from "./types/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
@@ -20,16 +20,16 @@ import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
 import TextareaAutosize from 'react-textarea-autosize';
 import { debounce, last, set } from "lodash";
 
-import UserComponent from "./components/userComponent";
-import FullPosts from "./components/fullPosts";
+import UserComponent from "./components/ui/UserComponent";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useQuery } from "@tanstack/react-query";
-import UserSkeleton from "./components/UserSkeleton";
-import PostSkeleton from "./components/PostSkeleton";
+import UserSkeleton from "./components/skeletons/UserSkeleton";
+import PostSkeleton from "./components/skeletons/PostSkeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
 import { Avatar,AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Camera, Upload } from "lucide-react";
 import { Button } from "../components/ui/button";
+import FullPosts from "./components/posts/fullPosts";
 
 
 

@@ -5,24 +5,24 @@ import React, {useState, useEffect, useRef} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpLong, faDownLong, faPen, faTrash, faArrowUp, faPaperclip, faN, faImage } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-import { Comment, Post, User } from '../types/types';
+import { Comment, Post, User } from '../../types/types';
 import PostComment from './PostComment';
-import EachComment from './eachComment';
 
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger} from '@/src/components/ui/dialog';
 import { ScrollArea } from "@/src/components/ui/scroll-area"
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import ResizableTextarea from './ResizableTextarea';
+import ResizableTextarea from '../ui/ResizableTextarea';
 import _ from 'lodash';
 import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '../context/AuthProvider';
+import { useAuth } from '../../context/AuthProvider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover';
 import { Command, CommandGroup, CommandItem, CommandList } from '@/src/components/ui/command';
 import { CircleFadingPlus, Ellipsis, EllipsisIcon, Pencil, Settings, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {Button as HeroUiBtn} from '@heroui/button';
+import EachComment from './eachComment';
 
 const EachPost = ({post, getComments, handleLike, handleDislike, deletePost, updatePost, refreshPosts}: {post: Post, getComments: boolean, handleLike: (postId: string) => void, handleDislike: (postId: string) => void, deletePost: (postId: string) => void, updatePost: (postId: string, updatedContent: string, updatedFiles: string[]) => void, refreshPosts: () => void})=> {
   

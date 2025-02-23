@@ -6,19 +6,19 @@ import { Command, CommandGroup, CommandItem, CommandList } from '@/src/component
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
-import { Post, Profile, User } from '../types/types';
+import { Post, Profile, User } from '../../types/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog';
-import ResizableTextarea from './ResizableTextarea';
+import ResizableTextarea from '../ui/ResizableTextarea';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { CircleFadingPlus } from 'lucide-react';
-import PostSkeleton from './PostSkeleton';
+import PostSkeleton from '../skeletons/PostSkeleton';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import EachPost from './eachPost';
+import EachPost from '../posts/eachPost';
 import {Button as HeroUiBtn} from '@heroui/button';
 
 const ProfilePosts = ({pathUser}: {pathUser: Profile | undefined}) => {

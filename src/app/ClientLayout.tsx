@@ -1,8 +1,8 @@
 'use client';
 
 import "./globals.css";
-import Footer from "./components/Footer/Footer";
-import Navbar from "./components/Navbar/Navbar";
+import Footer from "./components/layout/Footer";
+import Navbar from "./components/layout/Navbar";
 
 import { usePathname, useRouter } from "next/navigation";
 import AuthRedirect from "./AuthRedirect";

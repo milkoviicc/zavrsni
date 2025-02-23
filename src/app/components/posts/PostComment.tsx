@@ -1,10 +1,10 @@
 'use client';
 import React, {useState} from 'react'
-import ResizableTextarea from './ResizableTextarea';
+import ResizableTextarea from '../ui/ResizableTextarea';
 import axios from 'axios';
-import { Post, User } from '../types/types';
+import { Post, User } from '../../types/types';
 import { EnhancedButton } from '@/src/components/ui/enhancedButton';
-import { Comment } from '../types/types';
+import { Comment } from '../../types/types';
 import { useToast } from '@/hooks/use-toast';
 import {Button as HeroUiBtn} from "@heroui/button";
 

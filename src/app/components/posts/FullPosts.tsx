@@ -1,21 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import React, {useState, useEffect, useRef} from 'react'
-import ResizableTextarea from './ResizableTextarea'
-import { FollowSuggestion, Friendship, FriendshipStatus, Post, Profile, User } from '../types/types'
+import ResizableTextarea from '../ui/ResizableTextarea'
+import { FollowSuggestion, Friendship, FriendshipStatus, Post, Profile, User } from '../../types/types'
 import Image from 'next/image'
-import EachPost from './eachPost'
 import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faPaperclip } from '@fortawesome/free-solid-svg-icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import UserComponent from './userComponent';
-import Suggestion from './suggestion';
+import Suggestion from '../ui/suggestion';
 import { filter } from 'lodash';
 
-import {Popover, PopoverContent, PopoverTrigger} from "../../components/ui/popover";
-import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "../../components/ui/command";
-import {Button} from "../../components/ui/button";
+import {Popover, PopoverContent, PopoverTrigger} from "../../../components/ui/popover";
+import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "../../../components/ui/command";
+import {Button} from "../../../components/ui/button";
 import { Check, ChevronDown, ChevronsDown, ChevronsUpDown, ChevronUp, Circle, Menu} from 'lucide-react';
 import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
 import { profile } from 'console';
@@ -23,9 +21,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/componen
 import { useRouter } from 'next/navigation';
 import { CircleFadingPlus } from "lucide-react";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import PostSkeleton from './PostSkeleton';
+import PostSkeleton from '../skeletons/PostSkeleton';
 import { useToast } from '@/hooks/use-toast';
 import {Button as HeroUiBtn, ButtonGroup} from "@heroui/button";
+import EachPost from './EachPost';
 
 
 const FullPosts = ({user, popularUsers}: {user: User, popularUsers: User[]}) => {

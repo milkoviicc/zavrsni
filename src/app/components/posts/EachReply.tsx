@@ -1,13 +1,13 @@
 'use client';
 import React, { useEffect, useState } from 'react'
-import { Reply, User } from '../types/types';
+import { Reply, User } from '../../types/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger} from '@/src/components/ui/dialog';
-import ResizableTextarea from './ResizableTextarea';
+import ResizableTextarea from '../ui/ResizableTextarea';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarImage } from '@/src/components/ui/avatar';
-import { useAuth } from '../context/AuthProvider';
+import { useAuth } from '../../context/AuthProvider';
 import { Popover } from "@radix-ui/react-popover"
 import { Command, CommandGroup, CommandItem, CommandList } from '@/src/components/ui/command';
 import { EllipsisIcon, Pencil, Trash2 } from 'lucide-react';

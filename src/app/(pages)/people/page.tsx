@@ -3,11 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { User } from '../../types/types';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import UserSkeleton from '../../components/UserSkeleton';
-import Suggestion from '../../components/suggestion';
+import UserSkeleton from '../../components/skeletons/UserSkeleton';
+import Suggestion from '../../components/ui/Suggestion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
 import { useSearchParams } from 'next/navigation';
-import PeopleSkeleton from '../../components/PeopleSkeleton';
+import PeopleSkeleton from '../../components/skeletons/PeopleSkeleton';
 import { Skeleton } from '@/src/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 

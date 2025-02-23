@@ -8,16 +8,16 @@ import axios from 'axios';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { profile } from 'console';
-import ProfileUserComponent from '../../../components/ProfileUserComponent';
+import ProfileUserComponent from '../../../components/profile/ProfileUserComponent';
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import PreviousMap_ from 'postcss/lib/previous-map';
-import UserSkeleton from '../../../components/UserSkeleton';
-import UserComponent from '../../../components/userComponent';
-import FullPosts from '../../../components/fullPosts';
-import ProfilePosts from '../../../components/ProfilePosts';
+import UserSkeleton from '../../../components/skeletons/UserSkeleton';
+import UserComponent from '../../../components/ui/UserComponent';
+import FullPosts from '../../../components/posts/FullPosts';
+import ProfilePosts from '../../../components/profile/ProfilePosts';
 import { useToast } from '@/hooks/use-toast';
 import {Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
-import ProfileSkeleton from '@/src/app/components/ProfileSkeleton';
+import ProfileSkeleton from '@/src/app/components/skeletons/ProfileSkeleton';
 
 const UserProfile = () => {
   const {addImage, deleteAccount} = useAuth();

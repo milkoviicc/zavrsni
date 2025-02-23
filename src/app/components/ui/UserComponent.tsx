@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react'
-import { Profile, User } from '../types/types'
+import { Profile, User } from '../../types/types'
 import { useRouter } from 'next/navigation';
 import {Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
 

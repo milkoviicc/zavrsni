@@ -1,10 +1,10 @@
 /* eslint-disable react/display-name */
 'use client';
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react'
-import UserComponent from './userComponent'
-import {FriendshipStatus, User } from '../types/types'
+import {FriendshipStatus, User } from '../../types/types'
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
+import UserComponent from './UserComponent';
 
 const Suggestion = ({profileSuggestion, handleRoute }: { profileSuggestion: User, handleRoute: (null | ((user: User) => void))}) => {
     

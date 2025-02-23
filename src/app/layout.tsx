@@ -7,7 +7,7 @@ import { Suspense,  } from "react";
 import { Theme }  from '@radix-ui/themes';
 
 import {motion, AnimatePresence} from 'framer-motion';
-import QueryProvider from "./components/QueryProvider";
+import QueryProvider from "./components/providers/QueryProvider";
 import { Toaster } from "../components/ui/toaster";
 import ClientSideScrollRestorer from "../useScrollRestorer";
 

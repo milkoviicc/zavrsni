@@ -2,24 +2,22 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
-import { FriendshipStatus, Profile, User } from '../types/types';
+import { FriendshipStatus, Profile, User } from '../../types/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
 import { Camera, CameraIcon, Ellipsis, EllipsisVertical, MousePointerClick, Pencil, Router, Trash2, Trash2Icon, Upload } from 'lucide-react';
 import axios from 'axios';
 import { CommandGroup } from 'cmdk';
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover';
 import { Command, CommandItem, CommandList } from '@/src/components/ui/command';
-import { useAuth } from '../context/AuthProvider';
+import { useAuth } from '../../context/AuthProvider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/src/components/ui/dialog';
 import { Button } from '@/src/components/ui/button';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import Suggestion from './suggestion';
-import UserComponent from './userComponent';
 import PreviousMap_ from 'postcss/lib/previous-map';
 import { Input } from '@/src/components/ui/input';
 import { Label } from '@/src/components/ui/label';
-import ProfileSkeleton from './ProfileSkeleton';
-import ResizableTextarea from './ResizableTextarea';
+import ProfileSkeleton from '../skeletons/ProfileSkeleton';
+import ResizableTextarea from '../ui/ResizableTextarea';
 
 const ProfileUserComponent = ({pathUser, editProfile, changeImage}: {pathUser: Profile, editProfile: (username: string, fullName: string, description: string | null, occupation: string | null) => void, changeImage: (selectedImage: File) => void}) => {
 
