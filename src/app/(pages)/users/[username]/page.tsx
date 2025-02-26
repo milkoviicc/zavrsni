@@ -17,6 +17,7 @@ import ProfilePosts from '../../../components/profile/ProfilePosts';
 import { useToast } from '@/hooks/use-toast';
 import {Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
 import ProfileSkeleton from '@/src/app/components/skeletons/ProfileSkeleton';
+import ProfileFriendsSkeleton from '@/src/app/components/skeletons/ProfileFriendsSkeleton';
 
 const UserProfile = () => {
   const {addImage, deleteAccount} = useAuth();
@@ -194,31 +195,33 @@ const UserProfile = () => {
               <div className='flex justify-center w-screen px-4 py-4'>
                 <div className={`xl:hidden group max-w-[350px] sm:max-w-[580px] md:max-w-[716px] lg:max-w-[765px] w-full h-full flex flex-col items-center gap-2 bg-transparent px-2 rounded-lg shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0_,_0.26)] py-4 mb-6 lg:mb-10`}>
                   <h1 className='font-Roboto text-[#DFDEDE] text-2xl text-center'>{myProfile ? 'Your friends' : `${user.firstName?.slice(0,1).toUpperCase()}${user.firstName?.slice(1)}'s friends`}</h1>
-                  <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
-                    {getFriendsQuery.isLoading || isRendering ? <UserSkeleton /> : getFriendsQuery.data?.map((user, index, array) => {
-                      const itemsInLastRow = array.length % columns || columns; // Defaulting to 4 when possible
-                      const isLastOdd = index >= array.length - itemsInLastRow;
-                      return (
-                      <div key={user.user.userId} className={`hover:cursor-pointer flex py-2 gap-2 ${isLastOdd && itemsInLastRow === 1 && array.length !== 1 ? 'col-span-full justify-center w-full' : 'w-fit'}`} onClick={() => router.push(`/users/${user.user.username}`)}>
-                        <Avatar className='w-[45px] h-[45px] md:w-[35px] md:h-[35px] xl:w-[55px] xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
-                            <AvatarImage src={`${user.user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{user.user.username.slice(0, 1)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col h-full items-start justify-center">
-                            <h1 className={`text-[#EFEFEF] font-[400] font-Roboto text-sm sm:text-base 2k:text-lg truncate whitespace-nowrap max-w-full`} title={`${user.user.firstName} ${user.user.lastName}`}>{user.user.firstName} {user.user.lastName}</h1>
-                            <p className={`text-[#888888]  text-sm sm:text-base ${isLastOdd && itemsInLastRow === 1 ? 'max-w-full' : 'max-w-[100px]'} 2k:text-lg truncate whitespace-nowrap`}>@{user.user.username}</p>
-                        </div>    
-                      </div>
-                    )})}
+                  {isRendering ? <ProfileFriendsSkeleton /> : (
+                    <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
+                      {getFriendsQuery.data?.map((user, index, array) => {
+                        const itemsInLastRow = array.length % columns || columns; // Defaulting to 4 when possible
+                        const isLastOdd = index >= array.length - itemsInLastRow;
+                        return (
+                        <div key={user.user.userId} className={`hover:cursor-pointer flex py-2 gap-2 ${isLastOdd && itemsInLastRow === 1 && array.length !== 1 ? 'col-span-full justify-center w-full' : 'w-fit'}`} onClick={() => router.push(`/users/${user.user.username}`)}>
+                          <Avatar className='w-[45px] h-[45px] md:w-[35px] md:h-[35px] xl:w-[55px] xl:h-[55px] 2k:w-[65px] 2k:h-[65px] rounded-full'>
+                              <AvatarImage src={`${user.user.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 3.08px 3.08px 0px #00000040'}} /><AvatarFallback>{user.user.username.slice(0, 1)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col h-full items-start justify-center">
+                              <h1 className={`text-[#EFEFEF] font-[400] font-Roboto text-sm sm:text-base 2k:text-lg truncate whitespace-nowrap max-w-full`} title={`${user.user.firstName} ${user.user.lastName}`}>{user.user.firstName} {user.user.lastName}</h1>
+                              <p className={`text-[#888888]  text-sm sm:text-base ${isLastOdd && itemsInLastRow === 1 ? 'max-w-full' : 'max-w-[100px]'} 2k:text-lg truncate whitespace-nowrap`}>@{user.user.username}</p>
+                          </div>    
+                        </div>
+                      )})}
+                    </div>
+                    )}
                   </div>
                 </div>
               </div>
-            </div>
           )}
           <div className='flex-grow w-screen xl:max-w-[768px] 2xl:max-w-[836px] '>
             <ProfilePosts pathUser={user} />
           </div>
           {getFriendsQuery.data?.length === 0 ? null : (
-            <div className="xl:flex hidden flex-col fixed top-36 3k:right-80 2k:right-64 2xl:right-24 xl:right-0 gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[300px] lg:h-[400px] xl:h-[500px] 2xl:h-[600px] 2k:h-[800px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[-20px] 2xl:translate-x-0 2k:translate-x-[-40px] 2xl:translate-y-[10px]">
+            <div className="xl:flex hidden flex-col fixed top-36 3k:right-80 2k:right-64 2xl:right-24 xl:right-0 gap-0 xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[300px] lg:h-[400px] xl:h-[500px] 2xl:h-[550px] 2k:h-[800px] text-center rounded-lg py-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[-20px] 2xl:translate-x-0 2k:translate-x-[-40px] 2xl:translate-y-[10px]">
                 <h1 className="font-Roboto text-lg xl:text-xl 2k:text-3xl pb-4 px-4 text-[#EFEFEF] font-normal">{myProfile ? 'Your Friends' : `${user.firstName?.slice(0,1).toUpperCase()}${user.firstName?.slice(1)}'s friends`}</h1>
                 <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
                 <div className='group w-full h-full lg:max-h-[400px] xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] flex flex-col gap-2 bg-transparent px-4 overflow-y-hidden hover:overflow-y-scroll scrollbar'>
