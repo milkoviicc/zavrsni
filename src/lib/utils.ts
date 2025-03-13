@@ -353,7 +353,7 @@ export const postsApi = {
     }
   },
   
-  getUserPosts: async (userId: string, page = 1) => {
+  getUserPosts: async (userId: string, page = 0) => {
     try {
       return await handleResponse(() => 
         api.get(`/api/posts/user/${userId}?page=${page}`)
@@ -364,7 +364,7 @@ export const postsApi = {
     }
   },
   
-  getUserPostsByUsername: async (username: string, page = 1) => {
+  getUserPostsByUsername: async (username: string, page = 0) => {
     try {
       return await handleResponse(() => 
         api.get(`/api/posts/username/${username}?page=${page}`)
@@ -514,7 +514,6 @@ export const profileApi = {
   
   getProfileByUsername: async (username: string) => {
     try {
-      console.log(username);
       return await handleResponse(() => 
         api.get(`/api/profiles/username/${username}`)
       );

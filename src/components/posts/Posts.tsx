@@ -8,15 +8,14 @@ import { followsApi, postsApi, profileApi, reactionsApi } from '@/src/lib/utils'
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Suggestions from '../other/Suggestions';
 import {toast} from 'sonner';
+import Cookies from 'js-cookie';
 
 const Posts = ({popularFeed, yourFeed, suggestions, refreshPosts}: {popularFeed: Post[], yourFeed: Post[], suggestions: User[], refreshPosts: () => void}) => {
 
-    const feed = localStorage.getItem('feed');
+    const feed = Cookies.get('feed');
     const [posts, setPosts] = useState<Post[]>([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
-    const [popularPosts, setPopularPosts] = useState(popularFeed);
-    const [yourFeedPosts, setYourFeedPosts] = useState(yourFeed);
     const [postsState, setPostsState] = useState(feed);
     const [randomNmbs, setRandomNmbs] = useState<number[]>();
     const [loading, setLoading] = useState(false);
@@ -60,19 +59,18 @@ const Posts = ({popularFeed, yourFeed, suggestions, refreshPosts}: {popularFeed:
     }
 
     const handleFeedState = (feedState: string) => {
-        const currentFeed = localStorage.getItem('feed');
+        const currentFeed = Cookies.get('feed');
         if(currentFeed === 'Popular' && feedState === 'Popular') {
           return;
         } else if (currentFeed === 'Popular' && feedState === 'Your Feed') {
-          localStorage.setItem('feed', 'Your Feed');
+          Cookies.set('feed', `${feedState}`);
           setPostsState('Your Feed');
           setCurrentPage(0);
           setPosts([]);
           setHasMore(true);
     
         } else if (currentFeed === 'Your Feed' && feedState === 'Popular') {
-          localStorage.setItem('feed', 'Popular');
-          
+          Cookies.set('feed', `${feedState}`);
           setPostsState('Popular');
           setCurrentPage(0);
           setPosts([]);

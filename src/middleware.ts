@@ -1,23 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 export async function middleware(req: NextRequest) {
-  // Await the cookies() to get the resolved cookies
   const cookieStore = await cookies();
-  const token = cookieStore.get('token');  // Get the token cookie
+  const token = cookieStore.get("token");
 
-  if (!token) {
-    // If no token, redirect to /auth
-    return NextResponse.redirect(new URL('/auth', req.url));
+  const isAuthPage = req.nextUrl.pathname === "/auth";
+
+  if (!token && !isAuthPage) {
+    // 🚀 If user is NOT authenticated, allow access to /auth, but block other pages
+    return NextResponse.redirect(new URL("/auth", req.url));
   }
 
-  if(token && req.nextUrl.pathname === '/auth') {
-    return NextResponse.redirect(new URL('/', req.url));
+  if (token && isAuthPage) {
+    // 🚀 If user IS authenticated, prevent them from accessing /auth and redirect home
+    return NextResponse.redirect(new URL("/", req.url));
   }
-  
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/', '/auth', '/people', '/users'],  // You can change this to match specific paths
+  matcher: ["/", "/auth", "/people", "/users"], // Define the routes where this middleware applies
 };

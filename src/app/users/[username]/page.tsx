@@ -41,20 +41,21 @@ const Users = async ({ params }: any) => {
     getFriends(currentUser.userId),
   ]);
 
+
   const refreshPosts = async () => {
     'use server';
-    revalidatePath('page');
+    revalidatePath('/users');
   };
 
   const handleChangeImage = async (selectedImage: File) => {
     'use server';
     await profileApi.updateProfilePicture(selectedImage);
-    revalidatePath(`/users/${currentUser.username}`);
+    revalidatePath('/users');
   };
 
-  const revalidate = async(path: string) => {
+  const revalidate = async() => {
     'use server';
-    revalidatePath(path);
+    revalidatePath('/users');
   }
 
   return (
@@ -67,7 +68,7 @@ const Users = async ({ params }: any) => {
         )}
 
         <div className="flex-grow flex justify-center xl:px-[25%]">
-          <ProfilePosts user={currentUser} posts={posts} refreshPosts={refreshPosts} />
+          <ProfilePosts user={currentUser} posts={posts} refreshPosts={refreshPosts} myPosts={currentUser.username === loggedUserData.username ? 'true' : 'false'} />
         </div>
         <div className="w-[25%] fixed hidden right-0 h-full xl:flex justify-center">
           <div className="bg-[#252525] flex flex-col justify-between py-4 rounded-lg shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[550px] 2k:h-[800px] 3k:h-[900px]">

@@ -16,10 +16,10 @@ import { useAuth } from '@/src/context/AuthProvider';
 import { profileApi } from '@/src/lib/utils';
 
 import {toast} from 'sonner';
-import { revalidatePath } from 'next/cache';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
-const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, changeImage: (selectedImage: File) => void, revalidate: (path: string) => void}) => {
+const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, changeImage: (selectedImage: File) => void, revalidate: () => void}) => {
   const [shortUsername, setShortUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const [lastName, setLastName] = useState(user.lastName);
@@ -136,11 +136,11 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
 
       if(res.status === 200) {
         const updatedUser: User = res.data;
-        localStorage.removeItem('user');
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        toast("Profile details successfully updated!", { duration: 1500, style: {backgroundColor: "#CA3C3C", border: "none", color: "#fff"}});
+        document.cookie = "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        Cookies.set('user', JSON.stringify(updatedUser));
+        toast("Profile details successfully updated!", { duration: 1500, style: {backgroundColor: "#1565CE", border: "none", color: "#fff"}});
         if(user?.username === updatedUser.username) {
-          revalidate(`/users/${user.username}`);
+          revalidate();
           return;
         } else {
           router.push(`/users/${updatedUser.username}`);
@@ -162,7 +162,7 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
                   <Command>
                     <CommandList>
                       <CommandGroup>
-                        <CommandItem><button onClick={() => setDeleteAccDialogOpen((prev) => !prev)} className='text-[#DFDEDE] flex gap-2 items-center text-base'><Trash2Icon size={20}/>Delete Your Account</button></CommandItem>
+                        <CommandItem><button onClick={() => setDeleteAccDialogOpen((prev) => !prev)} className='text-[#DFDEDE] flex gap-2 items-center text-base cursor-pointer'><Trash2Icon size={20}/>Delete Your Account</button></CommandItem>
                       </CommandGroup>
                     </CommandList>
                   </Command>
@@ -203,7 +203,7 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
               <div className='flex flex-col justify-center'>
                 <div className='flex flex-col gap-4'>
                   <div className='flex gap-2 justify-center items-center'>
-                    <button className='flex gap-2 bg-[#363636] px-4 py-2 rounded-md text-center font-Roboto text-[#A0A0A0] text-sm 2xl:text-lg font-semibold shadow-[0_2px_3px_0_rgba(0,0,0,0.3)]' onClick={() => setEditProfileOpen((prev) => !prev)}>EDIT PROFILE <MousePointerClick size={20}/></button>
+                    <button className='flex gap-2 bg-[#363636] px-4 py-2 rounded-md text-center font-Roboto text-[#A0A0A0] text-sm 2xl:text-lg font-semibold shadow-[0_2px_3px_0_rgba(0,0,0,0.3)] cursor-pointer' onClick={() => setEditProfileOpen((prev) => !prev)}>EDIT PROFILE <MousePointerClick size={20}/></button>
                   </div>
                   <div className={`${editProfileOpen ? 'flex' : 'hidden'} gap-2 w-full`}>
                     <div className='flex flex-col items-start h-fit w-full'>
@@ -252,7 +252,7 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
               <Command>
                 <CommandList>
                   <CommandGroup>
-                    <CommandItem><button onClick={() => setDeleteAccDialogOpen((prev) => !prev)} className='text-[#DFDEDE] flex gap-2 items-center text-base'><Trash2Icon size={20}/>Delete Your Account</button></CommandItem>
+                    <CommandItem><button onClick={() => setDeleteAccDialogOpen((prev) => !prev)} className='text-[#DFDEDE] flex gap-2 items-center text-base cursor-pointer'><Trash2Icon size={20}/>Delete Your Account</button></CommandItem>
                   </CommandGroup>
                 </CommandList>
               </Command>
@@ -287,7 +287,7 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
                             <span><Camera size={32} className='group-hover:block hidden absolute top-[25%] left-[25%] rounded-full text-white'/></span>
                             <AvatarImage src={URL.createObjectURL(selectedImage)} className="w-fit h-fit aspect-square rounded-full object-cover" /><AvatarFallback>{shortUsername}</AvatarFallback>
                           </Avatar>
-                          <Button className='w-fit font-Roboto bg-[#515151] shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]' onClick={() => {selectedImage && changeImage(selectedImage); setChangeImgDialogOpen(false)}}>Submit image</Button>
+                          <Button className='w-fit font-Roboto bg-[#515151] shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)] cursor-pointer' onClick={() => {selectedImage && changeImage(selectedImage); setChangeImgDialogOpen(false)}}>Submit image</Button>
                         </div>
                       ) : null}
                     </DialogContent>
@@ -314,7 +314,7 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
               <span className="bg-[#515151] h-[1px] w-full"></span>
               <div className='flex flex-col w-full px-4'>
                 <div className='flex gap-2 justify-center items-center'>
-                  <button className='flex gap-2 bg-[#363636] px-4 py-2 rounded-md text-center font-Roboto text-[#A0A0A0] text-sm font-semibold shadow-[0_2px_3px_0_rgba(0,0,0,0.3)]' onClick={() => setEditProfileOpen((prev) => !prev)}>EDIT PROFILE <MousePointerClick size={20}/></button>
+                  <button className='flex gap-2 bg-[#363636] px-4 py-2 rounded-md text-center font-Roboto text-[#A0A0A0] text-sm font-semibold shadow-[0_2px_3px_0_rgba(0,0,0,0.3)] cursor-pointer' onClick={() => setEditProfileOpen((prev) => !prev)}>EDIT PROFILE <MousePointerClick size={20}/></button>
                   <Dialog open={deleteAccDialogOpen} onOpenChange={setDeleteAccDialogOpen}>
                     <DialogContent className='bg-[#252525] border-none rounded-xl max-w-xs sm:max-w-md lg:max-w-lg xl:max-w-2xl [&>button]:text-white px-4 lg:px-8 py-4'>
                       <DialogHeader>
@@ -322,8 +322,8 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
                       </DialogHeader>
                       <p className='font-Roboto text-[#A6A6A6] text-center text-xs sm:text-base md:text-lg'>This action is permanent and you will not be able to access your account anymore.</p>
                       <div className='flex justify-center gap-4'>
-                        <Button onClick={() => setDeleteAccDialogOpen(false)} className='px-2 sm:px-8 rounded-full bg-[#1565CE] transition-all shadow-[0px_3px_5px_0px_rgba(21,101,206,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(21,101,206,0.50)] hover:opacity-90 font-normal font-Roboto text-white'>No, I changed my mind</Button>
-                        <Button variant="destructive" onClick={() => deleteAccount()} className='px-2 sm:px-8 rounded-full transition-all shadow-[0px_3px_5px_0px_rgba(202,60,60,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(202,60,60,0.50)] font-normal font-Roboto text-white'><Trash2 size={10}/> Yes, I'm sure</Button>
+                        <Button onClick={() => setDeleteAccDialogOpen(false)} className='px-2 sm:px-8 rounded-full bg-[#1565CE] transition-all shadow-[0px_3px_5px_0px_rgba(21,101,206,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(21,101,206,0.50)] hover:opacity-90 hover:bg-[#1565CE] font-normal font-Roboto text-white cursor-pointer'>No, I changed my mind</Button>
+                        <Button variant="destructive" onClick={() => deleteAccount()} className='px-2 sm:px-8 rounded-full transition-all shadow-[0px_3px_5px_0px_rgba(202,60,60,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(202,60,60,0.50)] font-normal font-Roboto text-white cursor-pointer'><Trash2 size={10}/> Yes, I'm sure</Button>
                       </div>
                     </DialogContent>
                   </Dialog>
