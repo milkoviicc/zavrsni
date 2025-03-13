@@ -1,101 +1,127 @@
-import Image from "next/image";
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { redirect, useRouter } from "next/navigation";
+import Footer from "../components/layout/Footer";
+import Navbar from "../components/layout/Navbar";
+import Suggestions from "../components/other/Suggestions";
+import { getCookieServer } from "../lib/getToken";
+import { useAuth } from "../context/AuthProvider";
+import { getCookie } from "cookies-next";
+import { followsApi, friendsApi, postsApi, profileApi } from "../lib/utils";
+import { GetServerSideProps } from "next";
+import { Friendship, Post, User } from "../types/types";
+import UserComponent from "../components/other/UserComponent";
+import UserSkeleton from "../components/skeletons/UserSkeleton";
+import { Suspense } from "react";
+import Posts from "../components/posts/Posts";
+import { revalidatePath } from "next/cache";
 
-export default function Home() {
+async function getPopularUsers() {
+  const res = await profileApi.getPopularProfiles();
+  const popularUsers: User[] = await res.data;
+  return popularUsers;
+}
+
+async function getPopularFeed() {
+  const res = await postsApi.getPopularFeed();
+  const popularFeed: Post[] = await res.data;
+  return popularFeed;
+}
+
+async function getYourFeed() {
+  const res = await postsApi.getYourFeed();
+  const yourFeed: Post[] = await res.data;
+  return yourFeed;
+}
+
+async function getYourFriends(userId: string) {
+  const res = await friendsApi.getFriends(userId);
+  const yourFriends: Friendship[] = await res.data;
+  return yourFriends;
+}
+
+async function getSuggestions() {
+  const res = await profileApi.getFollowSuggestions();
+  const suggestions: User[] = res.data;
+  return suggestions;
+}
+
+async function getFollowedUsers(userId: string) {
+  const res = await followsApi.getFollowed(userId);
+  const followedUsers = await res.data;
+  return followedUsers;
+}
+
+
+export default async function Home() {
+
+  const user = await getCookieServer('user');
+  if(!user) {
+    return redirect('/auth');
+  }
+
+  const userData: User = JSON.parse(user);
+
+  const [popularUsers, popularFeed, yourFeed, yourFriends, suggestions, followedUsers] = await Promise.all([getPopularUsers(), getPopularFeed(), getYourFeed(), getYourFriends(userData.userId), getSuggestions(), getFollowedUsers(userData.userId)]);
+
+  const refreshPosts = async () => {
+    'use server';
+    revalidatePath('page');
+  }
+
+  let mergedUsers: User[] = suggestions;
+
+  if(suggestions.length < 4) {
+    const neededProfiles = 4 - suggestions.length;
+  
+    const existingUsersIds = new Set(suggestions.map(existingSuggestion => existingSuggestion.userId));
+  
+    const followedUserIds = new Set(followedUsers);
+    const filteredPopularUsers = popularUsers.filter(popularUser => !existingUsersIds.has(popularUser.userId) && !followedUserIds?.has(popularUser.userId) && popularUser.userId !== userData.userId).slice(0, neededProfiles);
+    
+    mergedUsers = [...suggestions, ...filteredPopularUsers];
+  }
+
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="w-full h-full bg-[#222222]">
+      <div className="flex h-full py-16 md:py-30">
+        {/* Left Sidebar */}
+        <div className="w-[25%] fixed hidden left-0 h-full xl:flex justify-center">
+          <div className="bg-[#252525] flex flex-col py-4 rounded-lg shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[550px] 2k:h-[800px] 3k:h-[900px] overflow-x-hidden">
+            <h1 className="font-Roboto text-xl xl:text-2xl 2k:text-3xl px-4 pb-4 text-[#EFEFEF] font-normal text-center">Who's popular</h1>
+            <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
+            <div className="group w-full flex flex-col gap-2 bg-transparent px-4 lg:max-h-[400px] xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] overflow-y-hidden hover:overflow-y-scroll scrollbar">
+              {popularUsers.map((user) => (
+                <UserComponent key={user.userId} user={user} handleRoute={null} />
+              ))}
+            </div>
+            <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Middle Content */}
+        <div className="flex-grow flex justify-center xl:px-[25%]">
+          <Posts popularFeed={popularFeed} yourFeed={yourFeed} suggestions={mergedUsers} refreshPosts={refreshPosts} />
+        </div>
+
+        {/* Right Sidebar */}
+        <div className="w-[25%] fixed hidden right-0 h-full xl:flex justify-center">
+          <div className="bg-[#252525] flex flex-col justify-between py-4 rounded-lg shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[550px] 2k:h-[800px] 3k:h-[900px]">
+            <div className="flex flex-col">
+              <h1 className="font-Roboto text-xl xl:text-2xl 2k:text-3xl px-4 pb-4 text-[#EFEFEF] font-normal text-center">Your friends</h1>
+              <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
+              <div className="group w-full flex flex-col gap-2 bg-transparent px-4 lg:max-h-[400px] xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] overflow-y-hidden hover:overflow-y-scroll scrollbar">
+                {yourFriends?.map((friend) => (
+                  <UserComponent key={friend.user.userId} user={friend.user} handleRoute={null} />
+                ))}
+              </div>
+            </div>
+            <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
