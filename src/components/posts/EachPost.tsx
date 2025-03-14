@@ -80,9 +80,17 @@ const EachPost = ({post, refreshPosts, handleLike, handleDislike, deletePost}: {
     setComments(comments);
   }
 
-  const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
-    const { naturalWidth, naturalHeight } = event.currentTarget;
-    setIsPortrait(naturalHeight > naturalWidth);
+  const handleMediaLoad = (event: React.SyntheticEvent<HTMLImageElement | HTMLVideoElement>) => {
+    // Check if the event is from an image or a video
+    if (event.currentTarget instanceof HTMLImageElement) {
+      // For image elements, use naturalWidth and naturalHeight
+      const { naturalWidth, naturalHeight } = event.currentTarget;
+      setIsPortrait(naturalHeight > naturalWidth);
+    } else if (event.currentTarget instanceof HTMLVideoElement) {
+      // For video elements, handle accordingly
+      const { videoWidth, videoHeight } = event.currentTarget;
+      setIsPortrait(videoHeight > videoWidth);
+    }
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -321,15 +329,26 @@ const handleReaction = async (reaction: number) => {
                                   </div>
                                   {previousFiles.length === 0 ? null : (
                                   <div className="flex w-full h-full mt-4 -ml-4">
-                                    <div className={`grid gap-2 ${previousFiles.length <= 2 ? "grid-cols-3" : ''} ${previousFiles.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>
-                                      {previousFiles ? previousFiles.map((file, index) => (
-                                        <div key={index} className='w-full relative flex justify-center sm:px-2'>
-                                          <Image key={index} src={file} width={100} height={100} alt="a" className="py-2 opacity-80 rounded-xl h-[150px] w-[150px] object-cover" unoptimized/>
-                                          <button className="absolute text-white top-2 right-4 cursor-pointer" onClick={() => setPreviousFiles(previousFiles.filter((_, postIndex) => postIndex != index))}>X</button>
+                                    <div className={`grid gap-2 ${previousFiles.length <= 2 ? "grid-cols-3" : ""} ${previousFiles.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}> {previousFiles && previousFiles.map((file, index) => {
+                                      const fileUrl = file;
+                                      const isVideo = file.endsWith('.mp4') || file.endsWith('.mov');
+                                      return (
+                                        <div key={index} className="w-full relative flex justify-center sm:px-2" >
+                                            {isVideo ? ( 
+                                                <video key={index} src={fileUrl} width={100} height={100} className="py-2 opacity-80 rounded-xl h-[150px] w-[150px] object-cover" controls />
+                                            ) : (
+                                                <Image key={index} src={fileUrl} width={100} height={100} alt="a" className="py-2 opacity-80 rounded-xl h-[150px] w-[150px] object-cover"/>
+                                            )}
+                                            <button className="absolute text-white top-2 right-4 cursor-pointer" onClick={() => setPreviousFiles(previousFiles.filter((_, postIndex) => postIndex !== index))}>X</button>
                                         </div>
-                                      )) : null}
-                                      <div className='w-full flex justify-center items-center'>
-                                        {previousFiles.length === 0 ? null : <label htmlFor='new-file-input' className="hover:cursor-pointer text-[#646464] font-Roboto"><CircleFadingPlus className='text-[#646464] size-14' /></label>}
+                                      );
+                                      })}
+                                      <div className="w-full flex justify-center items-center">
+                                        {previousFiles.length === 0 ? null : (
+                                          <label htmlFor="new-file-input" className="hover:cursor-pointer text-[#646464] font-Roboto">
+                                              <CircleFadingPlus className="text-[#646464] size-14" />
+                                          </label>
+                                        )}
                                       </div>
                                     </div>
                                   </div>
@@ -356,31 +375,50 @@ const handleReaction = async (reaction: number) => {
             {post.fileUrls?.length > 0 && (
               <div>
                 {post.fileUrls?.length === 1 && isPortrait ? (
-                  // Single portrait image
-                  <Image
-                    src={post.fileUrls[0]}
-                    alt="Post Image"
-                    sizes="100vw"
-                    width={0}
-                    height={0}
-                    className="w-full h-auto"
-                    onLoad={handleImageLoad}
-                    unoptimized
-                  />
-                ) : (
-                  // Multiple images or single non-portrait image
-                  post.fileUrls.map((file, index) => (
+                  // Single portrait image or video
+                  post.fileUrls[0].endsWith('.mp4') || post.fileUrls[0].endsWith('.mov') ? (
+                    <video
+                      key={0}
+                      src={post.fileUrls[0]}
+                      className="w-full h-auto"
+                      onLoad={handleMediaLoad}
+                      controls
+                    />
+                  ) : (
                     <Image
-                      key={index}
-                      src={file}
-                      alt={`Image ${index + 1}`}
+                      src={post.fileUrls[0]}
+                      alt="Post Image"
                       sizes="100vw"
                       width={0}
                       height={0}
-                      className="w-full h-auto py-2"
-                      onLoad={handleImageLoad}
+                      className="w-full h-auto"
+                      onLoad={handleMediaLoad}
                       unoptimized
                     />
+                  )
+                ) : (
+                  // Multiple files or single non-portrait file
+                  post.fileUrls.map((file, index) => (
+                    file.endsWith('.mp4') || file.endsWith('.mov') ? (
+                      <video
+                        key={index}
+                        src={file}
+                        className="w-full h-auto py-2"
+                        controls
+                      />
+                    ) : (
+                      <Image
+                        key={index}
+                        src={file}
+                        alt={`Image ${index + 1}`}
+                        sizes="100vw"
+                        width={0}
+                        height={0}
+                        className="w-full h-auto py-2"
+                        onLoad={handleMediaLoad}
+                        unoptimized
+                      />
+                    )
                   ))
                 )}
               </div>
@@ -422,31 +460,50 @@ const handleReaction = async (reaction: number) => {
                       {post.fileUrls?.length > 0 && (
                         <div>
                           {post.fileUrls?.length === 1 && isPortrait ? (
-                            // Single portrait image
-                            <Image
-                              src={post.fileUrls[0]}
-                              alt="Post Image"
-                              sizes="100vw"
-                              width={0}
-                              height={0}
-                              className="w-full h-auto"
-                              onLoad={handleImageLoad}
-                              unoptimized
-                            />
-                          ) : (
-                            // Multiple images or single non-portrait image
-                            post.fileUrls.map((file, index) => (
+                            // Single portrait image or video
+                            post.fileUrls[0].endsWith('.mp4') || post.fileUrls[0].endsWith('.mov') ? (
+                              <video
+                                key={0}
+                                src={post.fileUrls[0]}
+                                className="w-full h-auto"
+                                onLoad={handleMediaLoad}
+                                controls
+                              />
+                            ) : (
                               <Image
-                                key={index}
-                                src={file}
-                                alt={`Image ${index + 1}`}
+                                src={post.fileUrls[0]}
+                                alt="Post Image"
                                 sizes="100vw"
                                 width={0}
                                 height={0}
-                                className="w-full h-auto py-2"
-                                onLoad={handleImageLoad}
+                                className="w-full h-auto"
+                                onLoad={handleMediaLoad}
                                 unoptimized
                               />
+                            )
+                          ) : (
+                            // Multiple files or single non-portrait file
+                            post.fileUrls.map((file, index) => (
+                              file.endsWith('.mp4') || file.endsWith('.mov') ? (
+                                <video
+                                  key={index}
+                                  src={file}
+                                  className="w-full h-auto py-2"
+                                  controls
+                                />
+                              ) : (
+                                <Image
+                                  key={index}
+                                  src={file}
+                                  alt={`Image ${index + 1}`}
+                                  sizes="100vw"
+                                  width={0}
+                                  height={0}
+                                  className="w-full h-auto py-2"
+                                  onLoad={handleMediaLoad}
+                                  unoptimized
+                                />
+                              )
                             ))
                           )}
                         </div>

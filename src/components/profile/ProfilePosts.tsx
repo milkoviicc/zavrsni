@@ -143,7 +143,7 @@ const ProfilePosts = ({user, posts, refreshPosts, myPosts}: {user: User, posts: 
       <div className='md:block hidden'>
         {myPosts === 'true' ? <NewPost addNewPost={addNewPost}/> : null}
       </div>
-      <h1 className='text-[#DFDEDE] text-3xl text-center py-8'>{myPosts === 'true' ? 'Your posts' : 'Their posts'}</h1>
+      <h1 className='text-[#DFDEDE] text-3xl text-center py-8'>{myPosts === 'true' ? 'Your posts' : `${user.firstName?.slice(0,1).toUpperCase()}${user.firstName?.slice(1)}'s posts`}</h1>
       <InfiniteScroll className='w-full flex flex-col items-center bg-transparent px-8 sm:px-4 2k:min-w-[832px]' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
         {fullPosts.map((post, index) => (
           <div key={index} className='max-w-[832px] w-full'>

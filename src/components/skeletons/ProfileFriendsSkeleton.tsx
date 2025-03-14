@@ -60,7 +60,6 @@ const ProfileFriendsSkeleton = () => {
                 <Skeleton className='w-[45px] h-[10px] rounded-xl bg-[#515151]' />
             </div>
         </div>
-        
     </div>
   )
 }
