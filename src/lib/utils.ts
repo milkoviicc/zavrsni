@@ -377,7 +377,6 @@ export const postsApi = {
   
   addPost: async (formData: FormData) => {
     try {
-      
       return await handleResponse(() => 
         api.post('/api/posts/add-post', formData, {
           headers: {

@@ -68,7 +68,6 @@ const NewPost = ({addNewPost}: {addNewPost: (newPost: Post) => void}) => {
 
     const {user} = useAuth();
 
-
   return (
     <div className='flex justify-center'>
         <div className="flex md:hidden items-center w-full flex-col py-4">
@@ -119,23 +118,34 @@ const NewPost = ({addNewPost}: {addNewPost: (newPost: Post) => void}) => {
                         </div>
                     </div>
                     <div className="flex w-full h-full justify-center">
-                        <div className={`grid gap-2 ${postFile.length <= 2 ? "grid-cols-3" : ''} ${postFile.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>
-                        {postFile ? postFile.map((file, index) => (
-                            <div key={index} className='w-full relative flex justify-center sm:px-2'>
-                                <Image key={index} src={URL.createObjectURL(file)} width={100} height={100} alt="a" className="py-2 opacity-80 rounded-xl h-[150px] w-[150px] object-cover"/>
-                                <button className="absolute text-white top-2 right-4 cursor-pointer" onClick={() => setPostFile(postFile.filter((_, postIndex) => postIndex != index))}>X</button>
+                        <div className={`grid gap-2 ${postFile.length <= 2 ? "grid-cols-3" : ""} ${postFile.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}> {postFile && postFile.map((file, index) => {
+                                const fileUrl = URL.createObjectURL(file);
+                                const isVideo = file.type.startsWith("video");
+                                return (
+                                <div key={index} className="w-full relative flex justify-center sm:px-2" >
+                                    {isVideo ? ( 
+                                        <video key={index} src={fileUrl} width={100} height={100} className="py-2 opacity-80 rounded-xl h-[150px] w-[150px] object-cover" controls />
+                                    ) : (
+                                        <Image key={index} src={fileUrl} width={100} height={100} alt="a" className="py-2 opacity-80 rounded-xl h-[150px] w-[150px] object-cover"/>
+                                    )}
+                                    <button className="absolute text-white top-2 right-4 cursor-pointer" onClick={() => setPostFile(postFile.filter((_, postIndex) => postIndex !== index))}>X</button>
+                                </div>
+                                );
+                            })}
+                            <div className="w-full flex justify-center items-center">
+                            {postFile.length === 0 ? null : (
+                                <label htmlFor="file-input" className="hover:cursor-pointer text-[#646464] font-Roboto">
+                                    <CircleFadingPlus className="text-[#646464] size-14" />
+                                </label>
+                            )}
                             </div>
-                        )) : null}
-                        <div className='w-full flex justify-center items-center'>
-                            {postFile.length === 0 ? null : <label htmlFor="file-input" className="hover:cursor-pointer text-[#646464] font-Roboto"><CircleFadingPlus className='text-[#646464] size-14' /></label>}
-                        </div>
                         </div>
                     </div>
                 </DialogContent>
             </Dialog>
         </div>
         <div className="md:flex hidden gap-2 items-center flex-col w-fit">
-          <div className="flex gap-2 items-center flex-col max-w-full rounded-3xl bg-[#363636] shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)]">
+            <div className="flex gap-2 items-center flex-col max-w-full rounded-3xl bg-[#363636] shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)]">
               <div className="flex flex-col justify-between relative w-full min-h-fit items-center gap-4 pt-4 px-4">
                   <div className='w-full h-full flex gap-4 pb-2 '>
                       <Avatar className='w-[45px] h-[45px] lg:w-[60px] lg:h-[60px] rounded-full'>
@@ -157,20 +167,31 @@ const NewPost = ({addNewPost}: {addNewPost: (newPost: Post) => void}) => {
                       </div>
                   </div>
               </div>
-          </div>
-          <div className="flex w-full h-full justify-center">
-            <div className={`grid gap-2 ${postFile.length <= 2 ? "grid-cols-3" : ''} ${postFile.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}>
-              {postFile ? postFile.map((file, index) => (
-                <div key={index} className='w-full relative flex justify-center px-2'>
-                  <Image key={index} src={URL.createObjectURL(file)} width={100} height={100} alt="a" className="py-2 opacity-80 rounded-xl h-[150px] w-[150px] object-cover"/>
-                  <button className="absolute text-white top-2 right-4 cursor-pointer" onClick={() => setPostFile(postFile.filter((_, postIndex) => postIndex != index))}>X</button>
-                </div>
-              )) : null}
-              <div className='w-full flex justify-center items-center'>
-                {postFile.length === 0 ? null : <label htmlFor="file-input-pc" className="hover:cursor-pointer text-[#646464] font-Roboto"><CircleFadingPlus className='text-[#646464] size-14' /></label>}
-              </div>
             </div>
-          </div>
+            <div className="flex w-full h-full justify-center">
+                <div className={`grid gap-2 ${postFile.length <= 2 ? "grid-cols-3" : ""} ${postFile.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}> {postFile && postFile.map((file, index) => {
+                        const fileUrl = URL.createObjectURL(file);
+                        const isVideo = file.type.startsWith("video");
+                        return (
+                        <div key={index} className="w-full relative flex justify-center sm:px-2" >
+                            {isVideo ? ( 
+                                <video key={index} src={fileUrl} width={100} height={100} className="py-2 opacity-80 rounded-xl h-[150px] w-[150px] object-cover" controls />
+                            ) : (
+                                <Image key={index} src={fileUrl} width={100} height={100} alt="a" className="py-2 opacity-80 rounded-xl h-[150px] w-[150px] object-cover"/>
+                            )}
+                            <button className="absolute text-white top-2 right-4 cursor-pointer" onClick={() => setPostFile(postFile.filter((_, postIndex) => postIndex !== index))}>X</button>
+                        </div>
+                        );
+                    })}
+                    <div className="w-full flex justify-center items-center">
+                    {postFile.length === 0 ? null : (
+                        <label htmlFor="file-input-pc" className="hover:cursor-pointer text-[#646464] font-Roboto">
+                            <CircleFadingPlus className="text-[#646464] size-14" />
+                        </label>
+                    )}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
   )
