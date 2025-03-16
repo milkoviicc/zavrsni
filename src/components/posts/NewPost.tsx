@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import React, { useEffect, useState } from 'react'
@@ -13,7 +14,9 @@ import { Post } from '@/src/types/types';
 import { useAuth } from '@/src/context/AuthProvider';
 import {toast} from 'sonner';
 import { postsApi } from '@/src/lib/utils';
-
+import {FFmpeg} from '@ffmpeg/ffmpeg';
+import { fetchFile } from '@ffmpeg/util';
+import { Spinner } from '@radix-ui/themes';
 
 const NewPost = ({addNewPost}: {addNewPost: (newPost: Post) => void}) => {
 
@@ -21,6 +24,8 @@ const NewPost = ({addNewPost}: {addNewPost: (newPost: Post) => void}) => {
     const [postFile, setPostFile] = useState<File[]>([]);
     const [postDialogOpen, setPostDialogOpen] = useState(false); 
     const [content, setContent] = useState(''); 
+    const [isVideoCompressing, setIsVideoCompressing] = useState(false);
+    const [processingToastId, setProcessingToastId] = useState<string | number | null>(null);
 
     const handlePostFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
@@ -32,39 +37,77 @@ const NewPost = ({addNewPost}: {addNewPost: (newPost: Post) => void}) => {
     };
 
     // async funkcija koja se poziva kada se klikne na gumb 'Send'
-  const sendPost = async () => {
+    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+    const ffmpeg = new FFmpeg();
+
+    const sendPost = async () => {
         try {
-        if(content !== '' || postFile.length !== 0) {
-            setContent('');
-            setPostFile([]);
-            setPostDialogOpen(false);
-        } else {
-            toast("Text or image is required!", {duration: 1500, style: {backgroundColor: "#CA3C3C", border: "none", color: "#fff"}});
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('Content', content);
-
-        // If there are files, append them to FormData
-        postFile.forEach((file) => {
-            formData.append(`Files`, file);
-        });
-        
-        // šalje se axios post request na API i prenosi se vrijednost content statea, tj. uneseni tekst posta
-        const res = await postsApi.addPost(formData);
-
-        // ukoliko je res.status jednak 200 novi post je dodan i vrijednost content statea se ponovno stavlja na empty string tj. ''
-        if(res.status === 200) {
-            const newPost: Post = res.data;
-            addNewPost(newPost);
-            toast("Post successfully posted", {duration: 1500, style:{backgroundColor: "#1565CE",  border: "none", color: "#fff"}});
-        }
-        } catch(err) {
-            // ukoliko je došlo do greške, ispisuje se u konzoli
+            if (content !== '' || postFile.length !== 0) {
+                setContent('');
+                setPostFile([]);
+                setPostDialogOpen(false);
+            } else {
+                toast("Text or image is required!", { duration: 1500, style: { backgroundColor: "#CA3C3C", border: "none", color: "#fff" } });
+                return;
+            }
+    
+            // Load ffmpeg
+            if (!ffmpeg.loaded) {
+                await ffmpeg.load();
+            }
+    
+            const formData = new FormData();
+            formData.append('Content', content);
+    
+            // Check for videos and compress if needed
+            for (const file of postFile) {
+                if (file.type.startsWith('video/')) {
+                  // Write the video file to FFmpeg's virtual file system
+                  await ffmpeg.writeFile('input.mp4', await fetchFile(file));
+                  
+                  setIsVideoCompressing(true);
+                  // Run FFmpeg command to compress the video
+                  await ffmpeg.exec(['-i', 'input.mp4', '-vcodec', 'libx264', '-b:v', '800k', '-preset', 'fast', 'output.mp4']);
+                  // Read the compressed video from FFmpeg's virtual file system
+                  const compressedData = await ffmpeg.readFile('output.mp4');
+                  
+                  // Create a new File object from the compressed data
+                  const compressedFile = new File([compressedData], 'compressed.mp4', { type: 'video/mp4' });
+                  
+                  // Append the compressed file to FormData
+                  formData.append('Files', compressedFile);
+                } else {
+                    // Append non-video files directly
+                    formData.append('Files', file);
+                }
+            }
+    
+            // Send the request
+            const res = await postsApi.addPost(formData);
+            
+            if (res.status === 200) {
+                setIsVideoCompressing(false);
+                const newPost: Post = res.data;
+                addNewPost(newPost);
+                toast("Post successfully posted", { duration: 1500, style: { backgroundColor: "#1565CE", border: "none", color: "#fff" } });
+            }
+        } catch (err) {
             console.error('Could not add post', err);
         }
-    }
+    };
+
+    useEffect(() => {
+        if(isVideoCompressing) {
+            const videoId = toast(<div className='flex gap-2'><Spinner size="3"/>Processing files, please wait shortly!</div>, { duration: Infinity, style: { backgroundColor: "#1565CE", border: "none", color: "#fff" }});
+            setProcessingToastId(videoId);
+        } else {
+            if(processingToastId) {
+                
+                toast.dismiss(processingToastId);
+                setProcessingToastId(null);
+            }
+        }
+    }, [isVideoCompressing]);
 
     const {user} = useAuth();
 
@@ -73,20 +116,20 @@ const NewPost = ({addNewPost}: {addNewPost: (newPost: Post) => void}) => {
         <div className="flex md:hidden items-center w-full flex-col py-4">
             <div className="flex flex-col w-[85%] relative mt-6 py-2 px-4 shadow-[1px_3px_4px_0px_rgba(0,_0,_0,_0.3)] bg-[#363636] rounded-full">
                 <div className='w-full flex justify-between items-center gap-2' onClick={() => setPostDialogOpen(true)}>
-                <Avatar className='w-[45px] h-[45px] rounded-full'>
-                    <AvatarImage src={`${user?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
-                </Avatar>
-                <div className="flex flex-col w-full px-2">
-                    <div className='flex justify-between items-center w-full'>
-                    <textarea value={`What's on your mind, ${user?.firstName}`} readOnly onClick={() => setPostDialogOpen(true)} className="resize-none truncate whitespace-nowrap font-Roboto font-normal scrollbar-none h-[20px] md:min-w-[310px] w-full md:w-full pr-2 text-sm text-[#fff] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
-                    <input type="file" id="file-input" accept="image/*, video/*, .webp" className="hidden" onChange={handlePostFile} multiple/>
-                    <div className="flex justify-between">
-                        <div>
-                            <label htmlFor="file-input" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" /></label>
+                    <Avatar className='w-[45px] h-[45px] rounded-full'>
+                        <AvatarImage src={`${user?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover" style={{boxShadow: '0px 6px 6px 0px #00000040'}} />
+                    </Avatar>
+                    <div className="flex flex-col w-full px-2">
+                        <div className='flex justify-between items-center w-full'>
+                        <textarea value={`What's on your mind, ${user?.firstName}`} readOnly onClick={() => setPostDialogOpen(true)} className="resize-none truncate whitespace-nowrap font-Roboto font-normal scrollbar-none h-[20px] md:min-w-[310px] w-full md:w-full pr-2 text-sm text-[#fff] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
+                        <input type="file" id="file-input" accept="image/*, video/*, .webp" className="hidden" onChange={handlePostFile} multiple/>
+                        <div className="flex justify-between">
+                            <div>
+                                <label htmlFor="file-input" className="hover:cursor-pointer text-[#646464] font-Roboto"><FontAwesomeIcon icon={faImage} size="2x" /></label>
+                            </div>
+                        </div>
                         </div>
                     </div>
-                    </div>
-                </div>
                 </div>
             </div>
             <Dialog open={postDialogOpen} onOpenChange={setPostDialogOpen}>

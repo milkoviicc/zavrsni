@@ -322,8 +322,8 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
                       </DialogHeader>
                       <p className='font-Roboto text-[#A6A6A6] text-center text-xs sm:text-base md:text-lg'>This action is permanent and you will not be able to access your account anymore.</p>
                       <div className='flex justify-center gap-4'>
-                        <Button onClick={() => setDeleteAccDialogOpen(false)} className='px-2 sm:px-8 rounded-full bg-[#1565CE] transition-all shadow-[0px_3px_5px_0px_rgba(21,101,206,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(21,101,206,0.50)] hover:opacity-90 hover:bg-[#1565CE] font-normal font-Roboto text-white cursor-pointer'>No, I changed my mind</Button>
-                        <Button variant="destructive" onClick={() => deleteAccount()} className='px-2 sm:px-8 rounded-full transition-all shadow-[0px_3px_5px_0px_rgba(202,60,60,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(202,60,60,0.50)] font-normal font-Roboto text-white cursor-pointer'><Trash2 size={10}/> Yes, I'm sure</Button>
+                        <Button onClick={() => setDeleteAccDialogOpen(false)} className='px-2 sm:px-8 rounded-full bg-[#1565CE] transition-all shadow-[0px_3px_5px_0px_rgba(21,101,206,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(21,101,206,0.50)] hover:opacity-90 hover:bg-[#1565CE] font-normal font-Roboto text-white cursor-pointer text-xs md:text-sm'>No, I changed my mind</Button>
+                        <Button variant="destructive" onClick={() => deleteAccount()} className='px-2 sm:px-8 rounded-full transition-all shadow-[0px_3px_5px_0px_rgba(202,60,60,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(202,60,60,0.50)] font-normal font-Roboto text-white cursor-pointer text-xs md:text-sm'><Trash2 size={10}/> Yes, I'm sure</Button>
                       </div>
                     </DialogContent>
                   </Dialog>

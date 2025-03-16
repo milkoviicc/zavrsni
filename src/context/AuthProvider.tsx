@@ -113,7 +113,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setProfile(null);
     setIsLoggedIn(false);
     clearAllCookies();
-    // preusmjerava se na login page
     router.push('/auth');
   }
 

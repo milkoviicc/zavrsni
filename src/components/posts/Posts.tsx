@@ -46,11 +46,18 @@ const Posts = ({popularFeed, yourFeed, suggestions, refreshPosts}: {popularFeed:
 
 
     const addNewPost = (newPost: Post) => {
-      setPosts((prevPosts) => [newPost, ...prevPosts]);
+      if(feed === 'Popular') {
+        setPosts((prevPosts) => [...prevPosts, newPost]);
+        refreshPosts();
+      } else {
+        setPosts((prevPosts) => [newPost, ...prevPosts]);
+        refreshPosts();
+      }
     }
 
     const deletePost = async (postId: string) => {
       const res = await postsApi.deletePost(postId);
+      refreshPosts();
       if (res.status === 200) {
         // Izbacujem obrisani post
         setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));

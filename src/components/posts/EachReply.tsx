@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 'use client';
 import React, { useEffect, useState } from 'react'
 import { Reply } from '../../types/types';
@@ -12,6 +13,7 @@ import {Button as HeroUiBtn} from "@heroui/button";
 import {toast} from 'sonner';
 import ResizableTextarea from '../other/ResizableTextarea';
 import { useAuth } from '@/src/context/AuthProvider';
+import { Button } from '../ui/button';
 
 const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Reply, like: (commentReplyId: string) => void, dislike: (commentReplyId: string) => void, deleteReply: (commentReplyId: string) => void, updateReply: (commentReplyId: string, updatedContent: string) => void}) => {
 
@@ -37,6 +39,7 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
 
     const [showUpdate, setShowUpdate] = useState(false);
     const [updatedContent, setUpdatedContent] = useState('');
+    const [deleteReplyOpen, setDeleteReplyOpen] = useState(false);
 
     const router = useRouter();
 
@@ -106,8 +109,7 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
                                                 }}><Pencil className="w-6 h-6"/>Update</CommandItem>
                                                 <CommandItem className="text-[#AFAFAF] text-lg cursor-pointer w-fit" onSelect={() => {
                                                     setPopoverOpen(false);
-                                                    deleteReply(reply.commentReplyId);
-                                                    toast("Your reply has been deleted.", {duration: 1500, style: {backgroundColor: "#1565CE", border: "none", color: "#fff"}});
+                                                    setDeleteReplyOpen(true);
                                                 }}><Trash2 className="w-6 h-6"/>Delete</CommandItem>
                                             </CommandGroup>
                                         </CommandList>
@@ -167,6 +169,18 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
                 </div>
             </div>
         </div>
+        <Dialog open={deleteReplyOpen} onOpenChange={setDeleteReplyOpen}>
+          <DialogContent className='bg-[#252525] border-none rounded-xl max-w-xs sm:max-w-md lg:max-w-lg xl:max-w-2xl [&>button]:text-white px-4 lg:px-8 py-4'>
+            <DialogHeader>
+              <DialogTitle className='text-[#fff] text-left text-xs sm:text-base md:text-lg font-semibold font-Roboto sm:text-center'>Are you sure you want to delete your post?</DialogTitle>
+            </DialogHeader>
+            <p className='font-Roboto text-[#A6A6A6] text-center text-xs sm:text-base md:text-lg'>This action is permanent and this post wont exist anymore.</p>
+            <div className='flex justify-center gap-4'>
+              <Button onClick={() => setDeleteReplyOpen(false)} className='px-2 sm:px-8 rounded-full bg-[#1565CE] transition-all shadow-[0px_3px_5px_0px_rgba(21,101,206,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(21,101,206,0.50)] hover:opacity-90 hover:bg-[#1565CE] font-normal font-Roboto text-white cursor-pointer text-xs md:text-sm'>No, I changed my mind</Button>
+              <Button variant="destructive" onClick={() => {deleteReply(reply.commentReplyId); setDeleteReplyOpen(false);toast("Your reply has been deleted.", {duration: 1500, style: {backgroundColor: "#1565CE", border: "none", color: "#fff"}});}} className='px-2 sm:px-8 rounded-full transition-all shadow-[0px_3px_5px_0px_rgba(202,60,60,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(202,60,60,0.50)] font-normal font-Roboto text-white cursor-pointer text-xs md:text-sm'><Trash2 size={10}/> Yes, I'm sure</Button>
+            </div>
+          </DialogContent>
+        </Dialog> 
     </div>
   )
 }

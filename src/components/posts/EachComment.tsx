@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 'use client';
 import React, {useEffect, useState} from 'react'
 import { Post, Comment, Reply } from '../../types/types'
@@ -15,6 +16,7 @@ import {toast} from 'sonner';
 import ResizableTextarea from '../other/ResizableTextarea';
 import { commentsApi, reactionsApi } from '@/src/lib/utils';
 import { useAuth } from '@/src/context/AuthProvider';
+import { Button } from '../ui/button';
 
 const EachComment = ({post, comment, refreshComments, updateComment, callComments}: {post: Post, comment: Comment, refreshComments: () => void, updateComment: (commentId: string, newContent: string) => void, callComments: React.Dispatch<React.SetStateAction<boolean>>})=> {
 
@@ -44,6 +46,7 @@ const EachComment = ({post, comment, refreshComments, updateComment, callComment
     const [commentReplies, setCommentReplies] = useState<Reply[]>([]);
     const [isUpdateCommentDialogOpen, setIsUpdateCommentDialogOpen] = useState(false);
     const [isCommentReplyDialogOpen, setIsCommentReplyDialogOpen] = useState(false);
+    const [deleteCommentOpen, setDeleteCommentOpen] = useState(false);
 
     const {user, role} = useAuth();
 
@@ -280,8 +283,7 @@ const EachComment = ({post, comment, refreshComments, updateComment, callComment
                                       }}><Pencil className="w-6 h-6"/>Update</CommandItem>
                                       <CommandItem className="text-[#AFAFAF] text-lg cursor-pointer w-fit" onSelect={() => {
                                           setPopoverOpen(false);
-                                          deleteComment(comment.commentId);
-                                          toast("Your comment has been deleted.", {duration: 1500, style:{backgroundColor: "#1565CE", border: "none", color: "#fff"}})
+                                          setDeleteCommentOpen(true);
                                           }}><Trash2 className="w-6 h-6"/>Delete</CommandItem>
                                   </CommandGroup>
                               </CommandList>
@@ -364,7 +366,7 @@ const EachComment = ({post, comment, refreshComments, updateComment, callComment
                           <div className='flex flex-col flex-grow gap-4 pr-4'>  
                             <ResizableTextarea onChange={(e) =>  setReplyContent(e.target.value)} value={replyContent} placeholder='Write a reply.' className="font-Roboto font-normal leading-5 scrollbar-none w-full max-h-[100px] lg:max-h-[150px] text-sm lg:text-lg text-[#EFEFEF] outline-none rounded border-gray-800 hover:border-gray-600 focus:border-gray-600 placeholder-[#BBBBBB] bg-transparent transition-all"/>
                             <div className='flex justify-end'>
-                              <HeroUiBtn onPress={() => handleReply(replyContent)} className="relative flex h-[40px] w-32 items-center justify-center overflow-hidden bg-[#5D5E5D] rounded-full font-Roboto text-[#EFEFEF] shadow-[0px_3px_3px_0px_rgba(0,0,0,0.2)] transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-gray-800 before:duration-500 before:ease-out hover:shadow-none hover:before:h-56 hover:before:w-56">
+                              <HeroUiBtn onPress={() => handleReply(replyContent)} className="cursor-pointer relative flex h-[40px] w-32 items-center justify-center overflow-hidden bg-[#5D5E5D] rounded-full font-Roboto text-[#EFEFEF] shadow-[0px_3px_3px_0px_rgba(0,0,0,0.2)] transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-gray-800 before:duration-500 before:ease-out hover:shadow-none hover:before:h-56 hover:before:w-56">
                                 <span className="relative z-10 text-base">Post reply</span>
                               </HeroUiBtn>
                             </div>
@@ -390,8 +392,19 @@ const EachComment = ({post, comment, refreshComments, updateComment, callComment
         </div>
         ): null}
       </div>
+      <Dialog open={deleteCommentOpen} onOpenChange={setDeleteCommentOpen}>
+        <DialogContent className='bg-[#252525] border-none rounded-xl max-w-xs sm:max-w-md lg:max-w-lg xl:max-w-2xl [&>button]:text-white px-4 lg:px-8 py-4'>
+          <DialogHeader>
+            <DialogTitle className='text-[#fff] text-left text-xs sm:text-base md:text-lg font-semibold font-Roboto sm:text-center'>Are you sure you want to delete your post?</DialogTitle>
+          </DialogHeader>
+          <p className='font-Roboto text-[#A6A6A6] text-center text-xs sm:text-base md:text-lg'>This action is permanent and this post wont exist anymore.</p>
+          <div className='flex justify-center gap-4'>
+            <Button onClick={() => setDeleteCommentOpen(false)} className='px-2 sm:px-8 rounded-full bg-[#1565CE] transition-all shadow-[0px_3px_5px_0px_rgba(21,101,206,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(21,101,206,0.50)] hover:opacity-90 hover:bg-[#1565CE] font-normal font-Roboto text-white cursor-pointer text-xs md:text-sm'>No, I changed my mind</Button>
+            <Button variant="destructive" onClick={() => {deleteComment(comment.commentId); setDeleteCommentOpen(false);toast("Your comment has been deleted.", {duration: 1500, style:{backgroundColor: "#1565CE", border: "none", color: "#fff"}});}} className='px-2 sm:px-8 rounded-full transition-all shadow-[0px_3px_5px_0px_rgba(202,60,60,0.25)] hover:shadow-[0px_3px_5px_0px_rgba(202,60,60,0.50)] font-normal font-Roboto text-white cursor-pointer text-xs md:text-sm'><Trash2 size={10}/> Yes, I'm sure</Button>
+          </div>
+        </DialogContent>
+      </Dialog> 
     </div>
-
   )
 }
 
