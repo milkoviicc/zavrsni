@@ -66,6 +66,7 @@ const EachPost = ({post, refreshPosts, handleLike, handleDislike, deletePost}: {
   const [updatedContent, setUpdatedContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previousFiles, setPreviousFiles] = useState<string[]>([]);
+  const [fileTypes, setFileTypes] = useState<{ [key: string]: string }>({});
   const [postReaction, setPostReaction] = useState<number>(post.userReacted);
   const [postLikes, setPostLikes] = useState(post.likes);
   const [postDislikes, setPostDislikes] = useState(post.dislikes);
@@ -76,6 +77,29 @@ const EachPost = ({post, refreshPosts, handleLike, handleDislike, deletePost}: {
   const {user, role} = useAuth();
 
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchFileTypes = async () => {
+      const types: { [key: string]: string } = {};
+
+      await Promise.all(
+        previousFiles.map(async (file) => {
+          try {
+            const response = await fetch(file);
+            const blob = await response.blob();
+            types[file] = blob.type; // Store the MIME type
+          } catch (error) {
+            console.error("Error fetching file type:", error);
+            types[file] = "";
+          }
+        })
+      );
+
+      setFileTypes(types);
+    };
+
+    fetchFileTypes();
+  }, [previousFiles]);
 
   const getPostComments = async () => {
     const res = await commentsApi.getComments(post.postId); 
@@ -128,7 +152,6 @@ const EachPost = ({post, refreshPosts, handleLike, handleDislike, deletePost}: {
         console.error(err);
       }
   }
-
 
 
   useEffect(() => {
@@ -334,7 +357,7 @@ const handleReaction = async (reaction: number) => {
                                   <div className="flex w-full h-full mt-4 -ml-4">
                                     <div className={`grid gap-2 ${previousFiles.length <= 2 ? "grid-cols-3" : ""} ${previousFiles.length >= 3 ? "grid-rows-2 grid-cols-3" : "grid-rows-1"}`}> {previousFiles && previousFiles.map((file, index) => {
                                       const fileUrl = file;
-                                      const isVideo = file.endsWith('.mp4') || file.endsWith('.mov');
+                                      const isVideo = file.endsWith(".mp4") || file.endsWith(".mov") || fileTypes[file]?.startsWith("video/");
                                       return (
                                         <div key={index} className="w-full relative flex justify-center sm:px-2" >
                                             {isVideo ? ( 
