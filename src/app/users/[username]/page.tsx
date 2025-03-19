@@ -99,7 +99,7 @@ const Users = async ({ params }: any) => {
         </div>
         
         <div className="w-[25%] fixed hidden right-0 h-full xl:flex justify-center">
-          <div className="bg-[#252525] flex flex-col py-4 rounded-lg shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] xl:w-[200px] w-[180px] 2xl:w-[240px] 2k:w-[275px] lg:h-[400px] xl:h-[500px] 2xl:h-[550px] 2k:h-[800px] 3k:h-[900px] overflow-x-hidden">
+          <div className="bg-[#252525] flex flex-col py-4 rounded-lg shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] w-[180px] xl:w-[200px] 2xl:max-w-[275px] 2xl:w-full lg:h-[400px] xl:h-[500px] 2xl:h-[550px] overflow-x-hidden">
             <h1 className="font-Roboto text-xl xl:text-2xl 2k:text-3xl px-4 pb-4 text-[#EFEFEF] font-normal text-center">{currentUser.username === loggedUserData.username ? 'Your friends' : `${currentUser.firstName?.slice(0,1).toUpperCase()}${currentUser.firstName?.slice(1)}'s friends`}</h1>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
             <div className="group w-full h-full flex flex-col gap-2 bg-transparent px-4 lg:max-h-[400px] xl:max-h-[500px] 2xl:max-h-[600px] 2k:max-h-[800px] overflow-y-hidden hover:overflow-y-scroll scrollbar">

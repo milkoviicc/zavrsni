@@ -225,7 +225,7 @@ const Posts = ({popularFeed, yourFeed, suggestions, refreshPosts}: {popularFeed:
     };
 
   return (
-    <div>
+    <div className='w-full h-full'>
         <NewPost addNewPost={addNewPost}/>
         <div className="flex gap-4 py-6 justify-center items-center">
             <div>
@@ -238,7 +238,7 @@ const Posts = ({popularFeed, yourFeed, suggestions, refreshPosts}: {popularFeed:
                 <span className={`${postsState === 'Your Feed' ? 'block bg-[#EFEFEF]' : 'hidden'} w-full h-[1px]`}></span>
             </div>
         </div>
-          <InfiniteScroll className='w-full flex flex-col items-center bg-transparent px-8 sm:px-4 2k:min-w-[832px]' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
+          <InfiniteScroll className='w-full flex flex-col items-center bg-transparent px-0 md:px-8 sm:px-4 2k:min-w-[832px]' dataLength={posts.length} next={fetchMoreData} hasMore={hasMore} loader={<h1>Loading...</h1>} endMessage={<h1 className='text-center text-white'>No more posts!</h1>}>
             {posts.map((post, index) => (
               <div key={index} className='max-w-[832px] w-full'>
                 {randomNmbs?.includes(index) ? (
