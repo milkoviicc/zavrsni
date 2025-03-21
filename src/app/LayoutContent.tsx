@@ -8,11 +8,11 @@ const LayoutContent = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  // Track user state and trigger re-render when it changes
   useEffect(() => {
     setIsAuthenticated(!!user);
   }, [user]);
-
+  
+  // Track user state and trigger re-render when it changes
   return (
     <>
       {isAuthenticated ? <Navbar /> : null}
