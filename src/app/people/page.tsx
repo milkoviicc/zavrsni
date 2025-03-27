@@ -37,7 +37,7 @@ const People = async({searchParams}: Props) => {
 
   return (
     <div className='flex-grow bg-[#252525]'>
-      <div className='flex flex-col justify-center items-center py-24'>
+      <div className='flex flex-col justify-center items-center py-24 h-full'>
         <Profiles searchTerm={searchTerm} searchedUsers={searchedUsers} users={profiles} suggestions={suggestions}/>
       </div>
     </div>

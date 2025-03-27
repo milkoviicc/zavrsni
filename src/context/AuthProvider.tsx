@@ -33,25 +33,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const storedUser = Cookies.get('user');
     const feed = Cookies.get('feed');
     const role = Cookies.get('role');
-
+    
     // ukoliko token i korisnik postoje ulazi u {} i izvršava se dalje
     if (token && storedUser && feed && role) {
-
+      
       // spremam korisnikove podatke u varijablu 'userData'
       const userData: User = JSON.parse(storedUser);
-
+      
       // postavljam korisnikove podatke (userData) u state 'user'
       setUser(userData);
-
+      
       setRole(role)
-
+      
       // postavljam svaki axios request da sadrži authorization bearer i token dobiven iz localStoragea
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
+      
       // postavljam isLoggedIn state na true kako bi se znalo da je korisnik prijavljen
       setIsLoggedIn(true);
-
+      
       Cookies.set("feed", `${feed}`);
+      const ignoreDefaultPic = Cookies.get('ignoreDefaultPic');
+
+      if(ignoreDefaultPic) {
+        setIgnoreDefaultPic(true);
+      } else {
+        setIgnoreDefaultPic(false);
+      }
     }
 
     // postavljam loading state na false nakon provjere
@@ -78,13 +85,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       router.refresh();
     } catch(err) {
-      console.error(err);
     }
   }
 
-  const callLogin = async(name: string, password: string) => {
+  const callLogin = async(username: string, password: string) => {
     try {
-      const res = await accountApi.login(name, password);
+      const res = await accountApi.login(username, password);
       
       if(res?.data.user) {
         setUser(res.data.user);
@@ -92,17 +98,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if(res?.status !== 200 && res?.statusText) {
         setAuthError(res.statusText);
       }
+
       
       // preusmjeravam na home page
       router.push('/');
-
+      
       // mjenjam isLoggedIn state u true kako bi se znalo da je korisnik prijavljen
       setIsLoggedIn(true);
-
+      
       router.refresh();
       
+      return res;
+      
     } catch(err) {
-      console.error(err);
+      throw err;
     }
   }
 
@@ -119,8 +128,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const deleteAccount = async () => {
     try {
       await accountApi.deleteAccount();
+      window.location.reload();
     } catch(err) {
-      console.error(err);
     }
   }
   

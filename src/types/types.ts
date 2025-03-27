@@ -1,9 +1,10 @@
+import { AxiosResponse } from "axios";
 
 // useAuth koristi ovu klasu kako bi mogao prenesti sve funkcije i varijable
 export interface AuthContextType {
     user: User | null;
     role: string;
-    callLogin: (username: string, password: string) => Promise<void>;
+    callLogin: (username: string, password: string) => Promise<AxiosResponse<Auth> | undefined>;
     callRegister: (username: string, email: string, password: string, confirmPassword: string) => Promise<void>;
     logout: () => void;
     deleteAccount: () => void;

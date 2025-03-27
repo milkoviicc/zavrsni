@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAuth } from '@/src/context/AuthProvider';
+import { toast } from 'sonner';
 
 const Auth = () => {
 
@@ -20,7 +21,6 @@ const Auth = () => {
   // opceniti stateovi
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [showMessage, setShowMessage] = useState(false);
   const [isHorizontal, setIsHorizontal] = useState(window.innerWidth > 768);
   const [initialRender, setInitialRender] = useState(true);
 
@@ -50,36 +50,29 @@ const Auth = () => {
   // async funkcija koja se poziva kada se klikne gumb 'Sign in'.
   const handleSignIn = async () => {
     setError(null);
-    
-    // stavljamo loading state na true
     setLoading(true);
-
-    // provjerava se je li unešeno ime i prezime prazno, ukoliko je izbacuje Error i vraća vrijednost 'false'
-    if(name === '' || loginPassword === '') {
-        setLoading(false);
-        setError(null);
+  
+    if (name === '' || loginPassword === '') {
+      setLoading(false);
+      setError(null);
       return false;
     }
-
-    // ukoliko unešeno ime i prezime nije prazno ulazi u try/catch
+  
     try {
-      // poziva se login funckija iz AuthProvider.tsx filea, i uz pomoć await čeka se response
-      callLogin(name,loginPassword);
-
-      // ukoliko je API call iz funkcije login prošao, postavlja se poruka na true te se prikazuje na stranici 
-      setShowMessage(true);
-
-      // nakon 1.5s poruka se postavlja na false te se više ne prikazuje na stranici
-      setTimeout(() => setShowMessage(false), 1500);
-
-      // stavljamo loading state na false jer se više ne loada nego je sve gotovo
-      setLoading(false);
-    } catch(err: any) {
-      // ukoliko se username/email ne može pronaći u bazi podataka, postavljamo Error sa određenom porukom
-      setLoading(false);
-      setError(err.message);
+      const res = await callLogin(name, loginPassword);
+  
+      if (res?.status === 200) {
+        toast("You have been successfully signed in. Redirecting you to our home page.",{duration: 1500, style: {backgroundColor: "#1565CE", border: "none", color: "#fff"}})
+      } else {
+        setError(res?.statusText || "Unknown error occured");
+      }
+  
+    } catch (error: any) {
+      setError(error.response?.data.detail || "Login failed. Please try again.");
     }
-  }
+  
+    setLoading(false);
+  };
 
   const validateForm = () => {
 
@@ -150,11 +143,7 @@ const Auth = () => {
       // poziva se register funckija iz AuthProvider.tsx filea, i uz pomoć await čeka se response
       callRegister(username, email, registerPassword, confirmRegisterPassword);
 
-      // ukoliko je API call iz funkcije register prošao, postavlja se poruka na true te se prikazuje na stranici 
-      setShowMessage(true);
-
-      // nakon 1.5s poruka se postavlja na false te se više ne prikazuje na stranici
-      setTimeout(() => setShowMessage(false), 1500);
+      toast("You have been successfully registered. Redirecting you to our home page.", {duration: 1500, style: {backgroundColor: "#1565CE", border: "none", color: "#fff"}});
 
       // stavljamo loading state na false jer se više ne loada nego je sve gotovo
       setLoading(false);
@@ -181,18 +170,17 @@ const Auth = () => {
     <AnimatePresence mode="wait">
     <div className='flex-grow flex sm:flex-row sm:justify-between flex-col overflow-y-hidden overflow-x-hidden relative h-screen'>
         <div className='flex justify-center items-center sm:w-[37%] w-full'>
-          <div className='flex items-center justify-center'>
+          <div className='flex items-center justify-center w-full'>
             <div className='md:px-4 px-2 sm:py-14 py-10'>
               <h1 className='text-black font-bold text-3xl'>Welcome back</h1>
               <p className='text-gray-400 text-sm my-2'>Please enter your details.</p>
             
-              <form className='my-4 flex flex-col' onSubmit={(e) => {e.preventDefault(); handleSignIn()}}>
+              <form className='my-4 flex flex-col w-full' onSubmit={(e) => {e.preventDefault(); handleSignIn()}}>
                 <input type="text" className={`lg:w-80 md:w-64 sm:w-56 w-full py-3 px-4 border ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Email address or username' id="name" onChange={(e) => setName(e.target.value)}/>
                 <input type="password" className={`lg:w-80 md:w-64 sm:w-56 w-full py-3 px-4 border  ${error === null ? 'border-gray-300' :  'border-red-500'} rounded-md text-sm my-2 outline-none focus:border-blue-400 transition-all`} placeholder='Password' id="loginPassword" onChange={(e) => setLoginPassword(e.target.value)} autoComplete="off" />
                 {error !== null ? <p className='text-red-500 text-sm my-2'>{error}</p> : null}
                 {loading ? <h1>Signing you in...</h1> : null}
-                {showMessage ? <p className='text-green-600 text-sm my-2'>You have been succesfully registered. Redirecting you to our login page.</p> : null}
-                <button className='bg-[#2F2F2F] hover:bg-[#232F5C] text-white font-bold lg:w-80 md:w-64 w-full sm:w-56 py-2 border border-[#232F5C] rounded transition-all'>Sign in <FontAwesomeIcon icon={faArrowRight} className='px-2'/></button>
+                <button className='bg-[#2F2F2F] hover:bg-[#232F5C] text-white font-bold lg:w-80 md:w-64 w-full sm:w-56 py-2 border border-[#232F5C] rounded transition-all cursor-pointer'>Sign in <FontAwesomeIcon icon={faArrowRight} className='px-2'/></button>
               </form>
               <p className='my-4 text-sm text-black text-opacity-[42%]'>Not a member? <a onClick={() => {setLoginRoute((prev) => !prev); setError(null)}} className='text-black hover:text-[#232F5C] underline hover:cursor-pointer transition-all'>Create an account</a></p>
             </div>
@@ -218,10 +206,7 @@ const Auth = () => {
                 </div>
                 {error !== null ? <p className='text-red-500 text-sm my-2'>{error}</p> : null}
                 {loading ? <h1>Registering your account...</h1> : null}
-                {showMessage ? (
-                  <p className='text-green-600 text-sm my-2'> You have been successfully registered. Redirecting you to our home page. </p>
-                ) : null}
-                <button type="submit" className='bg-[#2F2F2F] hover:bg-[#232F5C] text-white font-bold w-full py-2 border border-[#232F5C] rounded transition-all'> Sign up <FontAwesomeIcon icon={faArrowRight} className='px-2'/> </button>
+                <button type="submit" className='bg-[#2F2F2F] hover:bg-[#232F5C] text-white font-bold w-full py-2 border border-[#232F5C] rounded transition-all cursor-pointer'> Sign up <FontAwesomeIcon icon={faArrowRight} className='px-2'/> </button>
               </form>
               <p className='my-4 text-sm text-black text-opacity-[42%] text-center'> Already have an account?{' '} <a onClick={() => { setLoginRoute((prev) => !prev); setError(null); }} className='text-black hover:text-[#232F5C] underline hover:cursor-pointer transition-all' > Sign in. </a> </p>
             </div>

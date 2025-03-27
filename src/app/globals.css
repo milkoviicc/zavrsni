@@ -11,17 +11,18 @@
   --font-mono: var(--font-geist-mono);
 }
 
-
 body {
   font-family: 'Roboto', sans-serif;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   background-color: #222222;
   overflow-x: hidden;
 }
 
 html {
   background-color: #222222;
+  height: 100%;
+  width: 100%;
 }
 
 html body[data-scroll-locked] {

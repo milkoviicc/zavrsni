@@ -16,6 +16,10 @@ import UserSkeleton from "../components/skeletons/UserSkeleton";
 import { Suspense } from "react";
 import Posts from "../components/posts/Posts";
 import { revalidatePath } from "next/cache";
+import AddDetails from "../components/other/AddDetails";
+import AddPicture from "../components/other/AddPicture";
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 async function getPopularUsers() {
   const res = await profileApi.getPopularProfiles();
@@ -57,6 +61,7 @@ async function getFollowedUsers(userId: string) {
 export default async function Home() {
 
   const user = await getCookieServer('user');
+  const ignoreDefaultPic = await getCookieServer('ignoreDefaultPic');
   if(!user) {
     return redirect('/auth');
   }
@@ -83,9 +88,24 @@ export default async function Home() {
     mergedUsers = [...suggestions, ...filteredPopularUsers];
   }
 
+  const handleSkipImage = async() => {
+    'use server';
+    const cookieStore = await cookies();
+    cookieStore.set('ignoreDefaultPic', 'true', { path: '/' });
+  }
+
+
 
   return (
-    <div className="w-full h-full bg-[#222222]">
+    <div className="w-full min-h-full bg-[#222222]">
+      {userData.firstName === null || userData.lastName === null   ? (
+        <div className="w-full h-full">
+          <AddDetails />
+        </div>
+      ) : userData.pictureUrl === 'https://snetblobstorage.blob.core.windows.net/snetprofiles/default.jpg' && !ignoreDefaultPic ? (
+        <AddPicture user={userData} handleSkip={handleSkipImage}/>
+      ) :
+      (
       <div className="flex h-full py-16 md:py-30">
         {/* Left Sidebar */}
         <div className="w-[25%] fixed hidden left-0 h-full xl:flex justify-center">
@@ -120,6 +140,7 @@ export default async function Home() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }

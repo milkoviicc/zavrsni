@@ -93,30 +93,28 @@ export const accountApi = {
       // spremam primljene podatke u varijablu 'loggedUser' tipa 'User'
       const loggedUser: Auth = res.data;
 
-      // provjeravam sadrže li primljeni podatci token, id i username 
-      if(loggedUser.token && loggedUser.user.userId && loggedUser.user.userId) {
-
-        // spremam korisnika u localStorage
-        setCookie('user', JSON.stringify(loggedUser.user));
-        setCookie('feed', 'Popular');
-
-        const role = accountApi.getRoleFromToken(loggedUser.token);
-        
-        if(role === null) {
-          return;
+      if(res) {
+        // provjeravam sadrže li primljeni podatci token, id i username 
+        if(loggedUser.token && loggedUser.user.userId && loggedUser.user.userId) {
+  
+          // spremam korisnika u localStorage
+          setCookie('user', JSON.stringify(loggedUser.user));
+          setCookie('feed', 'Popular');
+  
+          const role = accountApi.getRoleFromToken(loggedUser.token);
+          
+          if(role === null) {
+            return;
+          }
+          setCookie('role', role);
+          setCookie("token", loggedUser.token, {path: "/"});
         }
-        setCookie('role', role);
-        setCookie("token", loggedUser.token, {path: "/"});
-
         return res;
       }
+
     } catch (error: any) {
       // ukoliko dođe do greške ispisuje se u konzoli
-      console.error("Login failed:", error);
-      if(error.response && error.response.data) {
-        throw new Error(error.response.data.detail || 'Login failed');
-      }
-      throw new Error("Invalid credentials");
+      throw error;
     }
   },
 
