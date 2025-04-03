@@ -88,7 +88,7 @@ const Users = async ({ params }: any) => {
         {currentUser.username === loggedUserData.username ? (
           <MyProfileDetails user={currentUser} changeImage={handleChangeImage} revalidate={revalidate}/>
         ) : (
-          <UserDetails user={currentUser} friendship={friendshipStatus} mutualFriends={mutualFriends} popular={popularUsers}/>
+          <UserDetails pathUser={currentUser} friendship={friendshipStatus} mutualFriends={mutualFriends} popular={popularUsers}/>
         )}
 
         <div className="flex-grow flex flex-col items-center justify-center xl:px-[25%]">
