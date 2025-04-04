@@ -139,7 +139,7 @@ const ProfilePosts = ({user, posts, refreshPosts, myPosts}: {user: User, posts: 
     };
 
   return (
-    <div className='w-full'>
+    <div className='w-full h-full'>
       <div className='md:block hidden'>
         {myPosts === 'true' ? <NewPost addNewPost={addNewPost}/> : null}
       </div>
