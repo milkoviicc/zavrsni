@@ -14,7 +14,10 @@ const AddDetails = () => {
         const user = await getCookieServer('user');
         if(user) {
             const userData: User = JSON.parse(user);
-            const res = await profileApi.updateProfile(userData.username, firstName, lastName, description, occupation);
+
+            const firstNameCapitalized = firstName.slice(0,1).toUpperCase() + firstName.slice(1);
+            const lastNameCapitalized = lastName.slice(0,1).toUpperCase() + lastName.slice(1);
+            const res = await profileApi.updateProfile(userData.username, firstNameCapitalized, lastNameCapitalized, description, occupation);
 
             if(res.status === 200) {
                 setSuccessfullUpdate(true);

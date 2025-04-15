@@ -94,8 +94,6 @@ export default async function Home() {
     cookieStore.set('ignoreDefaultPic', 'true', { path: '/' });
   }
 
-
-
   return (
     <div className="w-full min-h-full bg-[#222222]">
       {userData.firstName === null || userData.lastName === null   ? (
