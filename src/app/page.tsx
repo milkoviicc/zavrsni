@@ -105,7 +105,7 @@ export default async function Home() {
       (
       <div className="flex h-full py-16 md:py-30">
         {/* Left Sidebar */}
-        <div className="w-[25%] fixed hidden left-0 h-full xl:flex justify-center">
+        <div className="w-[25%] fixed hidden left-0 h-full xl:flex justify-center homeUsers2k">
           <div className="bg-[#252525] flex flex-col py-4 rounded-lg shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] w-[180px] xl:w-[200px] 2xl:max-w-[275px] 2xl:w-full lg:h-[400px] xl:h-[500px] overflow-x-hidden screen2k">
             <h1 className="font-Roboto text-xl xl:text-2xl 3xl:text-3xl px-4 pb-4 text-[#EFEFEF] font-normal text-center">Who's popular</h1>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>
@@ -124,7 +124,7 @@ export default async function Home() {
         </div>
 
         {/* Right Sidebar */}
-        <div className="w-[25%] fixed hidden right-0 h-full xl:flex justify-center">
+        <div className="w-[25%] fixed hidden right-0 h-full xl:flex justify-center homeUsers2k">
           <div className="bg-[#252525] flex flex-col py-4 rounded-lg shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] w-[180px] xl:w-[200px] 2xl:max-w-[275px] 2xl:w-full lg:h-[400px] xl:h-[500px] 2xl:h-[550px] screen2k overflow-x-hidden">
             <h1 className="font-Roboto text-xl xl:text-2xl 3xl:text-3xl px-4 pb-4 text-[#EFEFEF] font-normal text-center">Your friends</h1>
             <span className="border-[1px] border-[#1C1C1C] opacity-45"></span>

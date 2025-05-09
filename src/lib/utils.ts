@@ -154,7 +154,6 @@ export const commentsApi = {
       throw error;
     }
   },
-  
   addComment: async (postId: string, content: string) => {
     try {
       return await handleResponse(() => 

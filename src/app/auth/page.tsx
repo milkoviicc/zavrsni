@@ -140,14 +140,14 @@ const Auth = () => {
 
     try {
 
-      // Check if the username starts with a letter
+      // Provjerava je li username kreće sa slovom
       if (!/^[a-zA-Z]/.test(username)) {
         setError('Username must start with a letter.');
         setLoading(false);
         return;
       }
 
-      // Calls the register function from AuthProvider.tsx and waits for the response
+      // Poziva register funkciju iz AuthProvider.tsx i čeka odgovor
       await callRegister(username, email, registerPassword, confirmRegisterPassword);
 
       toast("You have been successfully registered. Redirecting you to our home page.", {duration: 1500, style: {backgroundColor: "#1565CE", border: "none", color: "#fff"}});

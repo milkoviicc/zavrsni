@@ -12,11 +12,30 @@
 }
 
 .screen2k {
-  @media (min-width: 1920px) {
+  @media (min-width: 2000px) {
     width: 325px;
     max-width: 100%;
     height: 800px;
     max-height: 100%;
+  }
+}
+
+.homeUsers2k {
+  @media (min-width: 2000px) {
+    width: 33%;
+  }
+}
+
+.userAvatar2k {
+  @media (min-width: 2000px) {
+    width: 65px;
+    height: 65px;
+  }
+}
+
+.user2k {
+  @media (min-width: 2000px) {
+    font-size: 20px;
   }
 }
 
