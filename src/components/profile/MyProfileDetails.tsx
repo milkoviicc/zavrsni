@@ -152,7 +152,7 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
   }
 
   return (
-    <div>
+    <div className='w-[25%] fixed hidden left-0 h-full xl:flex justify-center homeUsers2k'>
         <div className='xl:hidden pt-8 md:pb-4 flex justify-center px-4 w-screen'>
           <div className='w-fit sm:gap-10'>
             <div className='w-[350px] sm:w-[580px] md:w-[716px] lg:w-[765px] relative rounded-lg flex flex-col xl:hidden justify-center items-center gap-5 px-2 lg:px-8 py-4 shadow-[0px_0.1px_15px_0px_rgba(0,_0,_0,_0.26)]'>
@@ -245,7 +245,7 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
             </div>
           </div>
         </div>
-        <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-18 xl:left-10 self-start gap-0 xl:w-[200px] 2xl:max-w-[275px] 2xl:w-full h-fit text-center rounded-lg py-2 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
+        <div className="xl:flex hidden flex-col fixed 2xl:left-18 xl:left-10 self-start gap-0 xl:w-[200px] 2xl:max-w-[275px] 2xl:w-full h-fit text-center rounded-lg py-2 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525] xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px] myProfile2k">
           <Popover open={popoverPcOpen} onOpenChange={setPopoverPcOpen}>
             <PopoverTrigger className='absolute top-2 right-2 cursor-pointer z-[9999]' onClick={() => setPopoverPcOpen(!popoverPcOpen)} asChild><Ellipsis className='text-[#DFDEDE]' size={24}/></PopoverTrigger>
             <PopoverContent className='w-fit'>
@@ -263,8 +263,8 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
               <div className='flex px-3'>
                 <Dialog open={changeImgDialogOpen} onOpenChange={setChangeImgDialogOpen}>
                   <DialogTrigger>
-                    <Avatar className='relative w-[65px] h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)] group' onClick={() =>  setChangeImgDialogOpen(true)}>
-                      <span><Camera size={32} className='group-hover:block hidden absolute top-[25%] left-[25%] 2k:top-[30%] 2k:left-[31%] 2k:size-10 rounded-full text-white transition-all'/></span>
+                    <Avatar className='relative w-[65px] h-[65px] myProfileAvatar2k rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)] group' onClick={() =>  setChangeImgDialogOpen(true)}>
+                      <span><Camera size={32} className='group-hover:block hidden absolute top-[25%] left-[25%] camera2k rounded-full text-white transition-all'/></span>
                       <AvatarImage src={`${user?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover cursor-pointer hover:opacity-10 transition-all"  /><AvatarFallback>{shortUsername}</AvatarFallback>
                     </Avatar>
                   </DialogTrigger>
@@ -293,21 +293,21 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
                     </DialogContent>
                 </Dialog>
                 <div className='flex flex-col justify-center items-start px-2 2xl:px-3 2k:px-4'>
-                  <h1 className='text-[#DFDEDE] font-Roboto text-sm 2xl:text-base 2k:text-lg'>{user.firstName} {user.lastName}</h1>
-                  <p className='text-[#888888] font-Roboto text-sm 2xl:text-base 2k:text-lg'>@{user.username}</p>
+                  <h1 className='text-[#DFDEDE] font-Roboto text-sm 2xl:text-base myProfileUser'>{user.firstName} {user.lastName}</h1>
+                  <p className='text-[#888888] font-Roboto text-sm 2xl:text-base myProfileUser'>@{user.username}</p>
                 </div>
               </div>
               <div className='flex flex-col px-3 py-2 gap-4'>
-                <p className='text-left break-words hyphens-auto text-[#888888] px-[5px] font-Roboto text-xs 2xl:text-sm 2k:text-base'>{user.description ? `${user.description}` : 'No description yet! You can add one down below.'}</p>
-                <p className='text-[#888888] text-center font-Roboto text-xs 2xl:text-sm 2k:text-base'>{user.occupation ? `${user.occupation}` : 'No occupation yet!'}</p>
+                <p className='text-left break-words hyphens-auto text-[#888888] px-[5px] font-Roboto text-xs 2xl:text-sm myProfileText'>{user.description ? `${user.description}` : 'No description yet! You can add one down below.'}</p>
+                <p className='text-[#888888] text-center font-Roboto text-xs 2xl:text-sm myProfileText'>{user.occupation ? `${user.occupation}` : 'No occupation yet!'}</p>
               </div>
               <div className='flex justify-evenly gap-4'>
                 <div className='flex items-center gap-2'>
-                  <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm 2k:text-base'>Followers</p>
+                  <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm myProfileText'>Followers</p>
                   <span className='text-[#888888] text-lg'>{user.followers}</span>
                 </div>
                 <div className='flex items-center gap-2'>
-                  <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm 2k:text-base'>Following</p>
+                  <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm myProfileText'>Following</p>
                   <span className='text-[#888888] text-lg'>{user.following}</span>
                 </div>
               </div>

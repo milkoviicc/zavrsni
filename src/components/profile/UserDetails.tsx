@@ -195,36 +195,36 @@ const UserDetails = ({pathUser, friendship, mutualFriends, popular}: {pathUser: 
         </div>
       </div>
     </div>
-    <div className="xl:flex hidden flex-col fixed 3k:left-80 2k:left-64 2xl:left-24 xl:left-0 self-start gap-0 xl:w-[225px] w-[180px] 2xl:w-[245px] 2k:w-[300px] lg:h-[400px] xl:h-[520px] 2xl:h-[600px] 2k:h-[800px] text-center rounded-lg py-4 xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px]">
+    <div className="xl:flex hidden flex-col fixed 2xl:left-24 xl:left-0 self-start gap-0 xl:w-[225px] w-[180px] 2xl:w-[245px] lg:h-[400px] xl:h-[520px] 2xl:h-[600px] text-center rounded-lg py-4 xl:translate-x-[20px] 2xl:translate-x-0 2k:translate-x-[40px] xl:translate-y-0 2xl:translate-y-[40px] userDetails2k">
       <div className='w-full flex flex-col justify-center items-center shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] bg-[#252525]'>
         <div className='flex flex-col py-1 gap-2 w-full'>
           <div className='flex px-3'>
-            <Avatar className='w-[45px] h-[45px] 2xl:w-[65px] 2xl:h-[65px] 2k:w-[100px] 2k:h-[100px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+            <Avatar className='w-[45px] h-[45px] 2xl:w-[65px] 2xl:h-[65px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)] myProfileAvatar2k'>
               <AvatarImage src={`${pathUser?.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{shortUsername}</AvatarFallback>
             </Avatar>
             <div className='flex flex-col justify-center items-start px-2 2k:px-4'>
-              <h1 className='text-[#DFDEDE] font-Roboto text-sm 2xl:text-base 2k:text-lg'>{pathUser.firstName} {pathUser.lastName}</h1>
-              <p className='text-[#888888] font-Roboto text-sm 2xl:text-base 2k:text-lg'>@{pathUser.username}</p>
+              <h1 className='text-[#DFDEDE] font-Roboto text-sm 2xl:text-base myProfileUser'>{pathUser.firstName} {pathUser.lastName}</h1>
+              <p className='text-[#888888] font-Roboto text-sm 2xl:text-base myProfileUser'>@{pathUser.username}</p>
             </div>
           </div>
           <div className='flex flex-col px-3 py-2 gap-4'>
-            <p className='text-left break-words hyphens-auto text-[#888888] px-[5px] font-Roboto text-xs 2xl:text-sm 2k:text-base'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
-            <p className='text-[#888888] text-center font-Roboto text-xs 2xl:text-sm 2k:text-base'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
+            <p className='text-left break-words hyphens-auto text-[#888888] px-[5px] font-Roboto text-xs 2xl:text-sm myProfileText'>{pathUser.description ? `${pathUser.description}` : 'No description yet! You can add one down below.'}</p>
+            <p className='text-[#888888] text-center font-Roboto text-xs 2xl:text-sm myProfileText'>{pathUser.occupation ? `${pathUser.occupation}` : 'No occupation yet!'}</p>
           </div>
           <div className='flex justify-evenly gap-4'>
             <div className='flex items-center gap-2'>
-            <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Followers</p>
+            <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm myProfileText'>Followers</p>
             <span className='text-[#888888] text-lg'>{pathUser.followers}</span>
             </div>
             <div className='flex items-center gap-2'>
-            <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm'>Following</p>
+            <p className='text-[#888888] font-Roboto text-xs 2xl:text-sm myProfileText'>Following</p>
             <span className='text-[#888888] text-lg'>{pathUser.following}</span>
             </div>
           </div>
           <span className="bg-[#515151] h-[1px] w-full"></span>
         </div>
         <div className='w-full pt-2 pb-4'>
-          <p className='text-[#808080] font-Roboto'>{friendshipStatus === 0 ? 'You are not friends' : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
+          <p className='text-[#808080] font-Roboto myProfileUser'>{friendshipStatus === 0 ? 'You are not friends' : friendshipStatus === 1 ? 'You sent a friend request' : friendshipStatus === 2 ? 'Sent you a friend request' : 'Friends'}</p>
           {friendshipStatus === 0 ? (
             <div className='w-full px-2 flex justify-between gap-4 pt-2 text-sm 2xl:text-base'>
               <button onClick={() => addFriend()} className='px-2 py-0 w-full rounded-full font-Roboto font-normal bg-[#1565CE] transition-all shadow-[0px_1px_2px_0px_rgba(110, 122, 248, 0.25)] hover:shadow-[1px_1px_5px_3px_rgba(12,75,156,1)] hover:opacity-90 text-[#E3E3E3] cursor-pointer'>Add friend</button>
@@ -254,17 +254,17 @@ const UserDetails = ({pathUser, friendship, mutualFriends, popular}: {pathUser: 
         </div>
       </div>
       <div className='bg-[#252525] mt-4 shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)]'>
-        <h3 className='font-Roboto text-[#808080] mt-2'>{mutualFriends?.length !== 0 ? 'Mutual friends' : 'You might know'}</h3>
+        <h3 className='font-Roboto text-[#808080] mt-2 myProfileUser'>{mutualFriends?.length !== 0 ? 'Mutual friends' : 'You might know'}</h3>
         <span className="bg-[#515151] h-[1px] w-full block my-1"></span>
         <div className='flex flex-col px-6 w-full'>
           {mutualFriends?.length !== 0 ? mutualFriends?.map((profile, index) => (
             <div key={profile.userId} className="hover:cursor-pointer flex gap-2 py-2 items-center " onClick={() => router.push(`/users/${profile.username}`)}>
-              <Avatar className='w-[45px] h-[45px] 2xl:w-[45px] 2xl:h-[45px] 2k:w-[55px] 2k:h-[55px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)]'>
+              <Avatar className='w-[45px] h-[45px] 2xl:w-[45px] 2xl:h-[45px] rounded-full shadow-[0px_5px_5px_0px_rgba(0,_0,_0_,_0.25)] mutualFriends2k'>
                   <AvatarImage src={`${profile.pictureUrl}`} className="w-fit h-fit aspect-square rounded-full object-cover"  /><AvatarFallback>{profile.username.slice(0, 1)}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col h-full items-start justify-center w-full">
-                  <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap" title={`${profile.firstName} ${profile.lastName}`}>{profile.firstName} {profile.lastName}</h1>
-                  <p className="text-[#888888] text-sm 2xl:text-base 2k:text-lg truncate whitespace-nowrap">@{profile.username}</p>
+                  <h1 className="text-[#EFEFEF] font-[400] font-Roboto text-sm 2xl:text-base myProfileUserg truncate whitespace-nowrap" title={`${profile.firstName} ${profile.lastName}`}>{profile.firstName} {profile.lastName}</h1>
+                  <p className="text-[#888888] text-sm 2xl:text-base myProfileUser truncate whitespace-nowrap">@{profile.username}</p>
               </div>    
             </div>
           )) : 
