@@ -27,19 +27,20 @@ const NewPost = ({addNewPost}: {addNewPost: (newPost: Post) => void}) => {
     const [isVideoCompressing, setIsVideoCompressing] = useState(false);
     const [processingToastId, setProcessingToastId] = useState<string | number | null>(null);
 
+    // funkcija za dodavanje datoteka u post
     const handlePostFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
             const filesArray = Array.from(event.target.files);
             
-            // Use the spread operator to append new files without removing previous ones.
+            // Dodajemo nove datoteke na kraj trenutnog niza datoteka
             setPostFile((prevFiles) => [...prevFiles, ...filesArray]);
         }
     };
 
-    // async funkcija koja se poziva kada se klikne na gumb 'Send'
     const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
     const ffmpeg = new FFmpeg();
-
+    
+    // async funkcija koja se poziva kada se klikne na gumb 'Send' koja dodaje novi post
     const sendPost = async () => {
         try {
             if (content !== '' || postFile.length !== 0) {
@@ -51,7 +52,7 @@ const NewPost = ({addNewPost}: {addNewPost: (newPost: Post) => void}) => {
                 return;
             }
     
-            // Load ffmpeg
+            // Ucitaj ffmpeg ako nije već učitan
             if (!ffmpeg.loaded) {
                 await ffmpeg.load();
             }
@@ -59,22 +60,22 @@ const NewPost = ({addNewPost}: {addNewPost: (newPost: Post) => void}) => {
             const formData = new FormData();
             formData.append('Content', content);
     
-            // Check for videos and compress if needed
+            // Provjeri za video datoteke i kompresiraj ih ako je potrebno
             for (const file of postFile) {
                 if (file.type.startsWith('video/')) {
-                  // Write the video file to FFmpeg's virtual file system
+                // Ako je datoteka video, kompresiraj je koristeći FFmpeg
                   await ffmpeg.writeFile('input.mp4', await fetchFile(file));
                   
                   setIsVideoCompressing(true);
-                  // Run FFmpeg command to compress the video
+                  // Pozovi FFmpeg da kompresira video datoteku
                   await ffmpeg.exec(['-i', 'input.mp4', '-vcodec', 'libx264', '-b:v', '800k', '-preset', 'fast', 'output.mp4']);
-                  // Read the compressed video from FFmpeg's virtual file system
+                  // Ucitaj kompresirane podatke iz FFmpeg-ovog virtuelnog fajl sistema
                   const compressedData = await ffmpeg.readFile('output.mp4');
                   
-                  // Create a new File object from the compressed data
+                  // radimo novi File objekt sa kompresiranim podacima
                   const compressedFile = new File([compressedData], 'compressed.mp4', { type: 'video/mp4' });
                   
-                  // Append the compressed file to FormData
+                  // dodajemo kompresiranu datoteku u FormData
                   formData.append('Files', compressedFile);
                 } else {
                     // Append non-video files directly
@@ -82,7 +83,7 @@ const NewPost = ({addNewPost}: {addNewPost: (newPost: Post) => void}) => {
                 }
             }
     
-            // Send the request
+            // saljemo request sa svim podacima
             const res = await postsApi.addPost(formData);
             
             if (res.status === 200) {
@@ -96,6 +97,8 @@ const NewPost = ({addNewPost}: {addNewPost: (newPost: Post) => void}) => {
         }
     };
 
+    // useEffect hook koji se koristi za prikazivanje toasta kada je video kompresija u toku
+
     useEffect(() => {
         if(isVideoCompressing) {
             const videoId = toast(<div className='flex gap-2'><Spinner size="3"/>Processing files, please wait shortly!</div>, { duration: Infinity, style: { backgroundColor: "#1565CE", border: "none", color: "#fff" }});
@@ -107,7 +110,7 @@ const NewPost = ({addNewPost}: {addNewPost: (newPost: Post) => void}) => {
                 setProcessingToastId(null);
             }
         }
-    }, [isVideoCompressing]);
+    }, [isVideoCompressing, processingToastId]);
 
     const {user} = useAuth();
 

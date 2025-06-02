@@ -17,14 +17,17 @@ const ProfilePosts = ({user, posts, refreshPosts, myPosts}: {user: User, posts: 
     const [loading, setLoading] = useState(false);
     const [fullPosts, setPosts] = useState(posts);
 
+    // funkcija za dodavanje novog posta na početak liste kako bih se na stranici odmah vidio novi post
     const addNewPost = (newPost: Post) => {
       setPosts((prevPosts) => [newPost, ...prevPosts]);
     }
 
+    // funkcija koja briše post
+
     const deletePost = async (postId: string) => {
       const res = await postsApi.deletePost(postId);
       if (res.status === 200) {
-        // Izbacujem obrisani post
+        // Izbacujem obrisani post iz statea da se ne prikazuje više na stranici
         setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
         toast("Your post has been deleted.", {duration: 1500, style:{backgroundColor: "#1565CE", border: "none", color: "#fff"}})
       }
@@ -103,6 +106,7 @@ const ProfilePosts = ({user, posts, refreshPosts, myPosts}: {user: User, posts: 
       }
     }
 
+    // funkcija koja dobija postove sa servera i postavlja ih u state
     const getPosts = async (page: number) => {
       if(page === 0) {
         setPosts([]);
@@ -132,6 +136,8 @@ const ProfilePosts = ({user, posts, refreshPosts, myPosts}: {user: User, posts: 
         console.error('Could not fetch posts: ', err);
       }
     }
+
+    // funkcija koja dobija nove postove prilikom skrolanja
 
     const fetchMoreData = async() => {
       getPosts(currentPage + 1);

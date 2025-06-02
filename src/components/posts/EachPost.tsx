@@ -78,7 +78,10 @@ const EachPost = ({post, refreshPosts, handleLike, handleDislike, deletePost}: {
 
   const router = useRouter();
 
+  
+
   useEffect(() => {
+    // Dohvaća MIME tipove datoteka iz previousFiles i sprema ih u state fileTypes, za svaki file dohvaća blob i tip, u slučaju greške postavlja prazan string.
     const fetchFileTypes = async () => {
       const types: { [key: string]: string } = {};
 
@@ -101,6 +104,7 @@ const EachPost = ({post, refreshPosts, handleLike, handleDislike, deletePost}: {
     fetchFileTypes();
   }, [previousFiles]);
 
+  // funkcija koja dobija komentare za post
   const getPostComments = async () => {
     const res = await commentsApi.getComments(post.postId); 
     const comments: Comment[] = res.data;
@@ -108,38 +112,33 @@ const EachPost = ({post, refreshPosts, handleLike, handleDislike, deletePost}: {
   }
 
   const handleMediaLoad = (event: React.SyntheticEvent<HTMLImageElement | HTMLVideoElement>) => {
-    // Check if the event is from an image or a video
+    // Provjeri je li event iz slike ili videozapisa
     if (event.currentTarget instanceof HTMLImageElement) {
-      // For image elements, use naturalWidth and naturalHeight
+      // za slike koristi naturalWidth i naturalHeight da postavimo isPortrait
       const { naturalWidth, naturalHeight } = event.currentTarget;
       setIsPortrait(naturalHeight > naturalWidth);
     } else if (event.currentTarget instanceof HTMLVideoElement) {
-      // For video elements, handle accordingly
+      // Za video elemente, koristi videoWidth i videoHeight da postavimo isPortrait
       const { videoWidth, videoHeight } = event.currentTarget;
       setIsPortrait(videoHeight > videoWidth);
     }
   };
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files && event.target.files[0];
-    if (file) {
-      setSelectedImage(file);
-    }
-  };
+  // funkcija koja se poziva kada se promijeni slika
 
   const handlePostFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const filesArray = Array.from(event.target.files);
       
-      // Use URL.createObjectURL to generate a URL for each file and add it to the state
       filesArray.forEach((file) => {
         const fileUrl = URL.createObjectURL(file);
   
-        // Add the file URL to the previous files state
         setPreviousFiles((prevFiles) => [...prevFiles, fileUrl]);
       });
     }
   };
+
+  // funkcija koja se koristi pri updateanju komentara na postu
 
   const updateComment = async (commentId: string, newContent: string) => {
     try {
@@ -153,10 +152,7 @@ const EachPost = ({post, refreshPosts, handleLike, handleDislike, deletePost}: {
       }
   }
 
-
   useEffect(() => {
-
-    // ako korisnik postoji ulazi u {}, ako ne ništa se ne dešava
     if(user) {
       // ako je id korisnika koji je objavio post jednak trenutnom korisniku state se stavlja na true kako bi se gumb 'Delete' prikazao, inače na false kako se ne bi prikazao
       if(post.user?.userId === user.userId || role === "admin") {
@@ -169,6 +165,8 @@ const EachPost = ({post, refreshPosts, handleLike, handleDislike, deletePost}: {
     }
   }, [user, post.user?.userId, role]);  
 
+  // funkcija koja se koristi pri updateanju slika na postu
+
   const handleUpdate = async () => {
     setUpdatedContent(post?.content);
 
@@ -178,6 +176,8 @@ const EachPost = ({post, refreshPosts, handleLike, handleDislike, deletePost}: {
       setPreviousFiles([]);
     }
   }
+
+  // funkcija koja se koristi za updateanje posta
 
   const update = async () => {
     if(post?.content === updatedContent && post.fileUrls === previousFiles) {
@@ -194,65 +194,66 @@ const EachPost = ({post, refreshPosts, handleLike, handleDislike, deletePost}: {
   }
 
 
-const [tajmout, setTajmout] = useState<number | NodeJS.Timeout>();
+  const [tajmout, setTajmout] = useState<number | NodeJS.Timeout>();
 
-const handleReaction = async (reaction: number) => {
-  clearTimeout(tajmout);
-  setTajmout(undefined);
-  try {
-    // Handle reactions based on current state
-    if (postReaction === 1 && reaction === 1) {
-      // Undo a like
-      setPostReaction(0);
-      setPostLikes((prev) => prev - 1);
-      setTajmout(setTimeout(() => {
-        handleLike(post.postId);
-      }, 500));
-    } else if (postReaction === 0 && reaction === 1) {
-      // Add a like
-      setPostReaction(1);
-      setPostLikes((prev) => prev + 1);
-      setTajmout(setTimeout(() => {
-        handleLike(post.postId); // Backend call
-      }, 500));
-    } else if (postReaction === 1 && reaction === -1) {
-      // Switch from like to dislike
-      setPostReaction(-1)
-      setPostLikes((prev) => prev - 1);
-      setPostDislikes((prev) => prev + 1);
-      setTajmout(setTimeout(() => {
-        handleDislike(post.postId); // Backend call
-      }, 500));
-    } else if (postReaction === 0 && reaction === -1) {
-      // Add a dislike
-      setPostReaction(-1);
-      setPostDislikes((prev) => prev + 1);
-      setTajmout(setTimeout(() => {
-        handleDislike(post.postId); // Backend call
-      }, 500));
-    } else if (postReaction === -1 && reaction === -1) {
-      // Undo a dislike
-      setPostReaction(0);
-      setPostDislikes((prev) => prev - 1);
-      setTajmout(setTimeout(() => {
-        handleDislike(post.postId); // Backend call
-      }, 500));
-    } else if (postReaction === -1 && reaction === 1) {
-      // Switch from dislike to like
-      setPostReaction(1);
-      setPostLikes((prev) => prev + 1);
-      setPostDislikes((prev) => prev - 1);
-      setTajmout(setTimeout(() => {
-        handleLike(post.postId); // Backend call
-      }, 500));
+  const handleReaction = async (reaction: number) => {
+    clearTimeout(tajmout);
+    setTajmout(undefined);
+    try {
+      if (postReaction === 1 && reaction === 1) {
+        // Obrisi like
+        setPostReaction(0);
+        setPostLikes((prev) => prev - 1);
+        setTajmout(setTimeout(() => {
+          handleLike(post.postId);
+        }, 500));
+      } else if (postReaction === 0 && reaction === 1) {
+        // Dodaj like
+        setPostReaction(1);
+        setPostLikes((prev) => prev + 1);
+        setTajmout(setTimeout(() => {
+          handleLike(post.postId); // Backend call
+        }, 500));
+      } else if (postReaction === 1 && reaction === -1) {
+        // Promjeni sa like na dislike
+        setPostReaction(-1)
+        setPostLikes((prev) => prev - 1);
+        setPostDislikes((prev) => prev + 1);
+        setTajmout(setTimeout(() => {
+          handleDislike(post.postId); // Backend call
+        }, 500));
+      } else if (postReaction === 0 && reaction === -1) {
+        // Dodaj dislike
+        setPostReaction(-1);
+        setPostDislikes((prev) => prev + 1);
+        setTajmout(setTimeout(() => {
+          handleDislike(post.postId); // Backend call
+        }, 500));
+      } else if (postReaction === -1 && reaction === -1) {
+        // Obrisi dislike
+        setPostReaction(0);
+        setPostDislikes((prev) => prev - 1);
+        setTajmout(setTimeout(() => {
+          handleDislike(post.postId); // Backend call
+        }, 500));
+      } else if (postReaction === -1 && reaction === 1) {
+        // Promjeni sa dislike na like
+        setPostReaction(1);
+        setPostLikes((prev) => prev + 1);
+        setPostDislikes((prev) => prev - 1);
+        setTajmout(setTimeout(() => {
+          handleLike(post.postId); // Backend call
+        }, 500));
+      }
+    } catch (err) {
+      console.error("Error handling reaction:", err);
     }
-  } catch (err) {
-    console.error("Error handling reaction:", err);
-  }
-};
+  };
 
 
   const [popoverOpen, setPopoverOpen] = useState(false);
+
+  // funkcija koja se poziva pri skrolanju koja zatvara popover ako je otvoren
 
   useEffect(() => {
     const handleScroll = () => {
@@ -401,7 +402,7 @@ const handleReaction = async (reaction: number) => {
             {post.fileUrls?.length > 0 && (
               <div>
                 {post.fileUrls?.length === 1 && isPortrait ? (
-                  // Single portrait image or video
+                  // Ako ima jedna slika ili video i ako je portret
                   post.fileUrls[0].endsWith('.mp4') || post.fileUrls[0].endsWith('.mov') ? (
                     <video
                       key={0}
@@ -423,7 +424,7 @@ const handleReaction = async (reaction: number) => {
                     />
                   )
                 ) : (
-                  // Multiple files or single non-portrait file
+                  // Ako ima više slika ili videozapisa ili ako je samo jedna slika koja nije portret
                   post.fileUrls.map((file, index) => (
                     file.endsWith('.mp4') || file.endsWith('.mov') ? (
                       <video
@@ -486,7 +487,7 @@ const handleReaction = async (reaction: number) => {
                       {post.fileUrls?.length > 0 && (
                         <div>
                           {post.fileUrls?.length === 1 && isPortrait ? (
-                            // Single portrait image or video
+                            // Ako ima jedna slika ili video i ako je portret
                             post.fileUrls[0].endsWith('.mp4') || post.fileUrls[0].endsWith('.mov') ? (
                               <video
                                 key={0}
@@ -508,7 +509,7 @@ const handleReaction = async (reaction: number) => {
                               />
                             )
                           ) : (
-                            // Multiple files or single non-portrait file
+                            // Ako ima više slika ili videozapisa ili ako je samo jedna slika koja nije portret
                             post.fileUrls.map((file, index) => (
                               file.endsWith('.mp4') || file.endsWith('.mov') ? (
                                 <video

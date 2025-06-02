@@ -5,11 +5,15 @@ import { User } from '../../types/types';
 import { profileApi } from '@/src/lib/utils';
 import Profiles from '@/src/components/people/Profiles';
 
+// Funkcija koja dobija korisnike na osnovu pretrage
+
 async function getUsersBySearch(searchTerm: string) {
   const res = await profileApi.searchProfiles(searchTerm);
   const searchedUsers: User[] = res.data;
   return searchedUsers;
 }
+
+// Funkcija koja dobija prijedloge za praćenje korisnika
 
 async function getSuggestions() {
   const res = await profileApi.getFollowSuggestions();
@@ -17,12 +21,15 @@ async function getSuggestions() {
   return suggestions;
 }
 
+// Funkcija koja dobija profile korisnika, ograničene na određeni broj
+
 async function getProfiles(limit: number) {
   const res = await profileApi.getProfiles(limit);
   const profiles: User[] = res.data;
   return profiles;
 }
 
+// Definicija tipova za props
 type Props = {
   searchParams: Promise<{ [key: string]: string }>;
 };

@@ -20,6 +20,8 @@ import AddPicture from "../components/other/AddPicture";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
+// Funkcije za dobijanje podataka sa servera
+
 async function getPopularUsers() {
   const res = await profileApi.getPopularProfiles();
   const popularUsers: User[] = await res.data;
@@ -59,16 +61,19 @@ async function getFollowedUsers(userId: string) {
 
 export default async function Home() {
 
+  // Dobijamo korisničke podatke iz kolačića
   const user = await getCookieServer('user');
   const ignoreDefaultPic = await getCookieServer('ignoreDefaultPic');
+
   if(!user) {
     return redirect('/auth');
   }
 
   const userData: User = JSON.parse(user);
-
+  // Pozivamo funkcije za dobijanje podataka sa servera
   const [popularUsers, popularFeed, yourFeed, yourFriends, suggestions, followedUsers] = await Promise.all([getPopularUsers(), getPopularFeed(), getYourFeed(), getYourFriends(userData.userId), getSuggestions(), getFollowedUsers(userData.userId)]);
 
+  // Funkcija za osvježavanje postova
   const refreshPosts = async () => {
     'use server';
     revalidatePath('page');
@@ -76,6 +81,7 @@ export default async function Home() {
 
   let mergedUsers: User[] = suggestions;
 
+  // Ako je broj prijedloga manji od 4, dodajemo popularne korisnike koji nisu već u prijedlozima
   if(suggestions.length < 4) {
     const neededProfiles = 4 - suggestions.length;
   
@@ -86,6 +92,8 @@ export default async function Home() {
     
     mergedUsers = [...suggestions, ...filteredPopularUsers];
   }
+
+  // Ako je korisnik već postavio sliku profila, ne prikazujemo opciju za dodavanje slike
 
   const handleSkipImage = async() => {
     'use server';
@@ -104,7 +112,7 @@ export default async function Home() {
       ) :
       (
       <div className="flex h-full py-16 md:py-30">
-        {/* Left Sidebar */}
+        {/* Lijevi Sidebar */}
         <div className="w-[25%] fixed hidden left-0 h-full xl:flex justify-center homeUsers2k">
           <div className="bg-[#252525] flex flex-col py-4 rounded-lg shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] w-[180px] xl:w-[200px] 2xl:max-w-[275px] 2xl:w-full lg:h-[400px] xl:h-[500px] 2xl:h-[550px] overflow-x-hidden screen2k">
             <h1 className="font-Roboto text-xl xl:text-2xl 3xl:text-3xl px-4 pb-4 text-[#EFEFEF] font-normal text-center">Who's popular</h1>
@@ -118,12 +126,12 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Middle Content */}
+        {/* Srednji Content */}
         <div className="flex-grow flex justify-center xl:px-[25%]">
           <Posts popularFeed={popularFeed} yourFeed={yourFeed} suggestions={mergedUsers} refreshPosts={refreshPosts} />
         </div>
 
-        {/* Right Sidebar */}
+        {/* Desni Sidebar */}
         <div className="w-[25%] fixed hidden right-0 h-full xl:flex justify-center homeUsers2k">
           <div className="bg-[#252525] flex flex-col py-4 rounded-lg shadow-[0px_2px_1px_3px_rgba(15,_15,_15,_0.1)] w-[180px] xl:w-[200px] 2xl:max-w-[275px] 2xl:w-full lg:h-[400px] xl:h-[500px] 2xl:h-[550px] screen2k overflow-x-hidden">
             <h1 className="font-Roboto text-xl xl:text-2xl 3xl:text-3xl px-4 pb-4 text-[#EFEFEF] font-normal text-center">Your friends</h1>

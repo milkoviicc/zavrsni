@@ -15,7 +15,7 @@ const AddPicture = ({user, handleSkip}: {user: User, handleSkip: () => void}) =>
     const [shortUsername, setShortUsername] = useState('');
     const {setIgnoreDefaultPic} = useAuth();
 
-
+    // skraćujemo korisničko ime na prva dva slova imena i prezimena kako bi se u navbaru moglo prikazati u avataru ukoliko se slika ne učita 
     useEffect(() => {
         if(user?.firstName && user?.lastName) {
           const firstNameLetter = user?.firstName?.slice(0,1);
@@ -24,11 +24,15 @@ const AddPicture = ({user, handleSkip}: {user: User, handleSkip: () => void}) =>
         }
     }, [user]);
 
+    // ako se dijalog zatvori, brišemo izabranu sliku
+
     useEffect(() => {
         if(changeImgDialogOpen === false) {
           setSelectedImage(null);
         }
     }, [changeImgDialogOpen]);
+
+    // funkcija koja se poziva kada se izabere slika
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files && event.target.files[0];
@@ -36,6 +40,8 @@ const AddPicture = ({user, handleSkip}: {user: User, handleSkip: () => void}) =>
             setSelectedImage(file);
         }
     };
+
+    // funkcija koja se poziva kada se slika prevuče i ispusti na labelu
 
     const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
         e.preventDefault();
@@ -45,11 +51,15 @@ const AddPicture = ({user, handleSkip}: {user: User, handleSkip: () => void}) =>
           setSelectedImage(files[0]);
         }
     }
+
+    // funkcija koja se poziva kada se slika prevuče preko labela
     
     const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
         e.preventDefault();
         e.stopPropagation();
     }
+
+    // funkcija koja se poziva kada se slika promijeni, šalje se na server i ažurira se user cookie sa novom slikom
     
     const changeImage = async (image: File) => {
         const res = await profileApi.updateProfilePicture(image);
@@ -59,6 +69,8 @@ const AddPicture = ({user, handleSkip}: {user: User, handleSkip: () => void}) =>
             document.cookie = `user=${res.data}; path=/;`;
         }
     }
+
+    // funkcija koja se poziva kada se preskoči slika, postavlja se ignoreDefaultPic na true i poziva se handleSkip
 
     const skipImage = async() => {
         setIgnoreDefaultPic(true);

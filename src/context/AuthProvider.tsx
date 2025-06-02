@@ -43,6 +43,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // postavljam korisnikove podatke (userData) u state 'user'
       setUser(userData);
       
+      // postavljam korisnikov role u state 'role'
+      // role može biti 'user' ili 'admin'
       setRole(role)
       
       // postavljam svaki axios request da sadrži authorization bearer i token dobiven iz localStoragea
@@ -51,6 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // postavljam isLoggedIn state na true kako bi se znalo da je korisnik prijavljen
       setIsLoggedIn(true);
       
+      // postavljam cookie feed na vrijednost feed-a iz localStoragea
       Cookies.set("feed", `${feed}`);
       const ignoreDefaultPic = Cookies.get('ignoreDefaultPic');
 
@@ -66,6 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [isLoggedIn, router]);
   
 
+  // funkcija za registraciju korisnika
   const callRegister = async(username: string, email: string, password: string, confirmPassword: string) => {
     try {
       const res = await accountApi.register(username, email, password, confirmPassword);
@@ -87,6 +91,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch(err) {
     }
   }
+
+  // funkcija za prijavu korisnika
 
   const callLogin = async(username: string, password: string) => {
     try {
@@ -125,6 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     router.push('/auth');
   }
 
+  // funkcija za brisanje korisničkog računa
   const deleteAccount = async () => {
     try {
       await accountApi.deleteAccount();
@@ -134,14 +141,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
   
 
-  // varijable koje se mogu koristit u drugim fileovima
+  // *varijable koje se mogu koristit u drugim fileovima*
+
   // isAuthenticated provjerava postoji li korisnik tj je li prijavljen
   const isAuthenticated = !!user;
+
   // fullyRegistered provjerava jel prijavljen korisnik ima unešeno puno ime i prezime ili ne
   const fullyRegistered = user?.firstName !== null && user?.lastName !== null;
 
+  // defaultPicture provjerava je li korisnik postavio sliku profila ili je defaultna slika profila
   const defaultPicture = user?.pictureUrl === 'https://snetblobstorage.blob.core.windows.net/snetprofiles/default.jpg';
 
+  // ignoreDefaultPic je varijabla koja se koristi za ignoriranje defaultne slike profila
   const [ignoreDefaultPic, setIgnoreDefaultPic] = useState(false);
 
   // ukoliko je trenutno stanje loading statea true vraća null

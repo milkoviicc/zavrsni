@@ -12,25 +12,29 @@ const SearchedUser = ({searchedUser}: {searchedUser: User}) => {
 
     const {user} = useAuth();
 
-   // Define the query function for checking friendship status
+   // Funkcija koja dohvaća listu korisnika koje trenutni korisnik prati
     const getFollowedUsers = async (): Promise<string[]> => {
         try {
             if(user) {
                 const res = await followsApi.getFollowed(user?.userId);
-                return res.data; // Return the string[]
+                return res.data; 
             }
             return [];
         } catch (error) {
             console.error("Error fetching friendship status:", error);
-            throw error; // Rethrow error so it can be handled by React Query
+            throw error;
         }
     };
+
+    // provjeravamo jesu li podatci koji se dobijaju iz funkcije niz i ako jesu, provjeravamo da li je trenutni korisnik kojeg tražimo u tom nizu te postavljamo setIsFollowed na true ili false
 
     useEffect(() => {
         if(Array.isArray(data)) {
             setIsFollowed(data.some((userId) => searchedUser.userId === userId));
         }
     }, [data, searchedUser.userId]);
+
+    // funkcija koja se poziva kada se klikne na follow/unfollow button, šalje se zahtjev na server i ažurira se stanje isFollowed
 
     const handleFollow = async (id: string) => {
         try {
@@ -55,6 +59,7 @@ const SearchedUser = ({searchedUser}: {searchedUser: User}) => {
     if(!user) {
         return;
     }
+    
   return (
     <div className='relative w-full flex justify-between items-center gap-2 sm:gap-4 px-1'>
         <UserComponent user={searchedUser} handleRoute={null}/>

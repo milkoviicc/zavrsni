@@ -10,6 +10,9 @@ const Profiles = ({searchTerm, searchedUsers, users, suggestions}: {searchTerm: 
 
   const [youMightLikeUsers, setYouMightLikeUsers] = useState<User[]>([]);
 
+  // Postavljamo korisnike koje bi korisnik mogao voljeti na temelju prijedloga i preostalih korisnika
+  // koji nisu u prijedlozima, a prikazujemo samo prvih 4 korisnika
+
   useEffect(() => {
     if(suggestions) {
       setYouMightLikeUsers(suggestions);

@@ -46,8 +46,6 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
     const {user, role} = useAuth();
 
     useEffect(() => {
-
-        // ako korisnik postoji ulazi u {}, ako ne ništa se ne dešava
         if(user) {
             // ako je id korisnika koji je objavio post jednak trenutnom korisniku state se stavlja na true kako bi se gumb 'Delete' prikazao, inače na false kako se ne bi prikazao
             if(reply.userProfile.userId === user.userId || role === "admin") {
@@ -58,11 +56,12 @@ const EachReply = ({reply, like, dislike, deleteReply, updateReply}: {reply: Rep
         }
     }, [reply.userProfile.userId, role, user]);
 
-
+    // funkcija koja postavlja sadrzaj reply-a kako bi se odmah azurirao na stranici
     const handleUpdate = () => {
         setUpdatedContent(reply.content);
     }
 
+    // funkcija za update reply-a
     const update = async () => {
         if(reply.content === updatedContent) {
             toast("You must change text!", {duration: 1500, style: {backgroundColor: "#CA3C3C", border: "none", color: "#fff"}});

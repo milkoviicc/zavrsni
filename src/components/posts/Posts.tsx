@@ -20,6 +20,7 @@ const Posts = ({popularFeed, yourFeed, suggestions, refreshPosts}: {popularFeed:
     const [randomNmbs, setRandomNmbs] = useState<number[]>();
     const [loading, setLoading] = useState(false);
 
+    // postavljamo postsState na vrijednost feed-a iz cookies-a
     useEffect(() => {
       if(feed === 'Popular') {
         setPosts(popularFeed);
@@ -27,6 +28,8 @@ const Posts = ({popularFeed, yourFeed, suggestions, refreshPosts}: {popularFeed:
         setPosts(yourFeed);
       }
     }, [feed, popularFeed, yourFeed]);
+
+    // generiramo nasumične brojeve između 10 i 100 koji će se koristiti za prikazivanje prijedloga korisnika u feedu između postova
 
     useEffect(() => {
       const newRandomNmbs: number[] = [];
@@ -45,6 +48,7 @@ const Posts = ({popularFeed, yourFeed, suggestions, refreshPosts}: {popularFeed:
     }, []);
 
 
+    // funkcija koja se poziva pri dodaji novog posta
     const addNewPost = (newPost: Post) => {
       if(feed === 'Popular') {
         setPosts((prevPosts) => [...prevPosts, newPost]);
@@ -54,6 +58,8 @@ const Posts = ({popularFeed, yourFeed, suggestions, refreshPosts}: {popularFeed:
         refreshPosts();
       }
     }
+
+    // funkcija za brisanje posta
 
     const deletePost = async (postId: string) => {
       const res = await postsApi.deletePost(postId);
@@ -65,6 +71,7 @@ const Posts = ({popularFeed, yourFeed, suggestions, refreshPosts}: {popularFeed:
       }
     }
 
+    // funkcija koja se poziva pri promjeni feeda (Popular/Your Feed)
     const handleFeedState = (feedState: string) => {
         const currentFeed = Cookies.get('feed');
         if(currentFeed === 'Popular' && feedState === 'Popular') {
@@ -161,6 +168,8 @@ const Posts = ({popularFeed, yourFeed, suggestions, refreshPosts}: {popularFeed:
       }
     }
 
+    // funkcija koja dohvaća postove na temelju feeda (Popular/Your Feed) i trenutne stranice
+
     const getPosts = async (postsState: string, page: number) => {
       if(page === 0) {
         setPosts([]);
@@ -217,11 +226,13 @@ const Posts = ({popularFeed, yourFeed, suggestions, refreshPosts}: {popularFeed:
       }
     }
 
+    // funkcija za dohvaćanje postova prilikom skrolanja
+
     const fetchMoreData = async() => {
       if(postsState)  {
         getPosts(postsState, currentPage + 1);
       }
-      setCurrentPage((prevPage) => prevPage + 1);  // Increment page
+      setCurrentPage((prevPage) => prevPage + 1);  // povećaj currentPage za 1
     };
 
   return (

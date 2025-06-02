@@ -17,6 +17,7 @@ const PostComment = ({post, refreshPosts, refreshComments, setComments, callComm
 
   const {user} = useAuth();
 
+  // funkcija za dodavanje komentara
   const PostComment = async () => {
     try {
 

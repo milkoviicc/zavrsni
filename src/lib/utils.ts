@@ -12,9 +12,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-const API_BASE_URL = 'https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/'; // Replace with your actual API base URL
+const API_BASE_URL = 'https://snetapi-evgqgtdcc0b6a2e9.germanywestcentral-01.azurewebsites.net/';
 
-// Create axios instance
+// Kreiramo axios instancu s osnovnim URL-om i headerima
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -24,7 +24,7 @@ const api = axios.create({
 
 const IS_SERVER = typeof window === 'undefined';
 
-// Request interceptor to add auth token
+// Koristimo interceptors za dodavanje auth tokena u svaki zahtjev
 api.interceptors.request.use(async(config) => {
     const token = IS_SERVER ? await getCookieServer("token") : getCookie("token");
     if (token) {
@@ -35,7 +35,7 @@ api.interceptors.request.use(async(config) => {
   (error) => Promise.reject(error)
 );
 
-// Helper function to handle API responses
+// pomoćna funkcija za API pozive
 const handleResponse = async <T>(apiCall: () => Promise<T>): Promise<T> => {
   try {
     const response = await apiCall();
@@ -118,6 +118,7 @@ export const accountApi = {
     }
   },
 
+  // dobijamo role iz tokena
   getRoleFromToken: (token: string): "admin" | "user" | null => {
     try {
       const decoded: {role?: "admin" | "user"} = jwtDecode(token)

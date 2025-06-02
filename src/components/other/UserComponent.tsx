@@ -8,6 +8,8 @@ const UserComponent = ({user, handleRoute}: {user: User | undefined, handleRoute
   const router = useRouter();
   const [shortUsername, setShortUsername] = useState('');
 
+  // ako je handleRoute null, onda se koristi router za navigaciju, inače se koristi funkcija handleRoute
+
   const routeToUser = () => {
     if(handleRoute !== null) {
       if(user) {
@@ -18,18 +20,21 @@ const UserComponent = ({user, handleRoute}: {user: User | undefined, handleRoute
     }
   }
 
+  // prefetchamo stranicu korisnika ako postoji username, kako bi se brže učitala kada se klikne na avatar
   useEffect(() => {
     if(user?.username) {
       router.prefetch(`/users/${user.username}`);
     } 
   }, [router, user?.username]);
 
+  // skraćujemo korisničko ime na prva dva slova imena i prezimena kako bi se u avataru moglo prikazati u slučaju da slika nije učitana
+
   useEffect(() => {
-      if(user && user.firstName && user.lastName) {
-          const firstLetter = user.firstName.slice(0, 1);
-          const secondLetter = user.lastName.slice(0, 1);
-          setShortUsername(firstLetter + secondLetter);
-      }
+    if(user && user.firstName && user.lastName) {
+        const firstLetter = user.firstName.slice(0, 1);
+        const secondLetter = user.lastName.slice(0, 1);
+        setShortUsername(firstLetter + secondLetter);
+    }
   }, [user]);
 
   if(!user) {

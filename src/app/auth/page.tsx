@@ -34,6 +34,8 @@ const Auth = () => {
   const [registerPassword, setRegisterPassword] = useState('');
   const [confirmRegisterPassword, setConfirmRegisterPassword] = useState('');
 
+  // provjerava se sirina ekrana i initialRender na false nakon prvog renderiranja
+
   useEffect(() => {
     const handleResize = () => {
       setIsHorizontal(window.innerWidth > 768);
@@ -41,7 +43,6 @@ const Auth = () => {
 
     window.addEventListener('resize', handleResize);
 
-    // Set initialRender to false after the first render
     setInitialRender(false);
 
     return () => window.removeEventListener('resize', handleResize);
@@ -74,26 +75,21 @@ const Auth = () => {
     setLoading(false);
   };
 
+  // funkcija koja provjerava unesene podatke u formi za registraciju
+
   const validateForm = () => {
 
-    // varijabla za provjeravanje brojeva
     const numberRegex = /\d/;
-
-    // ukoliko nešto od podataka nije uneseno, postavlja se error poruka i vraća false
 
     if(!username || !email || !registerPassword || !confirmRegisterPassword) {
       setError('You must fill in all fields!');
       return false;
     }
 
-    // ukoliko email ne sadrži '@', postavlja se error poruka i vraća false
-
     if(!email.includes('@')) {
       setError('Email is not in the correct format. ');
       return false;
     }
-
-    // ukoliko lozinka nije jednaka potvrdjenoj lozinki, postavlja se error poruka i vraća false
 
 
     if(registerPassword !== confirmRegisterPassword) {
@@ -101,21 +97,15 @@ const Auth = () => {
       return false;
     }
 
-    // ukoliko lozinka ne sadrži 8 znakova, postavlja se error poruka i vraća false
-
     if(registerPassword.length < 8) {
       setError('Password must be at least 8 characters long.');
       return false;
     }
 
-    // ukoliko lozinka ne sadrži niti 1 broj, postavlja se error poruka i vraća false
-    
     if(!numberRegex.test(registerPassword)) {
       setError('Password must contain at least 1 digit!');
       return false;
     }
-
-    // ukoliko je sve dobro vraća se true
 
     return true;
   };
@@ -127,36 +117,28 @@ const Auth = () => {
 
     setError(null);
 
-    // radim varijablu isValid kojoj je vrijednost vraćena iz funkcije validateForm()
-
     const isValid = validateForm();
 
-    // ukoliko je vrijednost false vraća se i ništa se dalje ne izvršava, inače ako je true ide dalje
     if(!isValid) return;
 
-    // loading state se postavlja na true
 
     setLoading(true);
 
     try {
 
-      // Provjerava je li username kreće sa slovom
       if (!/^[a-zA-Z]/.test(username)) {
         setError('Username must start with a letter.');
         setLoading(false);
         return;
       }
 
-      // Poziva register funkciju iz AuthProvider.tsx i čeka odgovor
       await callRegister(username, email, registerPassword, confirmRegisterPassword);
 
       toast("You have been successfully registered. Redirecting you to our home page.", {duration: 1500, style: {backgroundColor: "#1565CE", border: "none", color: "#fff"}});
 
-      // stavljamo loading state na false jer se više ne loada nego je sve gotovo
       setLoading(false);
     } catch(err: any) {
       setLoading(false);
-      // ukoliko je došlo do greške, postavljamo Error sa određenom porukom
       setError(err.message);
     }
   }
@@ -165,11 +147,11 @@ const Auth = () => {
 
     const slideVariants = {
       initial: isMobile 
-        ? { y: loginRoute ? '0%' : '100%' } // Slide vertically out of view for mobile
-        : { x: loginRoute ? '0%' : '60%' },   // Slide horizontally on larger screens
+        ? { y: loginRoute ? '0%' : '100%' } // Ulazi vertikalno u pogled na mobitelima
+        : { x: loginRoute ? '0%' : '60%' },   // Ulazi horizontalno na većim ekranima
       animate: isMobile 
-        ? { y: loginRoute ? '100%' : '0%' } // Slide vertically into view for mobile
-        : { x: loginRoute ? '60%' : '0%' }, // Slide horizontally on larger screens
+        ? { y: loginRoute ? '100%' : '0%' } // Ulazi vertikalno u pogled na mobitelima
+        : { x: loginRoute ? '60%' : '0%' }, // Ulazi horizontalno na većim ekranima
       transition: { duration: 0.8 },
     };
 

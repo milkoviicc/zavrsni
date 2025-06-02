@@ -10,10 +10,14 @@ import { revalidatePath } from 'next/cache';
 import { getCookieServer } from '@/src/lib/getToken';
 import MobileFriends from '@/src/components/profile/MobileFriends';
 
+// Funkcija koja dobija korisnika na osnovu korisničkog imena
+
 async function getUser(username: string) {
   const res = await profileApi.getProfileByUsername(username);
   return res.data as Profile;
 }
+
+// Funkcije koje dobijaju postove, prijatelje, status prijateljstva, zajedničke prijatelje i popularne korisnike
 
 async function getPosts(username: string) {
   const res = await postsApi.getUserPostsByUsername(username);
@@ -41,17 +45,21 @@ async function getPopularUsers() {
 }
 
 const Users = async ({ params }: any) => {
-  const myparams = await params;
-  const currentUser = await getUser(myparams.username);
-  const loggedUser = await getCookieServer('user');
 
+  // dobijamo korisnika na osnovu korisničkog imena iz parametara
+  const myparams = await params;
+
+  const currentUser = await getUser(myparams.username);
+  
+  // provjeravamo da li je taj korisnik prijavljen
+  const loggedUser = await getCookieServer('user');
   if(!loggedUser) {
     return;
   }
 
   const loggedUserData: User = JSON.parse(loggedUser);
 
-  // Fetch posts and friends concurrently
+  // Dobijamo podatke o postovima, prijateljima korisnika i popularnim korisnicima
   const [posts, friends, popularUsers] = await Promise.all([
     getPosts(currentUser.username),
     getFriends(currentUser.userId),
@@ -60,23 +68,28 @@ const Users = async ({ params }: any) => {
 
   let friendshipStatus: FriendshipStatus | null = null;
   let mutualFriends: User[] | null = null;
-
+  
+  // Ako trenutni korisnik nije isti kao prijavljeni korisnik, dobijamo status prijateljstva i zajedničke prijatelje
   if(currentUser.username !== loggedUserData.username) {
     friendshipStatus = await getFriendshipStatus(currentUser.userId);
     mutualFriends = await getMutualFriends(currentUser.userId);
   }
 
+  // Kada se funkcija izvrši, revalidiramo putanju da bismo osvježili podatke
   const refreshPosts = async () => {
     'use server';
     revalidatePath('/users');
   };
 
+
+  // Funkcija za promjenu slike profila
   const handleChangeImage = async (selectedImage: File) => {
     'use server';
     await profileApi.updateProfilePicture(selectedImage);
     revalidatePath('/users');
   };
 
+  // Funkcija za revalidaciju putanje nakon promjene slike profila
   const revalidate = async() => {
     'use server';
     revalidatePath('/users');

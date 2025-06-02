@@ -52,11 +52,9 @@ const EachComment = ({post, comment, refreshComments, updateComment, callComment
 
     const router = useRouter();
 
+    // ako je id korisnika koji je objavio post jednak trenutnom korisniku state se stavlja na true kako bi se gumb 'Delete' prikazao, inače na false kako se ne bi prikazao
     useEffect(() => {
-  
-      // ako korisnik postoji ulazi u {}, ako ne ništa se ne dešava
       if(user) {
-        // ako je id korisnika koji je objavio post jednak trenutnom korisniku state se stavlja na true kako bi se gumb 'Delete' prikazao, inače na false kako se ne bi prikazao
         if(comment.user.userId === user.userId || post.user.userId === user.userId || role === "admin") {
           setShowUpdate(true);
         } else {
@@ -64,6 +62,8 @@ const EachComment = ({post, comment, refreshComments, updateComment, callComment
         }
       }
     }, [user, comment.user.userId, post.user.userId, role]);
+
+    // postavljamo state commentReplies na komentare koji su proslijeđeni u komponentu kako bi se mogli prikazati
 
     useEffect(() => {
       setCommentReplies(comment.replies);
@@ -154,9 +154,12 @@ const EachComment = ({post, comment, refreshComments, updateComment, callComment
     }
     }
   
+    // funkcija koja postavlja updatedContent na trenutni sadržaj komentara kako bi se odmah prikazalo na stranici
     const handleUpdate = () => {
       setUpdatedContent(comment.content);
     }
+
+    // funkcija koja se poziva kada se klikne na gumb 'Update' u dijalogu za ažuriranje komentara
 
     const update = async () => {
       if(comment.content === updatedContent) {
@@ -166,6 +169,8 @@ const EachComment = ({post, comment, refreshComments, updateComment, callComment
       updateComment(comment.commentId, updatedContent);
       setIsUpdateCommentDialogOpen(false);
     }
+
+    // funkcija koja se poziva kada se klikne na gumb 'Reply' u komentaru
 
     const handleReply = async (replyContent: string) => {
       if(replyContent === '') {
@@ -187,6 +192,7 @@ const EachComment = ({post, comment, refreshComments, updateComment, callComment
         console.error(err);
       }
     }
+
 
     const handleReplyLike = async (commentReplyId: string) => {
       try {
@@ -248,8 +254,6 @@ const EachComment = ({post, comment, refreshComments, updateComment, callComment
     }
 
     const [popoverOpen, setPopoverOpen] = useState(false);
-
-
 
   return (
     <div className='py-2 flex-col'>

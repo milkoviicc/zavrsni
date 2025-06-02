@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation';
 
 const MobileFriends = ({friends, currentUser, loggedUserData}: {friends: Friendship[], currentUser: User, loggedUserData: User}) => {
 
-    const [columns, setColumns] = useState(0);
+  const [columns, setColumns] = useState(0);
 
+  // funkcija za postavljanje broja kolona na osnovu širine ekrana
   useEffect(() => {
     const updateColumns = () => {
       if(window.innerWidth >= 768) {

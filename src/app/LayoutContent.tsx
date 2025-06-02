@@ -6,10 +6,15 @@ import Footer from "../components/layout/Footer";
 import { usePathname } from "next/navigation";
 
 const LayoutContent = ({ children }: { children: React.ReactNode }) => {
+  // Koristi useAuth za pristup korisničkim podacima i statusu registracije
   const { user, ignoreDefaultPic, fullyRegistered } = useAuth();
+
+  // Koristi usePathname za dobijanje trenutne putanje
   const pathname = usePathname();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [show, setShow] = useState(false);
+
+  // Provjerava da li je korisnik prijavljen i da li je u potpunosti registriran
 
   useEffect(() => {
     setIsAuthenticated(!!user);
@@ -21,7 +26,7 @@ const LayoutContent = ({ children }: { children: React.ReactNode }) => {
     }
   }, [user, pathname, ignoreDefaultPic]);
   
-  // Track user state and trigger re-render when it changes
+  // Postavlja da li se prikazuje navbar i footer na osnovu korisničkog statusa
   return (
     <div className="flex flex-col min-h-screen">
       {isAuthenticated && fullyRegistered && show ? <Navbar /> : null}

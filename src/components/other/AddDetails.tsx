@@ -10,6 +10,8 @@ const AddDetails = () => {
     const [lastName, setLastName] = useState('');
     const [description, setDescription] = useState('');
     const [occupation, setOccupation] = useState('');
+
+    // funkcija koja dodaje detalje korisnika
     const addDetails = async(firstName: string, lastName: string, description: string, occupation: string) => {
         const user = await getCookieServer('user');
         if(user) {
@@ -23,6 +25,8 @@ const AddDetails = () => {
                 setSuccessfullUpdate(true);
 
                 const userData = JSON.stringify(res.data);
+
+                // brišemo stari cookie na način da postavimo datum isteka na prošlost, a zatim postavljamo novi cookie sa ažuriranim podacima
                 document.cookie = 'user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC';
                 document.cookie = `user=${userData}; path=/;`;
                 window.location.reload();

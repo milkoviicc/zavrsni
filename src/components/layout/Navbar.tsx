@@ -21,9 +21,9 @@ const Navbar = memo(() => {
 
     // prosljedjuje mi se user state i funkcija logout iz AuthProvider.tsx
 
-    const {logout, deleteAccount} = useAuth()
+    const {logout, deleteAccount} = useAuth();
 
-    // nextJs router za mjenjanje path-a
+    // koristim useRouter i usePathname za navigaciju i dobijanje trenutne putanje
     const router = useRouter();
     const path = usePathname();
 
@@ -40,9 +40,10 @@ const Navbar = memo(() => {
     const [deleteAccOpen, setDeleteAccOpen] = useState(false);
     const [showLogo, setShowLogo] = useState(true);
 
+    // koristim useAuth za pristup korisničkim podacima
     const {user} = useAuth();
 
-
+    // skraćujemo korisničko ime na prva dva slova imena i prezimena kako bi se u navbaru moglo prikazati u avataru ukoliko se slika ne učita
     useEffect(() => {
         if (user && user.firstName && user.lastName) {
             const firstLetter = user.firstName.slice(0, 1);
@@ -50,6 +51,8 @@ const Navbar = memo(() => {
             setShortUsername(firstLetter + secondLetter);
         }
     }, [user]); 
+
+    // funkcija koja se poziva pri pretrazi korisnika
 
     useEffect(() => {
         const handleSearch = async (search: string) => {
@@ -71,45 +74,47 @@ const Navbar = memo(() => {
                 setReceivedItems(res.data);
                 setIsSearchLoading(false);
     
-                // Ensure the Input remains focused
+                // ostavi fokus na inputu nakon pretrage
                 inputRef.current?.focus();
                 
             } catch(err) {
                 console.error(err);
             }
         }
+
+        // pričekaj 500ms prije nego što se izvrši pretraga
         const timeoutId = setTimeout(() => {
             handleSearch(search);
         }, 500);
-        // Clear the timeout if `search` changes
+
+        // obriši timeout ako se pretraga promijeni prije isteka vremena da se nebi slalo previše zahtjeva
         return () => clearTimeout(timeoutId);
     }, [search])
 
-    const handleRoute = (user: User) => {
-        setSearchOpen(false);
-        router.push(`/users/${user.username}`);
-        setSearch('');
-        setReceivedItems([]);
-        searchInputRef.current?.blur();
-    };
-
+    // funkcija koja obriše pretragu i sakrije rezultate
     const clearSearch = () => {
         if(search !== '') {
             setSearch('');
             setReceivedItems([]);
         } else {
-            searchInputRef.current?.focus(); // Focus the input
+            searchInputRef.current?.focus(); // ostavi fokus na inputu nakon pretrage
         }
     }
 
+
+    // funkcija koja mjenja stanje pretrage na mobilnim uređajima zbog ikone
     const mobileHandleSearch = () => {
         setSearchOpen((prev) => !prev);
     }
+
+    // funkcija koja briše pretragu na mobilnim uređajima i sakriva rezultate
 
     const mobileClearSearch = () => {
         setSearch('');
         setReceivedItems([]);
     }
+
+    // funkcija koja se poziva pri skrolanju kako bi se svi popoveri otvoreni zatvorili i pretraga obrisala
 
     useEffect(() => {
         const handleScroll = () => {
@@ -126,6 +131,8 @@ const Navbar = memo(() => {
             return () => window.removeEventListener("scroll", handleScroll);
         }
     }, [popoverOpen, pcPopoverOpen, searchOpen]);
+
+    // funkcija koja se poziva pri kliku bilo gdje na stranici kako bi se svi popoveri zatvorili i pretraga obrisala
 
     useEffect(() => {
         if(popoverOpen && searchOpen) {
@@ -144,6 +151,8 @@ const Navbar = memo(() => {
         }
     }, [popoverOpen, pcPopoverOpen, searchOpen]);
 
+    // funkcija koja prikazuje/ne prikazuje, ovisno o veličini ekrana, logo "SNET" kad je pretraga otvorena
+
     useEffect(() => {
         const windowSize = window.innerWidth;
         if(windowSize < 580 && searchOpen) {
@@ -153,6 +162,8 @@ const Navbar = memo(() => {
         }
     }, [searchOpen]);
 
+    // funkcija koja se poziva pri kliku na "See more" u pretrazi i preusmjerava na stranicu sa svim korisnicima koji odgovaraju pretrazi
+
     const handleSeeMore = (search: string) => {
         setSearchOpen(false);
         router.push(`/people?searchTerm=${search}`);
@@ -161,7 +172,6 @@ const Navbar = memo(() => {
         searchInputRef.current?.blur();
     }
 
-    // ukoliko je user state User vraća se sve ispod
     return (
         <div className="border-1 border-black bg-[#222222] shadow-[0px_0.5px_20.16px_0px_rgba(0,_0,_0,_0.26)] h-[50px] sm:h-[80px] fixed top-0 w-full z-[9998]">
             <div className="sm:hidden flex flex-col px-4 h-full justify-center">

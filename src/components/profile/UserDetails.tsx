@@ -16,6 +16,8 @@ const UserDetails = ({pathUser, friendship, mutualFriends, popular}: {pathUser: 
   const {user} = useAuth();
   const router = useRouter();
 
+  // Postavljanje kratkog korisničkog imena na osnovu imena i prezimena korisnika, friendship statusa i popularnih korisnika
+
   useEffect(() => {
     if(pathUser && pathUser.firstName && pathUser.lastName) {
       setShortUsername(pathUser.firstName.slice(0,1) + pathUser.lastName.slice(0,1));
@@ -31,7 +33,9 @@ const UserDetails = ({pathUser, friendship, mutualFriends, popular}: {pathUser: 
       const newPopularUsers = fillUsers.filter(filledUser => filledUser.userId !== user.userId).slice(0,4);
       setPopularUsers(newPopularUsers);
     }
-  }, [pathUser, friendship, popular]);
+  }, [pathUser, friendship, popular, user]);
+
+  // funkcija koja prati ili prestaje pratiti korisnika
 
   const handleFollow = async (id: string) => {
     if(isFollowed) {
@@ -51,6 +55,8 @@ const UserDetails = ({pathUser, friendship, mutualFriends, popular}: {pathUser: 
         console.error(err);
     }
   }
+
+  // funkcije za prihvaćanje, odbijanje, slanje zahtjeva za prijateljstvo i brisanje prijateljstva
 
   const acceptRequest = async () => {
 
@@ -88,6 +94,8 @@ const UserDetails = ({pathUser, friendship, mutualFriends, popular}: {pathUser: 
       console.error(err);
     }
   }
+
+  // funkcija za poništavanje zahtjeva za prijateljstvo
 
   const unsendFriendReq = async () => {
     setFriendshipStatus(0);

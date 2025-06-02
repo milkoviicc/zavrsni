@@ -43,6 +43,7 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
   const {deleteAccount} = useAuth();
   const router = useRouter();
   
+  // funkcija koja pri skrolanju zatvara sve popovere
   useEffect(() => {
     const handleScroll = () => {
       setPopoverOpen(false);
@@ -60,6 +61,8 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
 
   }, [popoverOpen, popoverTabletOpen, popoverLaptopOpen, popoverPcOpen]);
 
+  // funkcija koja zatvara dijalog za promjenu slike kada se dijalog zatvori
+
   useEffect(() => {
     if(changeImgDialogOpen === false) {
       setSelectedImage(null);
@@ -67,12 +70,16 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
   }, [changeImgDialogOpen]);
 
 
+  // funkcija koja se poziva kada dodamo sliku
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
       setSelectedImage(file);
     }
   };
+
+  // pri prvom renderovanju postavlja korisničke podatke u stateove
 
   useEffect(() => {
     if(user && user.firstName && user.lastName) {
@@ -97,6 +104,8 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
     }
   }, [user]);
 
+  // funkcija koja poziva editProfile kada korisnik klikne na dugme za azuriranje profila
+
   const handleEditProfile = () => {
     editProfile(username, fullName, description, occupation);
     setAllowSaving(false);
@@ -105,6 +114,8 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
     setEditableDescription(false);
     setEditableOccupation(false);
   }
+
+  // funkcija koja se poziva kada korisnik prevuče sliku na labelu
 
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
@@ -115,10 +126,14 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
     }
   }
 
+  // funkcija koja sprečava defaultno ponašanje pri prevlačenju slike na labelu
+
   const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
   }
+
+  // funkcija koja djeli puno ime na ime i prezime
 
   function splitFullName(fullName: string): {firstName: string; lastName: string} {
     const [firstName, ...lastNameParts] = fullName.split(' ');
@@ -128,6 +143,7 @@ const MyProfileDetails = ({user, changeImage, revalidate}: {user: Profile, chang
     return {firstName, lastName};
   }
 
+  // funkcija koja ažurira profil korisnika
   const editProfile = async (username: string, fullName: string, description: string | null, occupation: string | null) => {
     try {
       const { firstName, lastName } = splitFullName(fullName);
